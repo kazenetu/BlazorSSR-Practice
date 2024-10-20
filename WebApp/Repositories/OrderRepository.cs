@@ -62,11 +62,11 @@ namespace WebApp.Repositories
       foreach (DataRow row in sqlResult.Rows)
       {
         // 注文
-        var no = int.Parse(row["no"].ToString());
+        var no = int.Parse(row["NoId"].ToString());
         var product = row["productName"].ToString();
         var unitPrice = decimal.Parse(row["unitPrice"].ToString());
         var qty = decimal.Parse(row["qty"].ToString());
-        var totalPrice = decimal.Parse(row["totalPrice"].ToString());
+        var totalPrice = unitPrice * qty;
         result.Add(new Order(no, product, unitPrice, qty, totalPrice));
       }
       return result;

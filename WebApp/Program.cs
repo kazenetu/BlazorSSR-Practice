@@ -15,7 +15,7 @@ public class Program
         builder.Services.AddRazorComponents();
 
         // DI設定
-        builder.Services.AddTransient<IOrderRepository, IOrderRepository>();
+        builder.Services.AddTransient<IOrderRepository, OrderRepository>();
 
         // Configを専用Modelに設定
         var dbRoot = builder.Configuration.GetSection("DB");

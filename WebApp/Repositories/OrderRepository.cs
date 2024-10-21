@@ -25,7 +25,7 @@ namespace WebApp.Repositories
     /// 注文リストを取得
     /// </summary>
     /// <returns>注文リスト</returns>
-    public List<Order> GetOderList()
+    public List<OrderModel> GetOderList()
     {
       return Find(null);
     }
@@ -36,9 +36,9 @@ namespace WebApp.Repositories
     /// <param name="productName">商品名</param>
     /// <returns>注文リスト</returns>
     /// <remarks>メイン処理</remarks>
-    private List<Order> Find(string? productName)
+    private List<OrderModel> Find(string? productName)
     {
-      var result = new List<Order>();
+      var result = new List<OrderModel>();
 
       // パラメータ初期化
       db.ClearParam();
@@ -67,7 +67,7 @@ namespace WebApp.Repositories
         var unitPrice = decimal.Parse(row["unitPrice"].ToString());
         var qty = decimal.Parse(row["qty"].ToString());
         var totalPrice = unitPrice * qty;
-        result.Add(new Order(no, product, unitPrice, qty, totalPrice));
+        result.Add(new OrderModel(no, product, unitPrice, qty, totalPrice));
       }
       return result;
     }

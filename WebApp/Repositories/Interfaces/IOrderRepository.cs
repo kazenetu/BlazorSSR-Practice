@@ -11,6 +11,6 @@ namespace WebApp.Repositories.Interfaces
     /// 注文リストを取得
     /// </summary>
     /// <returns>注文リスト</returns>
-    List<Order> GetOderList();
+    List<OrderModel> GetOderList();
   }
 }

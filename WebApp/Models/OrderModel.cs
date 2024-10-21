@@ -8,5 +8,5 @@ namespace WebApp.Models
     /// <param name="UnitPrice">単価</param>
     /// <param name="Qty">数量</param>
     /// <param name="TotalPrice">合計金額</param>
-    public record Order(int No, string ProductName, decimal UnitPrice, decimal Qty, decimal TotalPrice);
+    public record OrderModel(int No, string ProductName, decimal UnitPrice, decimal Qty, decimal TotalPrice);
 }

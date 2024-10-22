@@ -1,0 +1,52 @@
+﻿@page "/order"
+@attribute [StreamRendering]
+@using WebApp.Models
+@using WebApp.Repositories.Interfaces
+@inject IOrderRepository orderRepository;
+
+<PageTitle>注文一覧</PageTitle>
+
+<h1>注文一覧</h1>
+
+@if (orders == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>ProductName</th>
+                <th>UnitPrice</th>
+                <th>Qty</th>
+                <th>TotalPrice</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var oder in orders)
+            {
+                <tr>
+                    <td>@oder.No</td>
+                    <td>@oder.ProductName</td>
+                    <td>@oder.UnitPrice</td>
+                    <td>@oder.Qty</td>
+                    <td>@oder.TotalPrice</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private OrderModel[]? orders;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Simulate asynchronous loading to demonstrate streaming rendering
+        await Task.Delay(500);
+
+        orders = orderRepository.GetOderList().ToArray();
+    }
+}

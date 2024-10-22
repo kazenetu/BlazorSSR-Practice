@@ -1,4 +1,7 @@
 using WebApp.Components;
+using WebApp.Repositories;
+using WebApp.Repositories.Interfaces;
+using WebApp.DBAccess;
 
 namespace WebApp;
 
@@ -10,6 +13,27 @@ public class Program
 
         // Add services to the container.
         builder.Services.AddRazorComponents();
+
+        // DI設定
+        builder.Services.AddTransient<IOrderRepository, OrderRepository>();
+
+        // Configを専用Modelに設定
+        var dbRoot = builder.Configuration.GetSection("DB");
+        var dbSetting = builder.Configuration.GetSection("Setting");
+
+        #if DEBUG
+            var dbConnectionStrings = dbRoot.GetSection("ConnectionStrings");
+            var dbTarget = dbRoot.GetSection("Target");
+            if (dbTarget.Value is null)
+            {
+                // デバッグ時のみ未設定の場合はSQLiteを選択
+                dbConnectionStrings.GetSection("sqlite").Value = "assets/Test.db";
+                dbTarget.Value = "sqlite";
+            }
+        #endif
+
+        builder.Services.Configure<DatabaseConfigModel>(dbRoot);
+        builder.Services.Configure<SettingConfigModel>(dbSetting);
 
         var app = builder.Build();
 

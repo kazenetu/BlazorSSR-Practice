@@ -1,0 +1,44 @@
+﻿@page "/counter"
+@using Providers
+
+<PageTitle>Counter</PageTitle>
+
+<h1>Counter</h1>
+
+<p>Current count: <strong>@count</strong></p>
+<button @onclick="CountUp" class="btn btn-outline-success">CounteUp</button>
+<button @onclick="Clear" class="btn btn-outline-success">Clear</button>
+
+@code {
+    [CascadingParameter]
+    private SessionStorageProvider? sessionStorageProvider { get; set; }
+
+    private int count;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && sessionStorageProvider is not null)
+        {
+            var result = await sessionStorageProvider.GetAsync<int>("Cont");
+            count = result.Success ? result.Value : 0;
+            StateHasChanged();
+        }
+    }
+
+    private async Task CountUp()
+    {
+        if (sessionStorageProvider is not null)
+        {
+            count++;
+            await sessionStorageProvider.SetAsync("Cont", count);
+        }
+    }
+
+    private async Task Clear()
+    {
+        if (sessionStorageProvider is not null)
+        {
+            count = 0;
+            await sessionStorageProvider.Clear();
+        }
+    }
+}

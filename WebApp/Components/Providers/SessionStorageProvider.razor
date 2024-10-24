@@ -1,0 +1,16 @@
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage ProtectedSessionStore
+@inject IJSRuntime JS
+
+<CascadingValue Value="this">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    public async Task<ProtectedBrowserStorageResult<T>> GetAsync<T>(string name) => await ProtectedSessionStore.GetAsync<T>(name);
+    public async Task SetAsync<T>(string name, T value) => await ProtectedSessionStore.SetAsync(name, value!);
+    public async Task Clear() => await JS.InvokeVoidAsync("sessionStorage.clear");
+}

@@ -1,7 +1,7 @@
 using WebApp.Components;
+using WebApp.DBAccess;
 using WebApp.Repositories;
 using WebApp.Repositories.Interfaces;
-using WebApp.DBAccess;
 
 namespace WebApp;
 
@@ -12,7 +12,9 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
-        builder.Services.AddRazorComponents();
+        //builder.Services.AddRazorComponents();
+        builder.Services.AddRazorComponents()
+            .AddInteractiveServerComponents();
 
         // DI設定
         builder.Services.AddTransient<IOrderRepository, OrderRepository>();
@@ -46,7 +48,9 @@ public class Program
         app.UseStaticFiles();
         app.UseAntiforgery();
 
-        app.MapRazorComponents<App>();
+        //app.MapRazorComponents<App>();
+        app.MapRazorComponents<App>()
+            .AddInteractiveServerRenderMode();
 
         app.Run();
     }

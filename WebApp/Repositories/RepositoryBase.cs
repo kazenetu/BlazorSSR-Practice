@@ -2,6 +2,7 @@
 using WebApp.DBAccess.DB;
 using WebApp.DBAccess;
 using WebApp.Repositories.Interfaces;
+using Microsoft.AspNetCore.Components.Forms.Mapping;
 
 namespace WebApp.Repositories
 {
@@ -67,7 +68,7 @@ namespace WebApp.Repositories
     /// </summary>
     public void BeginTransaction()
     {
-      db.BeginTransaction();
+      db!.BeginTransaction();
     }
 
     /// <summary>
@@ -75,7 +76,7 @@ namespace WebApp.Repositories
     /// </summary>
     public void Commit()
     {
-      db.Commit();
+      db!.Commit();
     }
 
     /// <summary>
@@ -83,7 +84,53 @@ namespace WebApp.Repositories
     /// </summary>
     public void Rollback()
     {
-      db.Rollback();
+      db!.Rollback();
+    }
+
+    /// <summary>
+    /// DataRow[Name]をTに変換する
+    /// </summary>
+    /// <typeparam name="T">変換先の型</typeparam>
+    /// <param name="value">変換対象</param>
+    /// <returns>変換先の型(変換できない場合は初期値)</returns>
+    protected T Parse<T>(object value) where T: notnull
+    {
+      object? result = null;
+      object? defaultValue = null;
+      
+      if (typeof(T) == typeof(int))
+      {
+        defaultValue = 0;
+        if(int.TryParse(value.ToString(), out int parseResult))
+          result = parseResult;
+      }
+      if (typeof(T) == typeof(decimal))
+      {
+        defaultValue = 0m;
+        if (decimal.TryParse(value.ToString(), out decimal parseResult))
+          result = parseResult;
+      }
+      if (typeof(T) == typeof(float))
+      {
+        defaultValue = 0f;
+        if (float.TryParse(value.ToString(), out float parseResult))
+          result = parseResult;
+      }
+      if (typeof(T) == typeof(double))
+      {
+        defaultValue = 0f;
+        if (double.TryParse(value.ToString(), out double parseResult))
+          result = parseResult;
+      }
+      if (typeof(T) == typeof(string))
+      {
+        defaultValue = string.Empty;
+        if (string.IsNullOrEmpty(value.ToString()))
+          result = value.ToString();
+      }
+
+      if (result is null) return (T)defaultValue!;
+      return (T)result!;
     }
   }
 }

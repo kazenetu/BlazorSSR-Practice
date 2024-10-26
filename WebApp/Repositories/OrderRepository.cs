@@ -41,7 +41,7 @@ namespace WebApp.Repositories
       var result = new List<OrderModel>();
 
       // パラメータ初期化
-      db.ClearParam();
+      db!.ClearParam();
 
       var sql = new StringBuilder();
 
@@ -62,10 +62,10 @@ namespace WebApp.Repositories
       foreach (DataRow row in sqlResult.Rows)
       {
         // 注文
-        var no = int.Parse(row["NoId"].ToString());
-        var product = row["productName"].ToString();
-        var unitPrice = decimal.Parse(row["unitPrice"].ToString());
-        var qty = decimal.Parse(row["qty"].ToString());
+        var no = Parse<int>(row["NoId"]);
+        var product = Parse<string>(row["productName"]);
+        var unitPrice = Parse<decimal>(row["unitPrice"]);
+        var qty = Parse<decimal>(row["qty"]);
         var totalPrice = unitPrice * qty;
         result.Add(new OrderModel(no, product, unitPrice, qty, totalPrice));
       }

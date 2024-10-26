@@ -125,7 +125,7 @@ namespace WebApp.DBAccess.DB
       }
 
       // SQL発行
-      using (SqliteCommand command = conn.CreateCommand())
+      using (SqliteCommand command = conn!.CreateCommand())
       {
         command.CommandText = sql;
 
@@ -152,7 +152,7 @@ namespace WebApp.DBAccess.DB
       }
 
       // SQL発行
-      using (SqliteCommand command = conn.CreateCommand())
+      using (SqliteCommand command = conn!.CreateCommand())
       {
         command.CommandText = sql;
 
@@ -202,7 +202,7 @@ namespace WebApp.DBAccess.DB
       }
       else
       {
-        this.tran = this.conn.BeginTransaction();
+        this.tran = this.conn!.BeginTransaction();
         this.isTran = true;
       }
     }
@@ -225,7 +225,7 @@ namespace WebApp.DBAccess.DB
       }
       else
       {
-        this.tran.Commit();
+        this.tran!.Commit();
         this.isTran = false;
       }
     }
@@ -248,7 +248,7 @@ namespace WebApp.DBAccess.DB
       }
       else
       {
-        this.tran.Rollback();
+        this.tran!.Rollback();
         this.isTran = false;
       }
     }
@@ -266,13 +266,13 @@ namespace WebApp.DBAccess.DB
       }
       if (this.isTran)
       {
-        this.tran.Rollback();
+        this.tran!.Rollback();
       }
       if(this.tran != null){
-        this.tran.Dispose();
+        this.tran!.Dispose();
       }
-      this.conn.Close();
-      this.conn.Dispose();
+      this.conn?.Close();
+      this.conn?.Dispose();
     }
 
     #endregion

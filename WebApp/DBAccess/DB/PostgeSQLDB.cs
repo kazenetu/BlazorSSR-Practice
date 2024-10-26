@@ -21,12 +21,12 @@ namespace WebApp.DBAccess.DB
     /// <summary>
     /// コネクションインスタンス
     /// </summary>
-    private NpgsqlConnection conn = null;
+    private NpgsqlConnection? conn = null;
 
     /// <summary>
     /// トランザクションインスタンス
     /// </summary>
-    private NpgsqlTransaction tran = null;
+    private NpgsqlTransaction? tran = null;
 
     /// <summary>
     /// パラメータ
@@ -74,9 +74,9 @@ namespace WebApp.DBAccess.DB
 
         this.param = new Dictionary<string, object>();
       }
-      catch (PostgresException ex)
+      catch (PostgresException)
       {
-        throw ex;
+        throw;
       }
       catch (Exception ex)
       {
@@ -127,7 +127,7 @@ namespace WebApp.DBAccess.DB
       }
 
       // SQL発行
-      using (NpgsqlCommand command = conn.CreateCommand())
+      using (NpgsqlCommand command = conn!.CreateCommand())
       {
         command.CommandText = sql;
 
@@ -154,7 +154,7 @@ namespace WebApp.DBAccess.DB
       }
 
       // SQL発行
-      using (NpgsqlCommand command = conn.CreateCommand())
+      using (NpgsqlCommand command = conn!.CreateCommand())
       {
         command.CommandText = sql;
 
@@ -190,7 +190,7 @@ namespace WebApp.DBAccess.DB
     /// </summary>
     public void BeginTransaction()
     {
-      if (isTran && isSetSavePoint)
+      if ((isTran && isSetSavePoint) || tran is null)
       {
         throw new Exception("トランザクションが設定できませんでした。");
       }
@@ -202,7 +202,7 @@ namespace WebApp.DBAccess.DB
       }
       else
       {
-        this.tran = this.conn.BeginTransaction();
+        this.tran = this.conn!.BeginTransaction();
         this.isTran = true;
       }
     }
@@ -219,12 +219,12 @@ namespace WebApp.DBAccess.DB
 
       if (isSetSavePoint)
       {
-        tran.Release(SavePointName);
+        tran!.Release(SavePointName);
         isSetSavePoint = false;
       }
       else
       {
-        this.tran.Commit();
+        this.tran!.Commit();
         this.isTran = false;
       }
 
@@ -242,12 +242,12 @@ namespace WebApp.DBAccess.DB
 
       if (isSetSavePoint)
       {
-        tran.Rollback(SavePointName);
+        tran!.Rollback(SavePointName);
         isSetSavePoint = false;
       }
       else
       {
-        this.tran.Rollback();
+        this.tran!.Rollback();
         this.isTran = false;
       }
     }
@@ -259,19 +259,19 @@ namespace WebApp.DBAccess.DB
     {
       if (isSetSavePoint)
       {
-        tran.Rollback(SavePointName);
+        tran!.Rollback(SavePointName);
         isSetSavePoint = false;
       }
       if (this.isTran)
       {
-        this.tran.Rollback();
+        this.tran!.Rollback();
       }
       if (this.tran != null)
       {
         this.tran.Dispose();
       }
-      this.conn.Close();
-      this.conn.Dispose();
+      this.conn?.Close();
+      this.conn?.Dispose();
     }
 
     #endregion

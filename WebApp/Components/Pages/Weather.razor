@@ -1,4 +1,5 @@
 ﻿@page "/weather"
+@inherits Base.PageBase
 @attribute [StreamRendering]
 
 <PageTitle>Weather</PageTitle>
@@ -52,6 +53,19 @@ else
             TemperatureC = Random.Shared.Next(-20, 55),
             Summary = summaries[Random.Shared.Next(summaries.Length)]
         }).ToArray();
+    }
+
+    /// <summary>
+    /// 初期処理
+    /// </summary>
+    /// <param name="firstRender">初回表示か否か</param>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // 未ログインの場合は即時終了
+            if (!await LoginCheck()) return;
+        }
     }
 
     private class WeatherForecast

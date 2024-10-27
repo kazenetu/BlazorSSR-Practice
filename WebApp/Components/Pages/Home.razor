@@ -1,7 +1,23 @@
 ﻿@page "/"
+@inherits Base.PageBase
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+
+@code{
+    /// <summary>
+    /// 初期処理
+    /// </summary>
+    /// <param name="firstRender">初回表示か否か</param>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // 未ログインの場合は即時終了
+            if (!await LoginCheck()) return;
+        }
+    }
+}

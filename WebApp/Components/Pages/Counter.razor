@@ -20,6 +20,9 @@
     {
         if (firstRender)
         {
+            // 未ログインの場合は即時終了
+            if (!await LoginCheck()) return;
+
             var result = await GetAsync<int>("Cont");
             count = result;
             StateHasChanged();

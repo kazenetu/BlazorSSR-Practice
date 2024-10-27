@@ -1,8 +1,9 @@
 ﻿@page "/order"
+@inherits Base.PageBase
 @attribute [StreamRendering]
 @using WebApp.Models
 @using WebApp.Repositories.Interfaces
-@inject IOrderRepository orderRepository;
+@inject IOrderRepository orderRepository
 
 <PageTitle>注文一覧</PageTitle>
 
@@ -48,5 +49,18 @@ else
         await Task.Delay(500);
 
         orders = orderRepository.GetOderList().ToArray();
+    }
+
+    /// <summary>
+    /// 初期処理
+    /// </summary>
+    /// <param name="firstRender">初回表示か否か</param>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // 未ログインの場合は即時終了
+            if (!await LoginCheck()) return;
+        }
     }
 }

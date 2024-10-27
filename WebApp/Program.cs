@@ -18,6 +18,7 @@ public class Program
 
         // DI設定
         builder.Services.AddTransient<IOrderRepository, OrderRepository>();
+        builder.Services.AddTransient<IUserRepository, UserRepository>();
 
         // Configを専用Modelに設定
         var dbRoot = builder.Configuration.GetSection("DB");

@@ -1,0 +1,50 @@
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Providers
+
+@code{
+    /// <summary>
+    /// セッション管理プロバイダークラス
+    /// </summary>
+    [CascadingParameter]
+    private SessionStorageProvider? sessionStorageProvider { get; set; }
+
+    /// <summary>
+    /// セッションの取得
+    /// </summary>
+    /// <param name="name">キー名</param>
+    /// <typeparam name="T">変換型</typeparam>
+    /// <returns>変換型に変換した値</returns>
+    protected async Task<T?> GetAsync<T>(string name)
+    {
+        if(sessionStorageProvider is not null){
+            var result = await sessionStorageProvider.GetAsync<T>(name);
+            if(result.Success) return result.Value;
+        }
+        return default(T);
+    }
+
+    /// <summary>
+    /// セッションの設定
+    /// </summary>
+    /// <param name="name">キー名</param>
+    /// <param name="value">値</param>
+    /// <typeparam name="T">変換型</typeparam>
+    protected async Task SetAsync<T>(string name, T value)
+    {
+        if (sessionStorageProvider is not null)
+        {
+            await sessionStorageProvider.SetAsync<T>(name, value);
+        }
+    }
+
+    /// <summary>
+    /// セッションクリア
+    /// </summary>
+    protected async Task Clear()
+    {
+        if (sessionStorageProvider is not null)
+        {
+            await sessionStorageProvider.Clear();
+        }
+    }
+}

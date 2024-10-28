@@ -107,12 +107,13 @@
 
         // ログイン成功
         var userModel = userRepository.GetUser(loginModel!.ID!);
-        await SetAsync("FullName", userModel!.Fullname);
-        await SetAsync("LoggedIn", true);
-        await SetAsync("AdminRole", userModel!.AdminRole);
+        await SetAsync(UserModel.SessionFullName, userModel!.Fullname);
+        await SetAsync(UserModel.SessionLoggedIn, true);
+        await SetAsync(UserModel.SessionAdminRole, userModel!.AdminRole);
 
         // 画面遷移
         Navigation.NavigateTo("/");
+        Navigation.Refresh(true);
     }
 
     private bool EqalsPassword(LoginModel model)

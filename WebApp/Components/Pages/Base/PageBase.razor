@@ -39,6 +39,18 @@
     }
 
     /// <summary>
+    /// セッションの削除
+    /// </summary>
+    /// <param name="name">キー名</param>
+    protected async Task DeleteAsync(string name)
+    {
+        if (sessionStorageProvider is not null)
+        {
+            await sessionStorageProvider.DeleteAsync(name);
+        }
+    }
+
+    /// <summary>
     /// セッションクリア
     /// </summary>
     protected async Task Clear()

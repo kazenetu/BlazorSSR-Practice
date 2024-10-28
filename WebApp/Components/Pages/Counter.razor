@@ -45,6 +45,6 @@
     private async Task CountClear()
     {
         count = 0;
-        await Clear();
+        await DeleteAsync("Count");
     }
 }

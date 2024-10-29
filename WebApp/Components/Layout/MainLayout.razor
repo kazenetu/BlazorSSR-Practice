@@ -1,4 +1,8 @@
-﻿@inherits LayoutComponentBase
+﻿@inject NavigationManager Navigation
+@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Providers
+@using WebApp.Models
 
 <div class="page">
     <div class="sidebar">
@@ -7,7 +11,9 @@
 
     <main>
         <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+            @if(loggedIn){
+                <button @onclick="Logout" class="btn btn-outline-success">ログアウト</button>
+            }
         </div>
 
         <article class="content px-4">
@@ -15,3 +21,58 @@
         </article>
     </main>
 </div>
+
+@code
+{
+    private bool loggedIn { set; get; }
+
+    /// <summary>
+    /// セッション管理プロバイダークラス
+    /// </summary>
+    [CascadingParameter]
+    private SessionStorageProvider? sessionStorageProvider { get; set; }
+
+    /// <summary>
+    /// 初期値設定
+    /// </summary>
+    /// <param name="firstRender">初期表示か否か</param>
+    /// <returns>遅延処理</returns>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            loggedIn = await GetAsync<bool>(UserModel.SessionLoggedIn);
+
+            // 画面反映
+            StateHasChanged();
+        }
+    }
+
+    /// <summary>
+    /// セッションの取得
+    /// </summary>
+    /// <param name="name">キー名</param>
+    /// <typeparam name="T">変換型</typeparam>
+    /// <returns>変換型に変換した値</returns>
+    private async Task<T?> GetAsync<T>(string name)
+    {
+        if (sessionStorageProvider is not null)
+        {
+            var result = await sessionStorageProvider.GetAsync<T>(name);
+            if (result.Success) return result.Value;
+        }
+        return default(T);
+    }
+
+    /// <summary>
+    /// ログアウト
+    /// </summary>
+    private async Task Logout()
+    {
+        await sessionStorageProvider.Clear();
+
+        // ログイン画面へ遷移
+        Navigation.NavigateTo("/login");
+        Navigation.Refresh(true);
+    }
+}

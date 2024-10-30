@@ -12,6 +12,11 @@
     private SessionStorageProvider? sessionStorageProvider { get; set; }
 
     /// <summary>
+    /// ログイン前か否か
+    /// </summary>
+    protected bool IsBeforeLoginCheck  { get; set; } = true;
+
+    /// <summary>
     /// セッションの取得
     /// </summary>
     /// <param name="name">キー名</param>

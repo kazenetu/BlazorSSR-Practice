@@ -1,6 +1,12 @@
 ﻿@page "/counter"
 @inherits Base.PageBase
 
+@if (IsBeforeLoginCheck)
+{
+    // ログイン確認前は表示なし
+    return;
+}
+
 <PageTitle>Counter</PageTitle>
 
 <h1>Counter</h1>
@@ -20,6 +26,13 @@
     {
         if (firstRender)
         {
+            // 未ログインの場合は即時終了
+            if (!await LoginCheck()) return;
+
+            // ログイン確認完了
+            IsBeforeLoginCheck = false;
+
+            // 初期カウンタ設定
             var result = await GetAsync<int>("Cont");
             count = result;
             StateHasChanged();
@@ -42,6 +55,6 @@
     private async Task CountClear()
     {
         count = 0;
-        await Clear();
+        await DeleteAsync("Count");
     }
 }

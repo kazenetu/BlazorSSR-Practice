@@ -12,5 +12,6 @@
 
     public async Task<ProtectedBrowserStorageResult<T>> GetAsync<T>(string name) => await ProtectedSessionStore.GetAsync<T>(name);
     public async Task SetAsync<T>(string name, T value) => await ProtectedSessionStore.SetAsync(name, value!);
+    public async Task DeleteAsync(string name) => await ProtectedSessionStore.DeleteAsync(name);
     public async Task Clear() => await JS.InvokeVoidAsync("sessionStorage.clear");
 }

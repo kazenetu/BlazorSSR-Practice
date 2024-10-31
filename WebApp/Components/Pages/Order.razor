@@ -1,8 +1,15 @@
 ﻿@page "/order"
+@inherits Base.PageBase
 @attribute [StreamRendering]
 @using WebApp.Models
 @using WebApp.Repositories.Interfaces
-@inject IOrderRepository orderRepository;
+@inject IOrderRepository orderRepository
+
+@if (IsBeforeLoginCheck)
+{
+    // ログイン確認前は表示なし
+    return;
+}
 
 <PageTitle>注文一覧</PageTitle>
 
@@ -42,11 +49,27 @@ else
 @code {
     private OrderModel[]? orders;
 
-    protected override async Task OnInitializedAsync()
+    /// <summary>
+    /// 初期処理
+    /// </summary>
+    /// <param name="firstRender">初回表示か否か</param>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // Simulate asynchronous loading to demonstrate streaming rendering
-        await Task.Delay(500);
+        if (firstRender)
+        {
+            // 未ログインの場合は即時終了
+            if (!await LoginCheck()) return;
 
-        orders = orderRepository.GetOderList().ToArray();
+            // ログイン確認完了
+            IsBeforeLoginCheck = false;
+            StateHasChanged();
+
+            // Simulate asynchronous loading to demonstrate streaming rendering
+            await Task.Delay(500);
+
+            // 検索結果を表示
+            orders = orderRepository.GetOderList().ToArray();
+            StateHasChanged();
+        }
     }
 }

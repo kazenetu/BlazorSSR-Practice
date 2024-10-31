@@ -1,5 +1,12 @@
 ﻿@page "/weather"
+@inherits Base.PageBase
 @attribute [StreamRendering]
+
+@if (IsBeforeLoginCheck)
+{
+    // ログイン確認前は表示なし
+    return;
+}
 
 <PageTitle>Weather</PageTitle>
 
@@ -39,19 +46,35 @@ else
 @code {
     private WeatherForecast[]? forecasts;
 
-    protected override async Task OnInitializedAsync()
+    /// <summary>
+    /// 初期処理
+    /// </summary>
+    /// <param name="firstRender">初回表示か否か</param>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // Simulate asynchronous loading to demonstrate streaming rendering
-        await Task.Delay(500);
-
-        var startDate = DateOnly.FromDateTime(DateTime.Now);
-        var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
-        forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
+        if (firstRender)
         {
-            Date = startDate.AddDays(index),
-            TemperatureC = Random.Shared.Next(-20, 55),
-            Summary = summaries[Random.Shared.Next(summaries.Length)]
-        }).ToArray();
+            // 未ログインの場合は即時終了
+            if (!await LoginCheck()) return;
+
+            // ログイン確認完了
+            IsBeforeLoginCheck = false;
+            StateHasChanged();
+
+            // Simulate asynchronous loading to demonstrate streaming rendering
+            await Task.Delay(500);
+
+            // 検索結果を表示
+            var startDate = DateOnly.FromDateTime(DateTime.Now);
+            var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
+            forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            {
+                Date = startDate.AddDays(index),
+                TemperatureC = Random.Shared.Next(-20, 55),
+                Summary = summaries[Random.Shared.Next(summaries.Length)]
+            }).ToArray();
+            StateHasChanged();
+        }
     }
 
     private class WeatherForecast

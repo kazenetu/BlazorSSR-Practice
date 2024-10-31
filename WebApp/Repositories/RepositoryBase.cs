@@ -98,6 +98,12 @@ namespace WebApp.Repositories
       object? result = null;
       object? defaultValue = null;
       
+      if (typeof(T) == typeof(bool))
+      {
+        defaultValue = false;
+        if(bool.TryParse(value.ToString(), out bool parseResult))
+          result = parseResult;
+      }
       if (typeof(T) == typeof(int))
       {
         defaultValue = 0;
@@ -125,7 +131,7 @@ namespace WebApp.Repositories
       if (typeof(T) == typeof(string))
       {
         defaultValue = string.Empty;
-        if (string.IsNullOrEmpty(value.ToString()))
+        if (!string.IsNullOrEmpty(value.ToString()))
           result = value.ToString();
       }
 

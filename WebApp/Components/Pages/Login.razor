@@ -1,0 +1,129 @@
+﻿@page "/login"
+@inherits Base.PageBase
+@using WebApp.Models
+@using WebApp.Repositories.Interfaces
+@inject IUserRepository userRepository
+@inject NavigationManager Navigation
+
+
+<PageTitle>ログイン</PageTitle>
+
+<h1>ログイン</h1>
+@if (errorMessages.Any())
+{
+    <div class=" col-md-6 offset-md-3" style="border: 1px red solid; margin-bottom: 1em;color:red;">
+        <ul style="margin-block-end:0em">
+        @foreach (var item in errorMessages)
+        {
+            <li>@item </li>
+        }
+        </ul>
+    </div>
+}
+<EditForm method="post" Model="Model" OnValidSubmit="SubmitLogin">
+    <div class="form-row">
+        <div class="form-group col-md-6 offset-md-3">
+            <label class="col-2">ID</label>
+            <InputText @bind-Value="Model!.ID" />
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-6 offset-md-3">
+            <label class="col-2">パスワード</label>
+            <InputText type="password" @bind-Value="Model!.Password" />
+        </div>
+    </div>
+
+    <div class="form-row" style="margin-top:1em;">
+        <div class="form-group col-md-6 offset-md-3">
+            <input class="btn btn-primary mb-2 float-right" id="send" type="submit" value="ログイン" />
+        </div>
+    </div>
+</EditForm>
+
+
+@code
+{
+    [SupplyParameterFromForm]
+    private LoginModel? Model { get; set; }
+
+    /// <summary>
+    /// エラーメッセージリスト
+    /// </summary>
+    private List<string> errorMessages = new();
+
+
+    protected override void OnInitialized()
+    {
+        Model ??= new();
+    }
+
+    /// <summary>
+    /// 初期値設定
+    /// </summary>
+    /// <param name="firstRender">初期表示か否か</param>
+    /// <returns>遅延処理</returns>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // セッションクリア
+            await Clear();
+
+            // 画面反映
+            StateHasChanged();
+        }
+    }
+
+    /// <summary>
+    /// ログイン
+    /// </summary>
+    /// <param name="editContext"></param>
+    private async void SubmitLogin(EditContext editContext)
+    {
+        // エラーメッセージクリア
+        errorMessages.Clear();
+
+        // 未入力チェック
+        var loginModel = editContext.Model as LoginModel;
+        if (loginModel?.ID is null)
+        {
+            // エラーメッセージ
+            errorMessages.Add("IDを入力してください。");
+        }
+        if (loginModel?.Password is null)
+        {
+            // エラーメッセージ
+            errorMessages.Add("パスワードを入力してください。");
+        }
+        if (errorMessages.Any()) return;
+
+        if (!EqalsPassword(loginModel!))
+        {
+            errorMessages.Add("IDまたはパスワードが間違っています。");
+        }
+        if (errorMessages.Any()) return;
+
+        // ログイン成功
+        var userModel = userRepository.GetUser(loginModel!.ID!);
+        await SetAsync(UserModel.SessionFullName, userModel!.Fullname);
+        await SetAsync(UserModel.SessionLoggedIn, true);
+        await SetAsync(UserModel.SessionAdminRole, userModel!.AdminRole);
+
+        // 画面遷移
+        Navigation.NavigateTo("/");
+        Navigation.Refresh(true);
+    }
+
+    private bool EqalsPassword(LoginModel model)
+    {
+        return userRepository.EqalsPassword(model.ID!, model.Password!);
+    }
+
+    public class LoginModel
+    {
+        public string? ID;
+        public string? Password;
+    }
+}

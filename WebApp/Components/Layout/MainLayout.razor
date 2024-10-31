@@ -69,8 +69,10 @@
     /// </summary>
     private async Task Logout()
     {
-        await sessionStorageProvider.Clear();
-
+        if (sessionStorageProvider is not null)
+        {
+            await sessionStorageProvider.Clear();
+        }
         // ログイン画面へ遷移
         Navigation.NavigateTo("/login");
         Navigation.Refresh(true);

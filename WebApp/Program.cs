@@ -1,7 +1,10 @@
+using NLog.Extensions.Logging;
+using NLog.Web;
 using WebApp.Components;
 using WebApp.DBAccess;
 using WebApp.Repositories;
 using WebApp.Repositories.Interfaces;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace WebApp;
 
@@ -10,6 +13,15 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        // ログ
+        builder.Logging.ClearProviders();
+        builder.Logging.SetMinimumLevel(LogLevel.Trace);
+        builder.Logging.AddNLog(new NLogProviderOptions {
+                CaptureMessageTemplates = true,
+                CaptureMessageProperties = true
+            });
+        builder.Host.UseNLog();        
 
         // Add services to the container.
         //builder.Services.AddRazorComponents();

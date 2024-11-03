@@ -141,7 +141,7 @@
             await SetAsync(UserModel.SessionLoggedIn, true);
             await SetAsync(UserModel.SessionAdminRole, userModel!.AdminRole);
             await SetAsync(UserModel.SessionUser, userModel.Serialize());
-throw new Exception("aa");
+
             Logger.LogInformation(await GetLogMessage($"ログイン成功"));
 
             // 画面遷移

@@ -1,6 +1,7 @@
 ﻿@page "/weather"
 @inherits Base.PageBase
 @attribute [StreamRendering]
+@inject ILogger<Weather> Logger
 
 @if (IsBeforeLoginCheck)
 {
@@ -54,26 +55,48 @@ else
     {
         if (firstRender)
         {
-            // 未ログインの場合は即時終了
-            if (!await LoginCheck()) return;
-
-            // ログイン確認完了
-            IsBeforeLoginCheck = false;
-            StateHasChanged();
-
-            // Simulate asynchronous loading to demonstrate streaming rendering
-            await Task.Delay(500);
-
-            // 検索結果を表示
-            var startDate = DateOnly.FromDateTime(DateTime.Now);
-            var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
-            forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            try
             {
-                Date = startDate.AddDays(index),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = summaries[Random.Shared.Next(summaries.Length)]
-            }).ToArray();
-            StateHasChanged();
+                Logger.LogInformation(await GetLogMessage("開始"));
+
+                // 未ログインの場合は即時終了
+                if (!await LoginCheck())
+                {
+                    Logger.LogInformation(await GetLogMessage("ログインチェック失敗"));
+                    return;
+                }
+
+                // ログイン確認完了
+                IsBeforeLoginCheck = false;
+                StateHasChanged();
+
+                Logger.LogInformation(await GetLogMessage("ログインチェック成功"));
+
+                // Simulate asynchronous loading to demonstrate streaming rendering
+                await Task.Delay(500);
+
+                // 検索結果を表示
+                var startDate = DateOnly.FromDateTime(DateTime.Now);
+                var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
+                forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
+                {
+                    Date = startDate.AddDays(index),
+                    TemperatureC = Random.Shared.Next(-20, 55),
+                    Summary = summaries[Random.Shared.Next(summaries.Length)]
+                }).ToArray();
+                StateHasChanged();
+
+                Logger.LogInformation(await GetLogMessage($"検索結果:{forecasts.Count()}件"));
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, await GetLogError(ex));
+                GotoErrorPage();
+            }
+            finally
+            {
+                Logger.LogInformation(await GetLogMessage("終了"));
+            }
         }
     }
 

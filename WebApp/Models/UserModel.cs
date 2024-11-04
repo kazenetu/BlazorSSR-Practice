@@ -26,5 +26,10 @@ namespace WebApp.Models
         /// セッション名：ログイン済
         /// </summary>
         public const string SessionLoggedIn = "SessionLoggedIn";
+
+        /// <summary>
+        /// セッション名：ユーザー情報
+        /// </summary>
+        public const string SessionUser = "SessionUser";
     }
 }

@@ -1,5 +1,6 @@
 ﻿@page "/"
 @inherits Base.PageBase
+@inject ILogger<Home> Logger
 
 @if (IsBeforeLoginCheck)
 {
@@ -22,12 +23,33 @@ Welcome to your new app.
     {
         if (firstRender)
         {
-            // 未ログインの場合は即時終了
-            if (!await LoginCheck()) return;
+            try
+            {
+                Logger.LogInformation(await GetLogMessage("開始"));
 
-            // ログイン確認完了
-            IsBeforeLoginCheck = false;
-            StateHasChanged();
+                // 未ログインの場合は即時終了
+                if (!await LoginCheck())
+                {
+                    Logger.LogInformation(await GetLogMessage("ログインチェック失敗"));
+                    return;
+                }
+
+                // ログイン確認完了
+                IsBeforeLoginCheck = false;
+                StateHasChanged();
+
+                Logger.LogInformation(await GetLogMessage("ログインチェック成功"));
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, await GetLogError(ex));
+                GotoErrorPage();
+            }
+            finally
+            {
+                Logger.LogInformation(await GetLogMessage("終了"));
+            }
+
         }
     }
 }

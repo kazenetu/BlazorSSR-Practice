@@ -4,7 +4,7 @@
 @using WebApp.Repositories.Interfaces
 @inject IUserRepository userRepository
 @inject NavigationManager Navigation
-
+@inject ILogger<Login> Logger
 
 <PageTitle>ログイン</PageTitle>
 
@@ -68,11 +68,23 @@
     {
         if (firstRender)
         {
-            // セッションクリア
-            await Clear();
+            try{
+                Logger.LogInformation(await GetLogMessage("開始"));
 
-            // 画面反映
-            StateHasChanged();
+                // セッションクリア
+                await Clear();
+
+                // 画面反映
+                StateHasChanged();
+            }
+            catch(Exception ex)
+            {
+                Logger.LogError(ex, await GetLogError(ex));
+                GotoErrorPage();
+           }
+            finally{
+                Logger.LogInformation(await GetLogMessage("終了"));
+            }
         }
     }
 
@@ -82,38 +94,68 @@
     /// <param name="editContext"></param>
     private async void SubmitLogin(EditContext editContext)
     {
-        // エラーメッセージクリア
-        errorMessages.Clear();
-
-        // 未入力チェック
-        var loginModel = editContext.Model as LoginModel;
-        if (loginModel?.ID is null)
+        try
         {
-            // エラーメッセージ
-            errorMessages.Add("IDを入力してください。");
+            Logger.LogInformation(await GetLogMessage("開始"));
+
+            // エラーメッセージクリア
+            errorMessages.Clear();
+
+            // 未入力チェック
+            var loginModel = editContext.Model as LoginModel;
+            if (loginModel?.ID is null)
+            {
+                // エラーメッセージ
+                errorMessages.Add("IDを入力してください。");
+            }
+            if (loginModel?.Password is null)
+            {
+                // エラーメッセージ
+                errorMessages.Add("パスワードを入力してください。");
+            }
+            if (errorMessages.Any())
+            {
+                Logger.LogInformation(await GetLogMessage($"入力エラー ログインID:{loginModel?.ID??"なし"}"));
+
+                // 画面反映
+                StateHasChanged();
+                return;
+            }
+
+            Logger.LogInformation(await GetLogMessage($"ログインチェック前 ログインID:{loginModel!.ID}"));
+            if (!EqalsPassword(loginModel!))
+            {
+                errorMessages.Add("IDまたはパスワードが間違っています。");
+            }
+            if (errorMessages.Any()){
+                Logger.LogInformation(await GetLogMessage($"ログインチェックエラー ログインID:{loginModel!.ID}"));
+
+                // 画面反映
+                StateHasChanged();
+                return;
+            }
+
+            // ログイン成功
+            var userModel = userRepository.GetUser(loginModel!.ID!);
+            await SetAsync(UserModel.SessionFullName, userModel!.Fullname);
+            await SetAsync(UserModel.SessionLoggedIn, true);
+            await SetAsync(UserModel.SessionAdminRole, userModel!.AdminRole);
+            await SetAsync(UserModel.SessionUser, userModel.Serialize());
+
+            Logger.LogInformation(await GetLogMessage($"ログイン成功"));
+
+            // 画面遷移
+            Navigation.NavigateTo("/");
+            Navigation.Refresh(true);
         }
-        if (loginModel?.Password is null)
+        catch(Exception ex)
         {
-            // エラーメッセージ
-            errorMessages.Add("パスワードを入力してください。");
+            Logger.LogError(ex, await GetLogError(ex));
+            GotoErrorPage();
         }
-        if (errorMessages.Any()) return;
-
-        if (!EqalsPassword(loginModel!))
-        {
-            errorMessages.Add("IDまたはパスワードが間違っています。");
+        finally{
+            Logger.LogInformation(await GetLogMessage("終了"));
         }
-        if (errorMessages.Any()) return;
-
-        // ログイン成功
-        var userModel = userRepository.GetUser(loginModel!.ID!);
-        await SetAsync(UserModel.SessionFullName, userModel!.Fullname);
-        await SetAsync(UserModel.SessionLoggedIn, true);
-        await SetAsync(UserModel.SessionAdminRole, userModel!.AdminRole);
-
-        // 画面遷移
-        Navigation.NavigateTo("/");
-        Navigation.Refresh(true);
     }
 
     private bool EqalsPassword(LoginModel model)

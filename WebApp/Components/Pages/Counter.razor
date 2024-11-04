@@ -1,5 +1,6 @@
 ﻿@page "/counter"
 @inherits Base.PageBase
+@inject ILogger<Counter> Logger
 
 @if (IsBeforeLoginCheck)
 {
@@ -26,16 +27,39 @@
     {
         if (firstRender)
         {
-            // 未ログインの場合は即時終了
-            if (!await LoginCheck()) return;
+            try
+            {
+                Logger.LogInformation(await GetLogMessage("開始"));
 
-            // ログイン確認完了
-            IsBeforeLoginCheck = false;
+                // 未ログインの場合は即時終了
+                if (!await LoginCheck())
+                {
+                    Logger.LogInformation(await GetLogMessage("ログインチェック失敗"));
+                    return;
+                }
 
-            // 初期カウンタ設定
-            var result = await GetAsync<int>("Cont");
-            count = result;
-            StateHasChanged();
+                // ログイン確認完了
+                IsBeforeLoginCheck = false;
+
+                Logger.LogInformation(await GetLogMessage("ログインチェック成功"));
+
+                // 初期カウンタ設定
+                var result = await GetAsync<int>("Cont");
+                count = result;
+
+                Logger.LogInformation(await GetLogMessage("初期カウンタ設定完了"));
+
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, await GetLogError(ex));
+                GotoErrorPage();
+            }
+            finally
+            {
+                Logger.LogInformation(await GetLogMessage("終了"));
+            }
         }
     }
 
@@ -44,8 +68,22 @@
     /// </summary>
     private async Task CountUp()
     {
-        count++;
-        await SetAsync("Cont", count);
+        try
+        {
+            Logger.LogInformation(await GetLogMessage("開始"));
+
+            count++;
+            await SetAsync("Cont", count);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, await GetLogError(ex));
+            GotoErrorPage();
+        }
+        finally
+        {
+            Logger.LogInformation(await GetLogMessage("終了"));
+        }
     }
 
     /// <summary>
@@ -54,7 +92,20 @@
     /// <returns></returns>
     private async Task CountClear()
     {
-        count = 0;
-        await DeleteAsync("Count");
+        try
+        {
+            Logger.LogInformation(await GetLogMessage("開始"));
+
+            count = 0;
+            await DeleteAsync("Count");
+        }
+        catch(Exception ex)
+        {
+            Logger.LogError(ex, await GetLogError(ex));
+            GotoErrorPage();
+        }
+        finally{
+            Logger.LogInformation(await GetLogMessage("終了"));
+        }
     }
 }

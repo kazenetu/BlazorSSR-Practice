@@ -4,6 +4,7 @@
 @using WebApp.Models
 @using WebApp.Repositories.Interfaces
 @inject IOrderRepository orderRepository
+@inject ILogger<Order> Logger
 
 @if (IsBeforeLoginCheck)
 {
@@ -57,19 +58,41 @@ else
     {
         if (firstRender)
         {
-            // 未ログインの場合は即時終了
-            if (!await LoginCheck()) return;
+            try
+            {
+                Logger.LogInformation(await GetLogMessage("開始"));
 
-            // ログイン確認完了
-            IsBeforeLoginCheck = false;
-            StateHasChanged();
+                // 未ログインの場合は即時終了
+                if (!await LoginCheck())
+                {
+                    Logger.LogInformation(await GetLogMessage("ログインチェック失敗"));
+                    return;
+                }
 
-            // Simulate asynchronous loading to demonstrate streaming rendering
-            await Task.Delay(500);
+                // ログイン確認完了
+                IsBeforeLoginCheck = false;
+                StateHasChanged();
 
-            // 検索結果を表示
-            orders = orderRepository.GetOderList().ToArray();
-            StateHasChanged();
+                Logger.LogInformation(await GetLogMessage("ログインチェック成功"));
+
+                // Simulate asynchronous loading to demonstrate streaming rendering
+                await Task.Delay(500);
+
+                // 検索結果を表示
+                orders = orderRepository.GetOderList().ToArray();
+                StateHasChanged();
+
+                Logger.LogInformation(await GetLogMessage($"検索結果:{orders.Count()}件"));
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, await GetLogError(ex));
+                GotoErrorPage();
+            }
+            finally
+            {
+                Logger.LogInformation(await GetLogMessage("終了"));
+            }
         }
     }
 }

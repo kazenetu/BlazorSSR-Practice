@@ -124,4 +124,34 @@
     {
         Navigation.NavigateTo("/Error");
     }
+
+    /// <summary>
+    /// ダイアログプロバイダークラス
+    /// </summary>
+    [CascadingParameter]
+    private DialogProvider? dialogProvider {get; set; }
+
+    /// <summary>
+    /// アラートメッセージ表示
+    /// </summary>
+    /// <param name="message">メッセージ本文</param>
+    protected async Task ShowAlert(string message)
+    {
+        if(dialogProvider is null)  return;
+
+        await dialogProvider.ShowAlert(message);
+    }
+
+    /// <summary>
+    /// 確認メッセージ表示
+    /// </summary>
+    /// <param name="message">メッセージ本文</param>
+    /// <param name="submitFunction">「はい」クリック時のコールバックメソッド</param>
+    public async Task ShowConfirm(string message, Func<Task> submitFunction)
+    {
+        if(dialogProvider is null)  return;
+
+        await dialogProvider.ShowConfirm(message, submitFunction);
+    }
+
 }

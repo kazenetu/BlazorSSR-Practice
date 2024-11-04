@@ -65,9 +65,26 @@
     }
 
     /// <summary>
-    /// ログアウト
+    /// ダイアログプロバイダークラス
+    /// </summary>
+    [CascadingParameter]
+    private DialogProvider? dialogProvider {get; set; }
+
+    /// <summary>
+    /// ログアウト用JS呼び出し
     /// </summary>
     private async Task Logout()
+    {
+        if(dialogProvider is null) return;
+
+        // 確認ダイアログ表示
+        await dialogProvider.ShowConfirm("ログアウトしますか？", LogoutMain);
+    }
+
+    /// <summary>
+    /// ログアウト用コールバックメソッド(「はい」クリック時のみ)
+    /// </summary>
+    private async Task LogoutMain()
     {
         if (sessionStorageProvider is not null)
         {

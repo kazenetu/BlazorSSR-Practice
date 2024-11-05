@@ -14,7 +14,29 @@
 
 Welcome to your new app.
 
+<div>
+    <button class="btn btn-primary" @onclick="ShowAlertTest">アラートメッセージ表示</button>
+</div>
+<div>
+    <button class="btn btn-primary" @onclick="ShowConfirmTest">確認メッセージ表示</button>
+</div>
+
+
 @code{
+    private async Task ShowAlertTest()
+    {
+        await ShowAlert("アラートメッセージ");
+    }
+    private async Task ShowConfirmTest()
+    {
+        await ShowConfirm("確認メッセージ",ShowConfirmYes);
+    }
+    private async Task ShowConfirmYes()
+    {
+        await ShowAlert("「はい」が押されました。");
+    }
+
+
     /// <summary>
     /// 初期処理
     /// </summary>

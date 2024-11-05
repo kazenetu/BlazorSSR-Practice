@@ -1,0 +1,104 @@
+@inject IJSRuntime JS
+
+<CascadingValue Value="this">
+    @ChildContent
+</CascadingValue>
+
+@* Alertダイアログ　*@
+<dialog id="alertDialog">
+    <h2 id="alertMessage"></h2>
+    <div style="text-align: center;">
+        <button id="alertCloseButton" type="button"  class="btn btn-outline-success btn-sm">
+            閉じる
+        </button>
+    </div>
+</dialog>
+
+@* Confirmダイアログ　*@
+<dialog id="confirmDialog">
+    <h2 id="confirmMessage"></h2>
+    <div class="row text-center">
+        <div class="col">
+            <button id="confirmCancelButton" type="button"  class="btn btn-outline-success btn-sm">
+                キャンセル
+            </button>
+        </div>
+        <div class="col">
+            <button id="confirmYesButton" type="button" class="btn btn-outline-success btn-sm">
+                はい
+            </button>
+        </div>
+        <button  id="confirmYesHiddenButton" @onclick="ConfirmYes" style="display: none;" />
+    </div>
+</dialog>
+
+<script>
+    window.showAlert = async (message) => {
+        document.getElementById('alertMessage').textContent = message;
+        const dialog = document.getElementById('alertDialog');
+        dialog.showModal();
+
+        // モーダルを閉じる
+        const closeButton = document.getElementById('alertCloseButton');
+        closeButton?.addEventListener('click', () => {
+            dialog.close();
+        });
+    }
+
+    window.showConfirm = async (message) => {
+        document.getElementById('confirmMessage').textContent = message;
+        const dialog = document.getElementById('confirmDialog');
+        dialog.showModal();
+
+        // YES:隠し送信ボタンクリック後、モーダルを閉じる
+        const yesButton = document.getElementById('confirmYesButton');
+        yesButton?.addEventListener('click', () => {
+            document.getElementById('confirmYesHiddenButton').click();
+            dialog.close();
+        });
+
+        // キャンセル：モーダルを閉じる
+        const cancelButton = document.getElementById('confirmCancelButton');
+        cancelButton?.addEventListener('click', () => {
+            dialog.close();
+        });
+    }
+</script>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// アラートメッセージ表示
+    /// </summary>
+    /// <param name="message">メッセージ本文</param>
+    public async Task ShowAlert(string message) => await JS.InvokeVoidAsync("showAlert", message);
+
+    /// <summary>
+    /// 確認メッセージ用コールバックメソッド（呼び出し側のメソッド）
+    /// </summary>
+    private Func<Task>? SubmitFunction { get; set; }
+
+    /// <summary>
+    /// 確認メッセージ表示
+    /// </summary>
+    /// <param name="message">メッセージ本文</param>
+    /// <param name="submitFunction">「はい」クリック時のコールバックメソッド（呼び出し側のメソッド）</param>
+    public async Task ShowConfirm(string message, Func<Task> submitFunction)
+    {
+        SubmitFunction = submitFunction;
+        await JS.InvokeVoidAsync("showConfirm", message, "ConfirmResult");
+    }
+
+    /// <summary>
+    /// 「はい」クリック時に発生するイベントメソッド
+    /// </summary>
+    private void ConfirmYes()
+    {
+        // コールバックメソッド設定している場合は実行
+        if (SubmitFunction is not null)
+            SubmitFunction();
+    }
+
+}

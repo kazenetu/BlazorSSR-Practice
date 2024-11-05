@@ -14,21 +14,6 @@
     </div>
 </dialog>
 
-@(new MarkupString($@"<script>
-    window.showAlert = async (message) => {{
-        document.getElementById('alertMessage').textContent = message;
-        const dialog = document.getElementById('alertDialog');
-        dialog.showModal();
-
-        // モーダルを閉じる
-        const closeButton = document.getElementById('alertCloseButton');
-        closeButton?.addEventListener('click', () => {{
-            dialog.close();
-        }});
-    }}
-</script>"))
-
-
 @* Confirmダイアログ　*@
 <dialog id="confirmDialog">
     <h2 id="confirmMessage"></h2>
@@ -43,26 +28,38 @@
     </div>
 </dialog>
 
-@(new MarkupString($@"<script>
-window.showConfirm = async (message) => {{
+<script>
+    window.showAlert = async (message) => {
+        document.getElementById('alertMessage').textContent = message;
+        const dialog = document.getElementById('alertDialog');
+        dialog.showModal();
+
+        // モーダルを閉じる
+        const closeButton = document.getElementById('alertCloseButton');
+        closeButton?.addEventListener('click', () => {
+            dialog.close();
+        });
+    }
+
+    window.showConfirm = async (message) => {
         document.getElementById('confirmMessage').textContent = message;
         const dialog = document.getElementById('confirmDialog');
         dialog.showModal();
 
         // YES:隠し送信ボタンクリック後、モーダルを閉じる
         const yesButton = document.getElementById('confirmYesButton');
-        yesButton?.addEventListener('click', () => {{
+        yesButton?.addEventListener('click', () => {
             document.getElementById('confirmYesHiddenButton').click();
             dialog.close();
-        }});
+        });
 
         // キャンセル：モーダルを閉じる
         const cancelButton = document.getElementById('confirmCancelButton');
-        cancelButton?.addEventListener('click', () => {{
+        cancelButton?.addEventListener('click', () => {
             dialog.close();
-        }});
-    }}
-</script>"))
+        });
+    }
+</script>
 
 @code {
     [Parameter]

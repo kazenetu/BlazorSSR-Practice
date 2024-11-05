@@ -17,13 +17,17 @@
 @* Confirmダイアログ　*@
 <dialog id="confirmDialog">
     <h2 id="confirmMessage"></h2>
-    <div style="text-align: center;">
-        <button id="confirmCancelButton" type="button"  class="btn btn-outline-success btn-sm">
-            キャンセル
-        </button>
-        <button id="confirmYesButton" type="button" class="btn btn-outline-success btn-sm">
-            はい
-        </button>
+    <div class="row text-center">
+        <div class="col">
+            <button id="confirmCancelButton" type="button"  class="btn btn-outline-success btn-sm">
+                キャンセル
+            </button>
+        </div>
+        <div class="col">
+            <button id="confirmYesButton" type="button" class="btn btn-outline-success btn-sm">
+                はい
+            </button>
+        </div>
         <button  id="confirmYesHiddenButton" @onclick="ConfirmYes" style="display: none;" />
     </div>
 </dialog>

@@ -29,7 +29,7 @@
     /// ダウンロードファイル設定
     /// </summary>
     [Parameter]
-    public Func<Task<DownLoadModel?>>? GetDataFunction { get; set; }
+    public Func<DownLoadModel>? GetDataFunction { get; set; }
 
     /// <summary>
     /// ファイルダウンロード
@@ -41,18 +41,23 @@
             if(GetDataFunction is null)
                 return;
 
-            // ファイル情報取得
-            var funcResult = GetDataFunction();
-            if(funcResult is null) return;
-            var model = funcResult.Result;
+            // ダウンロードファイル情報取得
+            var model = GetDataFunction();
 
-            if(string.IsNullOrEmpty(model?.FileName) || model?.Data is null)
+            // エラーメッセージが設定されている場合はエラーメッセージ表示
+            if(!string.IsNullOrEmpty(model.ErrorMessage)){
+                await JS.InvokeVoidAsync("showAlert", model.ErrorMessage);
+            }
+
+            // ファイル名やデータが設定されていない場合は終了
+            if(string.IsNullOrEmpty(model.FileName) || model.Data is null)
                 return;
 
+            // データ書き出しとファイル出力JSメソッド呼び出し
             using (var memoryStream = new MemoryStream())
             using (var writer = new StreamWriter(memoryStream))
             {
-                writer.WriteLine(model!.Data);
+                writer.WriteLine(model.Data);
                 writer.Flush();
                 memoryStream.Position = 0;
 
@@ -62,7 +67,6 @@
         }
         catch(Exception ex)
         {
- Console.WriteLine(ex);
            throw ex;
         }
     }

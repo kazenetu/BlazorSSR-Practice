@@ -1,0 +1,69 @@
+@using WebApp.Models.Parts
+@inject IJSRuntime JS
+
+<button class="btn btn-primary" @onclick="Download">@ButtonName</button>
+
+<script>
+    @*ファイルダウンロード*@
+    window.downloadFileFromStream = async (fileName, contentStreamReference) => {
+        const arrayBuffer = await contentStreamReference.arrayBuffer();
+        const blob = new Blob([arrayBuffer]);
+        const url = URL.createObjectURL(blob);
+        const anchorElement = document.createElement('a');
+        anchorElement.href = url;
+        anchorElement.download = fileName ?? '';
+        anchorElement.click();
+        anchorElement.remove();
+        URL.revokeObjectURL(url);
+    }
+</script>
+
+@code {
+    /// <summary>
+    /// ボタン名
+    /// </summary>
+    [Parameter]
+    public string ButtonName { get; set; } = "ダウンロード";
+
+    /// <summary>
+    /// ダウンロードファイル設定
+    /// </summary>
+    [Parameter]
+    public Func<Task<DownLoadModel?>>? GetDataFunction { get; set; }
+
+    /// <summary>
+    /// ファイルダウンロード
+    /// </summary>
+    private async Task Download()
+    {
+        try
+        {
+            if(GetDataFunction is null)
+                return;
+
+            // ファイル情報取得
+            var funcResult = GetDataFunction();
+            if(funcResult is null) return;
+            var model = funcResult.Result;
+
+            if(string.IsNullOrEmpty(model?.FileName) || model?.Data is null)
+                return;
+
+            using (var memoryStream = new MemoryStream())
+            using (var writer = new StreamWriter(memoryStream))
+            {
+                writer.WriteLine(model!.Data);
+                writer.Flush();
+                memoryStream.Position = 0;
+
+                using var streamRef = new DotNetStreamReference(memoryStream);
+                await JS.InvokeVoidAsync("downloadFileFromStream", model!.FileName, streamRef);
+            }
+        }
+        catch(Exception ex)
+        {
+ Console.WriteLine(ex);
+           throw ex;
+        }
+    }
+}

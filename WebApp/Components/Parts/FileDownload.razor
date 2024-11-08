@@ -1,0 +1,74 @@
+@namespace WebApp.Components.Parts
+@using WebApp.Models.Parts
+@inject IJSRuntime JS
+
+<button class="btn btn-primary" @onclick="Download">@ButtonName</button>
+
+<script>
+    @*ファイルダウンロード*@
+    window.downloadFileFromStream = async (fileName, contentStreamReference) => {
+        const arrayBuffer = await contentStreamReference.arrayBuffer();
+        const blob = new Blob([arrayBuffer]);
+        const url = URL.createObjectURL(blob);
+        const anchorElement = document.createElement('a');
+        anchorElement.href = url;
+        anchorElement.download = fileName ?? '';
+        anchorElement.click();
+        anchorElement.remove();
+        URL.revokeObjectURL(url);
+    }
+</script>
+
+@code {
+    /// <summary>
+    /// ボタン名
+    /// </summary>
+    [Parameter]
+    public string ButtonName { get; set; } = "ダウンロード";
+
+    /// <summary>
+    /// ダウンロードファイル設定
+    /// </summary>
+    [Parameter]
+    public Func<DownLoadModel>? GetDataFunction { get; set; }
+
+    /// <summary>
+    /// ファイルダウンロード
+    /// </summary>
+    private async Task Download()
+    {
+        try
+        {
+            if(GetDataFunction is null)
+                return;
+
+            // ダウンロードファイル情報取得
+            var model = GetDataFunction();
+
+            // エラーメッセージが設定されている場合はエラーメッセージ表示
+            if(!string.IsNullOrEmpty(model.ErrorMessage)){
+                await JS.InvokeVoidAsync("showAlert", model.ErrorMessage);
+            }
+
+            // ファイル名やデータが設定されていない場合は終了
+            if(string.IsNullOrEmpty(model.FileName) || model.Data is null)
+                return;
+
+            // データ書き出しとファイル出力JSメソッド呼び出し
+            using (var memoryStream = new MemoryStream())
+            using (var writer = new StreamWriter(memoryStream))
+            {
+                writer.WriteLine(model.Data);
+                writer.Flush();
+                memoryStream.Position = 0;
+
+                using var streamRef = new DotNetStreamReference(memoryStream);
+                await JS.InvokeVoidAsync("downloadFileFromStream", model!.FileName, streamRef);
+            }
+        }
+        catch(Exception ex)
+        {
+           throw ex;
+        }
+    }
+}

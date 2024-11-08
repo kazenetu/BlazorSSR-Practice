@@ -1,10 +1,12 @@
 ﻿@page "/order"
 @inherits Base.PageBase
-@attribute [StreamRendering]
-@using WebApp.Models
-@using WebApp.Repositories.Interfaces
 @inject IOrderRepository orderRepository
 @inject ILogger<Order> Logger
+@using System.Text
+@using WebApp.Components.Parts
+@using WebApp.Models.Parts
+@using WebApp.Models
+@using WebApp.Repositories.Interfaces
 
 @if (IsBeforeLoginCheck)
 {
@@ -22,6 +24,7 @@
 }
 else
 {
+    <WebApp.Components.Parts.FileDownload ButtonName="CSVダウンロード" GetDataFunction="DownLoadCSV"/>
     <table class="table">
         <thead>
             <tr>
@@ -94,5 +97,27 @@ else
                 Logger.LogInformation(await GetLogMessage("終了"));
             }
         }
+    }
+
+    /// <summary>
+    /// CSVダウンロード
+    /// </summary>
+    /// <returns>ダウンロード用モデル</returns>
+    private DownLoadModel DownLoadCSV()
+    {
+        if (orders is null || !orders.Any())
+        {
+            return new DownLoadModel(string.Empty, null, "出力対象がありません。");
+        }
+
+        var data = new StringBuilder();
+        data.AppendLine("No,ProductName,UnitPrice,Qty,TotalPrice");
+
+        foreach (var oder in orders)
+        {
+            data.AppendLine($"{oder.No},{oder.ProductName},{oder.UnitPrice},{oder.Qty},{oder.TotalPrice}");
+        }
+
+        return new DownLoadModel("test.csv", data);
     }
 }

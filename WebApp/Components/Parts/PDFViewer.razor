@@ -6,9 +6,9 @@
 
 <dialog id="PDFViewerDialog">
     @if(@IsPortrait){
-        <iframe id="iframe" style="height:80vh;width:50vw"/>
+        <iframe id="iframe" style="height:80vh;width:55vw"/>
     }else{
-        <iframe id="iframe" style="height:50vh;width:80vw"/>
+        <iframe id="iframe" style="height:55vh;width:80vw"/>
     }
     <div style="text-align: center;">
         <button id="PDFViewerCloseButton" type="button"  class="btn btn-outline-success btn-sm">
@@ -20,18 +20,19 @@
 <script>
   window.setSource = async (elementId, stream, title) => {
     const element = document.getElementById(elementId);
+    const dialog = document.getElementById('PDFViewerDialog');
     element.setAttribute("src", "data:application/pdf;base64," + stream);
-    setTimeout(()=>element.title = title,1000); 
+    element.title = title;
+
+    @* モーダル表示 *@
+    dialog.showModal();
 
     @* 閉じる：モーダルを閉じる *@
     const cancelButton = document.getElementById('PDFViewerCloseButton');
     cancelButton?.addEventListener('click', () => {
+        element.setAttribute("src", "");
         dialog.close();
     });
-
-    @* モーダル表示 *@
-    const dialog = document.getElementById('PDFViewerDialog');
-    dialog.showModal();
   }
 </script>
 

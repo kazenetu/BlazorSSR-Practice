@@ -8,6 +8,10 @@
 @using WebApp.Models
 @using WebApp.Repositories.Interfaces
 
+@using PdfReport;
+@using PdfReport.Interfaces;
+@using PdfReport.DataLists;
+
 @if (IsBeforeLoginCheck)
 {
     // ログイン確認前は表示なし
@@ -24,7 +28,9 @@
 }
 else
 {
-    <WebApp.Components.Parts.FileDownload ButtonName="CSVダウンロード" GetDataFunction="DownLoadCSV"/>
+    <FileDownload ButtonName="CSVダウンロード" GetDataFunction="DownLoadCSV"/>
+    <PDFViewer ButtonName="PDF表示" GetDataFunction="DownLoadPDF" IsPortrait="true"/>
+
     <table class="table">
         <thead>
             <tr>
@@ -119,5 +125,33 @@ else
         }
 
         return new DownLoadModel("test.csv", data);
+    }
+
+    /// <summary>
+    /// PDFダウンロード
+    /// </summary>
+    /// <returns>ダウンロード用モデル</returns>
+    private DownLoadModel DownLoadPDF()
+    {
+        if (orders is null || !orders.Any())
+        {
+            return new DownLoadModel(string.Empty, null, "出力対象がありません。");
+        }
+
+        var pdfOrders = new List<IData>();
+        foreach (var oder in orders)
+        {
+            pdfOrders.Add(new PdfReport.DataLists.Order(oder.No, oder.ProductName, oder.UnitPrice, oder.Qty));
+        }
+        var pdfMain = new PdfMain(LayoutKinds.Order, pdfOrders);
+
+        using (MemoryStream ms = new MemoryStream())
+        {
+            // PDF作成
+            pdfMain.Create(ms);
+
+            return new DownLoadModel("test.pdf", Convert.ToBase64String(ms.GetBuffer()));
+            //return new DownLoadModel("test.pdf", ms.GetBuffer());
+        }
     }
 }

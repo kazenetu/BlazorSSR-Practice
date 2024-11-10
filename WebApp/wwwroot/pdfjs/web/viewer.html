@@ -39,6 +39,21 @@ See https://github.com/adobe-type-tools/cmap-resources
   <body tabindex="1">
     <div id="outerContainer">
 
+  <div style="position: fixed;left: 0px;top:0px;z-index: 10000;">
+    <button type="button" id="close" style="height: 30px;">閉じる</body>
+  </div>
+  <script>
+    document.getElementById('close').addEventListener('click', () => {
+      close();
+    });
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") {
+        const url = location.search.replace('?file=', '');
+        URL.revokeObjectURL(url);
+      }
+    });
+  </script>
+
       <div id="sidebarContainer">
         <div id="toolbarSidebar">
           <div id="toolbarSidebarLeft">

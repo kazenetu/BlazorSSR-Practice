@@ -14,6 +14,9 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        // フォントリゾルバーのグローバル登録
+        PdfReport.Utilites.Utility.SetJapaneseFontResolver();
+
         // ログ
         builder.Logging.ClearProviders();
         builder.Logging.SetMinimumLevel(LogLevel.Trace);

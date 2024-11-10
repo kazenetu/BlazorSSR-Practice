@@ -18,6 +18,7 @@
 </dialog>
 
 <script>
+  @* PDFモーダル表示 *@
   window.setSource = async (elementId, stream, title) => {
     const element = document.getElementById(elementId);
     const dialog = document.getElementById('PDFViewerDialog');
@@ -34,6 +35,17 @@
         dialog.close();
     });
   }
+
+  @* PDF別ウィンドウ表示(pdf.js使用) *@
+  window.OpenPDFWindow = async (elementId, stream, title) => {
+
+    const arrayBuffer = stream.buffer;
+    const blob = new Blob([arrayBuffer]);
+    const url = URL.createObjectURL(blob);
+
+    window.open("/pdfjs/web/viewer.html?file="+url, "_blank", "popup");
+  }
+
 </script>
 
 @code {
@@ -48,6 +60,12 @@
     /// </summary>
     [Parameter]
     public bool IsPortrait { get; set; } = true;
+
+    /// <summary>
+    /// 新規ウィンドウ表示
+    /// </summary>
+    [Parameter]
+    public bool IsNewWindow { get; set; } = false;
 
     /// <summary>
     /// ダウンロードファイル設定
@@ -77,8 +95,28 @@
             if(string.IsNullOrEmpty(model.FileName) || model.Data is null)
                 return;
 
-            // JavaScript経由でPDF表示
-            await JS.InvokeVoidAsync("setSource", "iframe", model.Data, model.FileName, IsPortrait);
+            if (IsNewWindow)
+            {
+                // データ書き出しとファイル出力JSメソッド呼び出し
+                using (var memoryStream = new MemoryStream())
+                using (var writer = new StreamWriter(memoryStream))
+                {
+                    writer.Write(model.Data);
+                    writer.Flush();
+                    memoryStream.Position = 0;
+
+                    using var streamRef = new DotNetStreamReference(memoryStream);
+                    await JS.InvokeVoidAsync("OpenPDFWindow", "iframe", model.Data, model.FileName, IsPortrait);
+                }
+            }
+            else
+            {
+                // JavaScript経由でPDF表示
+                var bytes = model.Data as byte[];
+                if(bytes is null) return;
+                var base64 = Convert.ToBase64String(bytes);
+                await JS.InvokeVoidAsync("setSource", "iframe", base64, model.FileName, IsPortrait);
+            }
         }
         catch(Exception ex)
         {

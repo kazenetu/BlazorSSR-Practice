@@ -131,6 +131,7 @@ else
     /// PDFダウンロード
     /// </summary>
     /// <returns>ダウンロード用モデル</returns>
+    /// <remarks>Dataにはbyte[]配列を設定</remarks>
     private DownLoadModel DownLoadPDF()
     {
         if (orders is null || !orders.Any())
@@ -150,8 +151,7 @@ else
             // PDF作成
             pdfMain.Create(ms);
 
-            return new DownLoadModel("test.pdf", Convert.ToBase64String(ms.GetBuffer()));
-            //return new DownLoadModel("test.pdf", ms.GetBuffer());
+            return new DownLoadModel("test.pdf", ms.GetBuffer());
         }
     }
 }

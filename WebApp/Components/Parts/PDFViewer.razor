@@ -98,16 +98,7 @@
             if (IsNewWindow)
             {
                 // データ書き出しとファイル出力JSメソッド呼び出し
-                using (var memoryStream = new MemoryStream())
-                using (var writer = new StreamWriter(memoryStream))
-                {
-                    writer.Write(model.Data);
-                    writer.Flush();
-                    memoryStream.Position = 0;
-
-                    using var streamRef = new DotNetStreamReference(memoryStream);
-                    await JS.InvokeVoidAsync("OpenPDFWindow", "iframe", model.Data, model.FileName, IsPortrait);
-                }
+                await JS.InvokeVoidAsync("OpenPDFWindow", "iframe", model.Data, model.FileName, IsPortrait);
             }
             else
             {

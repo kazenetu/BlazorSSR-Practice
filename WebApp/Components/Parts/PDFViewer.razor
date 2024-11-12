@@ -1,0 +1,118 @@
+@namespace WebApp.Components.Parts
+@using WebApp.Models.Parts
+@inject IJSRuntime JS
+
+<button class="btn btn-primary" @onclick="Preview">@ButtonName</button>
+
+<dialog id="PDFViewerDialog">
+    @if(@IsPortrait){
+        <iframe id="iframe" style="height:80vh;width:55vw"/>
+    }else{
+        <iframe id="iframe" style="height:55vh;width:80vw"/>
+    }
+    <div style="text-align: center;">
+        <button id="PDFViewerCloseButton" type="button"  class="btn btn-outline-success btn-sm">
+            閉じる
+        </button>
+    </div>
+</dialog>
+
+<script>
+  @* PDFモーダル表示 *@
+  window.setSource = async (elementId, stream, title) => {
+    const element = document.getElementById(elementId);
+    const dialog = document.getElementById('PDFViewerDialog');
+    element.setAttribute("src", "data:application/pdf;base64," + stream + '#navpanes=0');
+    element.title = title;
+
+    @* モーダル表示 *@
+    dialog.showModal();
+
+    @* 閉じる：モーダルを閉じる *@
+    const cancelButton = document.getElementById('PDFViewerCloseButton');
+    cancelButton?.addEventListener('click', () => {
+        element.setAttribute("src", "");
+        dialog.close();
+    });
+  }
+
+  @* PDF別ウィンドウ表示(pdf.js使用) *@
+  window.OpenPDFWindow = async (elementId, stream, title) => {
+
+    const arrayBuffer = stream.buffer;
+    const blob = new Blob([arrayBuffer]);
+    const url = URL.createObjectURL(blob);
+
+    const windowFeatures = "popup,width="+window.screen.width+",height="+window.screen.height
+    window.open("/pdfjs/web/viewer.html?file="+url+"&title="+title, "_blank", windowFeatures);
+  }
+
+</script>
+
+@code {
+    /// <summary>
+    /// ボタン名
+    /// </summary>
+    [Parameter]
+    public string ButtonName { get; set; } = "ダウンロード";
+
+    /// <summary>
+    /// PDFは縦向きか？
+    /// </summary>
+    [Parameter]
+    public bool IsPortrait { get; set; } = true;
+
+    /// <summary>
+    /// 新規ウィンドウ表示
+    /// </summary>
+    [Parameter]
+    public bool IsNewWindow { get; set; } = false;
+
+    /// <summary>
+    /// ダウンロードファイル設定
+    /// </summary>
+    [Parameter]
+    public Func<DownLoadModel>? GetDataFunction { get; set; }
+
+    /// <summary>
+    /// PDFプレビュー
+    /// </summary>
+    private async Task Preview()
+    {
+        try
+        {
+            if(GetDataFunction is null)
+                return;
+
+            // ダウンロードファイル情報取得
+            var model = GetDataFunction();
+
+            // エラーメッセージが設定されている場合はエラーメッセージ表示
+            if(!string.IsNullOrEmpty(model.ErrorMessage)){
+                await JS.InvokeVoidAsync("showAlert", model.ErrorMessage);
+            }
+
+            // ファイル名やデータが設定されていない場合は終了
+            if(string.IsNullOrEmpty(model.FileName) || model.Data is null)
+                return;
+
+            if (IsNewWindow)
+            {
+                // データ書き出しとファイル出力JSメソッド呼び出し
+                await JS.InvokeVoidAsync("OpenPDFWindow", "iframe", model.Data, model.FileName, IsPortrait);
+            }
+            else
+            {
+                // JavaScript経由でPDF表示
+                var bytes = model.Data as byte[];
+                if(bytes is null) return;
+                var base64 = Convert.ToBase64String(bytes);
+                await JS.InvokeVoidAsync("setSource", "iframe", base64, model.FileName, IsPortrait);
+            }
+        }
+        catch(Exception ex)
+        {
+            throw ex;
+        }
+    }
+}

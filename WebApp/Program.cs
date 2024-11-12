@@ -1,5 +1,6 @@
 using NLog.Extensions.Logging;
 using NLog.Web;
+using Microsoft.AspNetCore.StaticFiles;
 using WebApp.Components;
 using WebApp.DBAccess;
 using WebApp.Repositories;
@@ -13,6 +14,9 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        // フォントリゾルバーのグローバル登録
+        PdfReport.Utilites.Utility.SetJapaneseFontResolver();
 
         // ログ
         builder.Logging.ClearProviders();
@@ -60,6 +64,14 @@ public class Program
 
         app.UseStaticFiles();
         app.UseAntiforgery();
+
+        // pdf.jsのftlが取得できるように設定
+        var provider = new FileExtensionContentTypeProvider();
+        provider.Mappings[".ftl"] = "text/plain";
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            ContentTypeProvider = provider
+        });
 
         //app.MapRazorComponents<App>();
         app.MapRazorComponents<App>()

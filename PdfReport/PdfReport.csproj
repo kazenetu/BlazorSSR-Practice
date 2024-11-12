@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="PDFsharp" Version="6.1.1" />
+    <EmbeddedResource Include="assets/GenShinGothic-Monospace-Medium.ttf" />  
+  </ItemGroup>
+
+</Project>

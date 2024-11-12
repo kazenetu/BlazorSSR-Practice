@@ -22,7 +22,7 @@
   window.setSource = async (elementId, stream, title) => {
     const element = document.getElementById(elementId);
     const dialog = document.getElementById('PDFViewerDialog');
-    element.setAttribute("src", "data:application/pdf;base64," + stream);
+    element.setAttribute("src", "data:application/pdf;base64," + stream + '#navpanes=0');
     element.title = title;
 
     @* モーダル表示 *@

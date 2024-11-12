@@ -2,6 +2,7 @@
 @inherits Base.PageBase
 @inject IOrderRepository orderRepository
 @inject ILogger<Order> Logger
+@inject NavigationManager Navigation
 @using System.Text
 @using WebApp.Components.Parts
 @using WebApp.Models.Parts
@@ -28,9 +29,16 @@
 }
 else
 {
-    <FileDownload ButtonName="CSVダウンロード" GetDataFunction="DownLoadCSV"/>
-    <PDFViewer ButtonName="PDF表示" GetDataFunction="DownLoadPDF" IsPortrait="true"/>
-    <PDFViewer ButtonName="PDF表示(別ウインドウ)" GetDataFunction="DownLoadPDF" IsNewWindow="true"/>
+    <div class="row">
+        <div class="col">
+            <button @onclick="@(() => ToEdit(0))" class="btn btn-outline-success">新規作成</button>
+        </div>
+        <div class="col">
+            <FileDownload ButtonName="CSVダウンロード" GetDataFunction="DownLoadCSV"/>
+            <PDFViewer ButtonName="PDF表示" GetDataFunction="DownLoadPDF" IsPortrait="true"/>
+            <PDFViewer ButtonName="PDF表示(別ウインドウ)" GetDataFunction="DownLoadPDF" IsNewWindow="true"/>
+        </div>
+    </div>
 
     <table class="table fiexed-header">
         <thead>
@@ -104,6 +112,17 @@ else
                 Logger.LogInformation(await GetLogMessage("終了"));
             }
         }
+    }
+
+    /// <summary>
+    /// 新規・編集
+    /// </summary>
+    /// <param name="targetNo"></param>
+    /// <returns></returns>
+    private void ToEdit(int targetNo)
+    {
+        // 画面遷移
+        Navigation.NavigateTo($"/OrderEdit/{targetNo}");
     }
 
     /// <summary>

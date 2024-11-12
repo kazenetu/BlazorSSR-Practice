@@ -49,3 +49,9 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+
+table.fiexed-header thead{
+    position: sticky;
+    top: 3.4rem;
+    background-color: wheat;
+}

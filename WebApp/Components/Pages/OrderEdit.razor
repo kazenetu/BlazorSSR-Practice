@@ -1,0 +1,55 @@
+@page "/orderEdit/{id:int}"
+@inherits Base.PageBase
+@inject ILogger<OrderEdit> Logger
+
+@if (IsBeforeLoginCheck)
+{
+    // ログイン確認前は表示なし
+    return;
+}
+
+<PageTitle>一覧編集</PageTitle>
+
+<h1>No is @Id</h1>
+
+@code{
+    [Parameter]
+    public int Id { get; set; }
+
+    /// <summary>
+    /// 初期処理
+    /// </summary>
+    /// <param name="firstRender">初回表示か否か</param>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                Logger.LogInformation(await GetLogMessage("開始"));
+
+                // 未ログインの場合は即時終了
+                if (!await LoginCheck())
+                {
+                    Logger.LogInformation(await GetLogMessage("ログインチェック失敗"));
+                    return;
+                }
+
+                // ログイン確認完了
+                IsBeforeLoginCheck = false;
+                StateHasChanged();
+
+                Logger.LogInformation(await GetLogMessage("ログインチェック成功"));
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, await GetLogError(ex));
+                GotoErrorPage();
+            }
+            finally
+            {
+                Logger.LogInformation(await GetLogMessage("終了"));
+            }
+        }
+    }
+}

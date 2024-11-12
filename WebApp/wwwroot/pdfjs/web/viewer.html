@@ -40,7 +40,7 @@ See https://github.com/adobe-type-tools/cmap-resources
     <div id="outerContainer">
 
   <div style="position: fixed;left: 0px;top:0px;z-index: 10000;">
-    <button type="button" id="close" style="height: 30px;">閉じる</body>
+    <button type="button" id="close" style="height: 33px;width: 90px;">閉じる</body>
   </div>
   <script>
     document.getElementById('close').addEventListener('click', () => {
@@ -48,10 +48,14 @@ See https://github.com/adobe-type-tools/cmap-resources
     });
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "hidden") {
-        const url = location.search.replace('?file=', '');
+        const url = location.search.split('&')[0].replace('?file=', '');
         URL.revokeObjectURL(url);
       }
     });
+    setTimeout(()=>{
+      const fileName = location.search.split('&')[1].replace('title=','');
+      PDFViewerApplication.setTitle(fileName);
+    },100);
   </script>
 
       <div id="sidebarContainer">

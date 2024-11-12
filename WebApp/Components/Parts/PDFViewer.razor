@@ -43,7 +43,8 @@
     const blob = new Blob([arrayBuffer]);
     const url = URL.createObjectURL(blob);
 
-    window.open("/pdfjs/web/viewer.html?file="+url, "_blank", "popup");
+    const windowFeatures = "popup,width="+window.screen.width+",height="+window.screen.height
+    window.open("/pdfjs/web/viewer.html?file="+url+"&title="+title, "_blank", windowFeatures);
   }
 
 </script>

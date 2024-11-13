@@ -35,7 +35,7 @@
 
 <script>
     window.showAlert = async (message) => {
-        document.getElementById('alertMessage').textContent = message;
+        addMessageTag('alertMessage', message);
         const dialog = document.getElementById('alertDialog');
         dialog.showModal();
 
@@ -47,7 +47,7 @@
     }
 
     window.showConfirm = async (message) => {
-        document.getElementById('confirmMessage').textContent = message;
+        addMessageTag('confirmMessage', message);
         const dialog = document.getElementById('confirmDialog');
         dialog.showModal();
 
@@ -63,6 +63,20 @@
         cancelButton?.addEventListener('click', () => {
             dialog.close();
         });
+    }
+
+    function addMessageTag(tagName, message)
+    {
+        const element = document.getElementById(tagName);
+        const messages = message.split('\r\n');
+
+        for(let msg of messages)
+        {
+            let div = document.createElement("div");
+            div.textContent = msg;
+            element.append(div);
+        }
+
     }
 </script>
 

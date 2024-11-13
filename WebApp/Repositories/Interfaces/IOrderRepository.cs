@@ -12,5 +12,19 @@ namespace WebApp.Repositories.Interfaces
     /// </summary>
     /// <returns>注文リスト</returns>
     List<OrderModel> GetOderList();
+
+    /// <summary>
+    /// 注文情報を取得
+    /// </summary>
+    /// <param name="productName">製品名</param>
+    /// <returns>注文情報</returns>
+    OrderModel GetOder(string productName);
+
+    /// <summary>
+    /// 注文情報の登録
+    /// </summary>
+    /// <param name="target">登録対象</param>
+    /// <returns>成功/失敗</returns>
+    bool Save(OrderModel target);
   }
 }

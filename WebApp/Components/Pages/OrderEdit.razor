@@ -1,6 +1,10 @@
-@page "/orderEdit/{id:int}"
+@page "/orderEdit/{product?}"
 @inherits Base.PageBase
 @inject ILogger<OrderEdit> Logger
+@inject IOrderRepository orderRepository
+@inject NavigationManager Navigation
+@using WebApp.Models
+@using WebApp.Repositories.Interfaces
 
 @if (IsBeforeLoginCheck)
 {
@@ -10,11 +14,56 @@
 
 <PageTitle>注文編集</PageTitle>
 
-<h1>No is @Id</h1>
+<h1>注文編集</h1>
+
+<div class="row page-header">
+    <div class="col">
+        <button @onclick="Cancel" class="btn btn-outline-success">キャンセル</button>
+    </div>
+    <div class="col">
+        <button type="submit" form="edit" class="btn btn-outline-success">保存</button>
+    </div>
+</div>
+
+<EditForm method="post" Model="Model" OnValidSubmit="Save" id="edit">
+        <div class="card col-md-8 offset-md-2">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col">
+                        <label class="col-md-4" for="ProductName">商品名</label>
+                        <InputText class="col-md-5" id="ProductName" @bind-Value="Model!.ProductName" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label class="col-md-4" for="UnitPrice">単価</label>
+                        <InputNumber class="col-md-5" id="UnitPrice" @bind-Value="Model!.UnitPrice" TValue="decimal" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <label class="col-md-4" for="Qty">数量</label>
+                        <InputNumber class="col-md-5" id="Qty" @bind-Value="Model!.Qty" TValue="decimal" />
+                    </div>
+                </div>
+            </div>
+        </div>
+</EditForm>
+
+
 
 @code{
+    /// <summary>
+    /// 製品名パラメータ
+    /// </summary>
     [Parameter]
-    public int Id { get; set; }
+    public string? Product { get; set; }
+
+    /// <summary>
+    /// 編集対象
+    /// </summary>
+    [SupplyParameterFromForm]
+    private OrderModel? Model { get; set; }
 
     /// <summary>
     /// 初期処理
@@ -37,9 +86,15 @@
 
                 // ログイン確認完了
                 IsBeforeLoginCheck = false;
-                StateHasChanged();
 
                 Logger.LogInformation(await GetLogMessage("ログインチェック成功"));
+
+                // 対象データを検索
+                Model = orderRepository.GetOder(Product??string.Empty);
+
+                StateHasChanged();
+
+                Logger.LogInformation(await GetLogMessage("対象データ取得完了"));
             }
             catch (Exception ex)
             {
@@ -51,5 +106,86 @@
                 Logger.LogInformation(await GetLogMessage("終了"));
             }
         }
+    }
+
+    /// <summary>
+    /// 保存
+    /// </summary>
+    /// <param name="editContext"></param>
+    private async Task Save(EditContext editContext)
+    {
+        try
+        {
+            Logger.LogInformation(await GetLogMessage("保存開始"));
+
+            var errorMessages = new System.Text.StringBuilder();
+
+            // 入力チェック
+            var orderModel = editContext.Model as OrderModel;
+            if (string.IsNullOrEmpty(orderModel?.ProductName))
+            {
+                // エラーメッセージ
+                errorMessages.AppendLine("製品名を入力してください。");
+            }
+            if (orderModel?.Qty <= 0)
+            {
+                // エラーメッセージ
+                errorMessages.AppendLine("数量は1以上にしてください。");
+            }
+            if (orderModel?.UnitPrice <= 0)
+            {
+                // エラーメッセージ
+                errorMessages.AppendLine("単価は1以上にしてください。");
+            }
+            if (!string.IsNullOrEmpty(errorMessages.ToString()))
+            {
+                Logger.LogInformation(await GetLogMessage("入力エラー"));
+
+                await ShowAlert(errorMessages.ToString());
+                return;
+            }
+
+            if(orderRepository.Save(Model!))
+            {
+                Logger.LogInformation(await GetLogMessage($"保存成功"));
+                await ShowAlert("保存しました。");
+
+                // 画面遷移
+                Navigation.NavigateTo("/Order");
+            }
+            else
+            {
+                Logger.LogInformation(await GetLogMessage($"保存失敗"));
+                await ShowAlert("保存失敗しました。");
+            }
+        }
+        catch(Exception ex)
+        {
+            Logger.LogError(ex, await GetLogError(ex));
+            GotoErrorPage();
+        }
+        finally{
+            Logger.LogInformation(await GetLogMessage("保存終了"));
+        }
+    }
+
+    /// <summary>
+    /// キャンセル確認
+    /// </summary>
+    private async Task Cancel()
+    {
+        await ShowConfirm("編集をキャンセルしますか？", ShowConfirmYes);
+    }
+
+    /// <summary>
+    /// キャンセル
+    /// </summary>
+    /// <returns></returns>
+    private async Task ShowConfirmYes()
+    {
+        await Task.Run(()=>{
+            // 画面遷移
+            Navigation.NavigateTo("/Order");
+        });
     }
 }

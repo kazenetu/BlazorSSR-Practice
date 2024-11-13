@@ -29,9 +29,9 @@
 }
 else
 {
-    <div class="row">
+    <div class="row page-header">
         <div class="col">
-            <button @onclick="@(() => ToEdit(0))" class="btn btn-outline-success">新規作成</button>
+            <button @onclick="@(() => ToEdit(string.Empty))" class="btn btn-outline-success">新規作成</button>
         </div>
         <div class="col">
             <FileDownload ButtonName="CSVダウンロード" GetDataFunction="DownLoadCSV"/>
@@ -48,6 +48,7 @@ else
                 <th>UnitPrice</th>
                 <th>Qty</th>
                 <th>TotalPrice</th>
+                <th>編集</th>
             </tr>
         </thead>
         <tbody>
@@ -59,6 +60,7 @@ else
                     <td>@oder.UnitPrice</td>
                     <td>@oder.Qty</td>
                     <td>@oder.TotalPrice</td>
+                    <td><button @onclick="@(() => ToEdit(oder.ProductName))" class="btn btn-outline-success">編集</button></td>
                 </tr>
             }
         </tbody>
@@ -117,12 +119,11 @@ else
     /// <summary>
     /// 新規・編集
     /// </summary>
-    /// <param name="targetNo"></param>
-    /// <returns></returns>
-    private void ToEdit(int targetNo)
+    /// <param name="productName">製品名</param>
+    private void ToEdit(string productName)
     {
         // 画面遷移
-        Navigation.NavigateTo($"/OrderEdit/{targetNo}");
+        Navigation.NavigateTo($"/OrderEdit/{productName}");
     }
 
     /// <summary>

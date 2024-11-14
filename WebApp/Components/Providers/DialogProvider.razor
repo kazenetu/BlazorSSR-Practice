@@ -68,6 +68,7 @@
     function addMessageTag(tagName, message)
     {
         const element = document.getElementById(tagName);
+        element.innerHTML="";
         const messages = message.split('\r\n');
 
         for(let msg of messages)

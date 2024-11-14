@@ -28,6 +28,11 @@ namespace WebApp.Models
         public decimal TotalPrice{set;get;}
 
         /// <summary>
+        /// バージョン番号(楽観ロック用)
+        /// </summary>
+        public int Version{set;get;}
+
+        /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="no">番号(1〜)</param>
@@ -35,13 +40,15 @@ namespace WebApp.Models
         /// <param name="unitPrice">単価</param>
         /// <param name="qty">数量</param>
         /// <param name="totalPrice">合計金額</param>
-        public OrderModel(int no, string productName, decimal unitPrice, decimal qty, decimal totalPrice)
+        /// <param name="version">バージョン番号(楽観ロック用)</param>
+        public OrderModel(int no, string productName, decimal unitPrice, decimal qty, decimal totalPrice, int version=0)
         {
             No = no;
             ProductName = productName;
             UnitPrice = unitPrice;
             Qty = qty;
             TotalPrice = totalPrice;
+            Version = version;
         }
     }
 }

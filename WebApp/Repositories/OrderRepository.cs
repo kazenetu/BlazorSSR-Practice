@@ -82,7 +82,8 @@ namespace WebApp.Repositories
         var unitPrice = Parse<decimal>(row["unitPrice"]);
         var qty = Parse<decimal>(row["qty"]);
         var totalPrice = unitPrice * qty;
-        result.Add(new OrderModel(no, product, unitPrice, qty, totalPrice));
+        var version = Parse<int>(row["version"]);
+        result.Add(new OrderModel(no, product, unitPrice, qty, totalPrice, version));
       }
       return result;
     }
@@ -95,8 +96,10 @@ namespace WebApp.Repositories
     /// 注文情報の登録
     /// </summary>
     /// <param name="target">登録対象</param>
+    /// <param name="userId">ユーザーID</param>
+    /// <param name="programId">プログラムID</param>
     /// <returns>成功/失敗</returns>
-    public bool Save(OrderModel target)
+    public bool Save(OrderModel target, string userId, string programId)
     {
       var result = false;
       try
@@ -108,11 +111,11 @@ namespace WebApp.Repositories
         var dbResult = Find(target.ProductName);
         if(dbResult.Count != 0)
         {
-          result = Update(target);
+          result = Update(target, userId??string.Empty, programId);
         }
         else
         {
-          result = Insert(target);
+          result = Insert(target, userId??string.Empty, programId);
         }
 
         // 登録・更新結果でコミット・ロールバック
@@ -136,19 +139,25 @@ namespace WebApp.Repositories
     /// 登録
     /// </summary>
     /// <param name="target">登録対象</param>
+    /// <param name="userId">ユーザーID</param>
+    /// <param name="programId">プログラムID</param>
     /// <returns>登録結果成功/失敗</returns>
-    private bool Insert(OrderModel target)
+    private bool Insert(OrderModel target, string userId, string programId)
     {
       var sql = new StringBuilder();
       sql.AppendLine("INSERT ");
-      sql.AppendLine("INTO t_order(productName, unitPrice, qty) ");
-      sql.AppendLine("VALUES (@productName, @unitPrice, @qty) ");
+      sql.AppendLine("INTO t_order(productName, unitPrice, qty, createDate,createUserId, createProgramId, updateDate, updateUserId, updateProgramId, version) ");
+      sql.AppendLine("VALUES (@productName, @unitPrice, @qty, @date, @user, @program, @date, @user, @program, 1) ");
 
       // Param設定
+      var date = DateTime.Now;
       db!.ClearParam();
       db.AddParam("@productName", target.ProductName);
       db.AddParam("@unitPrice", target.UnitPrice);
       db.AddParam("@qty", target.Qty);
+      db.AddParam("@date", date.ToString());
+      db.AddParam("@user", userId);
+      db.AddParam("@program", programId);
 
       // SQL発行
       if (db.ExecuteNonQuery(sql.ToString()) == 1)
@@ -163,23 +172,33 @@ namespace WebApp.Repositories
     /// 更新
     /// </summary>
     /// <param name="target">更新対象</param>
+    /// <param name="userId">ユーザーID</param>
+    /// <param name="programId">プログラムID</param>
     /// <returns>更新結果成功/失敗</returns>
-    private bool Update(OrderModel target)
+    private bool Update(OrderModel target, string userId, string programId)
     {
       var sql = new StringBuilder();
       sql.AppendLine("UPDATE t_order");
       sql.AppendLine("SET");
       sql.AppendLine("productName=@productName,");
       sql.AppendLine("unitPrice=@unitPrice,");
-      sql.AppendLine("qty=@qty");
+      sql.AppendLine("qty=@qty,");
+      sql.AppendLine("updateDate=@date,");
+      sql.AppendLine("updateUserId=@user,");
+      sql.AppendLine("updateProgramId=@program,");
+      sql.AppendLine("version=version+1");
       sql.AppendLine("WHERE");
       sql.AppendLine("  productName = @productName");
 
       // Param設定
+      var date = DateTime.Now;
       db!.ClearParam();
       db.AddParam("@productName", target.ProductName);
       db.AddParam("@unitPrice", target.UnitPrice);
       db.AddParam("@qty", target.Qty);
+      db.AddParam("@date", date.ToString());
+      db.AddParam("@user", userId);
+      db.AddParam("@program", programId);
 
       // SQL発行
       if (db.ExecuteNonQuery(sql.ToString()) == 1)

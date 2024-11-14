@@ -24,7 +24,9 @@ namespace WebApp.Repositories.Interfaces
     /// 注文情報の登録
     /// </summary>
     /// <param name="target">登録対象</param>
+    /// <param name="userId">ユーザーID</param>
+    /// <param name="programId">プログラムID</param>
     /// <returns>成功/失敗</returns>
-    bool Save(OrderModel target);
+    bool Save(OrderModel target, string userId, string programId);
   }
 }

@@ -145,7 +145,21 @@
                 return;
             }
 
-            if(orderRepository.Save(Model!))
+            // 楽観的ロック確認
+            if(!string.IsNullOrEmpty(Product) && Model is not null){
+                var dbModel = orderRepository.GetOder(Product);
+                if(Model.Version != dbModel.Version)
+                {
+                    Logger.LogInformation(await GetLogMessage($"楽観ロックエラー 取得時:{Model.Version} 最新:{dbModel.Version}"));
+
+                    await ShowAlert($"すでに更新されています。{Environment.NewLine}キャンセルを押して、再度編集ボタンを押してください。");
+                    return;
+                }
+            }
+
+            // 登録・更新
+            var userModel = await GetUserAsync();
+            if(orderRepository.Save(Model!, userModel!.ID, GetType().Name))
             {
                 Logger.LogInformation(await GetLogMessage($"保存成功"));
                 await ShowAlert("保存しました。");

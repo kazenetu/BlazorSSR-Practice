@@ -1,4 +1,4 @@
-@page "/orderEdit/{product?}"
+@page "/order-edit/{product?}"
 @inherits Base.PageBase
 @inject ILogger<OrderEdit> Logger
 @inject IOrderRepository orderRepository
@@ -165,7 +165,7 @@
                 await ShowAlert("保存しました。");
 
                 // 画面遷移
-                Navigation.NavigateTo("/Order");
+                Navigation.NavigateTo("/order");
             }
             else
             {
@@ -199,7 +199,7 @@
     {
         await Task.Run(()=>{
             // 画面遷移
-            Navigation.NavigateTo("/Order");
+            Navigation.NavigateTo("/order");
         });
     }
 }

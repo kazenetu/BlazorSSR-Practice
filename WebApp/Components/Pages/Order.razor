@@ -1,6 +1,6 @@
 ﻿@page "/order"
 @inherits Base.PageBase
-@inject IOrderRepository orderRepository
+@inject IOrderRepository repository
 @inject ILogger<Order> Logger
 @inject NavigationManager Navigation
 @using System.Text
@@ -99,7 +99,7 @@ else
                 await Task.Delay(500);
 
                 // 検索結果を表示
-                orders = orderRepository.GetOderList().ToArray();
+                orders = repository.GetOderList().ToArray();
                 StateHasChanged();
 
                 Logger.LogInformation(await GetLogMessage($"検索結果:{orders.Count()}件"));

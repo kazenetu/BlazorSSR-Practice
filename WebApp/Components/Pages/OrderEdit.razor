@@ -1,7 +1,7 @@
 @page "/order-edit/{product?}"
 @inherits Base.PageBase
 @inject ILogger<OrderEdit> Logger
-@inject IOrderRepository orderRepository
+@inject IOrderRepository repository
 @inject NavigationManager Navigation
 @using WebApp.Models
 @using WebApp.Repositories.Interfaces
@@ -90,7 +90,7 @@
                 Logger.LogInformation(await GetLogMessage("ログインチェック成功"));
 
                 // 対象データを検索
-                Model = orderRepository.GetOder(Product??string.Empty);
+                Model = repository.GetOder(Product??string.Empty);
 
                 StateHasChanged();
 
@@ -147,7 +147,7 @@
 
             // 楽観的ロック確認
             if(!string.IsNullOrEmpty(Product) && Model is not null){
-                var dbModel = orderRepository.GetOder(Product);
+                var dbModel = repository.GetOder(Product);
                 if(Model.Version != dbModel.Version)
                 {
                     Logger.LogInformation(await GetLogMessage($"楽観ロックエラー 取得時:{Model.Version} 最新:{dbModel.Version}"));
@@ -161,7 +161,7 @@
             if(string.IsNullOrEmpty(Product) && Model is not null)
             {
                 // DB取得
-                var dbResult = orderRepository.GetOder(Model.ProductName);
+                var dbResult = repository.GetOder(Model.ProductName);
 
                 // データが存在する場合はエラーとする
                 if(!string.IsNullOrEmpty(dbResult.ProductName))
@@ -175,7 +175,7 @@
 
             // 登録・更新
             var userModel = await GetUserAsync();
-            if(orderRepository.Save(Model!, userModel!.ID, GetType().Name))
+            if(repository.Save(Model!, userModel!.ID, GetType().Name))
             {
                 Logger.LogInformation(await GetLogMessage($"保存成功"));
                 await ShowAlert("保存しました。");

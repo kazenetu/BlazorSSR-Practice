@@ -2,6 +2,7 @@
 @inherits Base.PageBase
 @inject IOrderRepository orderRepository
 @inject ILogger<Order> Logger
+@inject NavigationManager Navigation
 @using System.Text
 @using WebApp.Components.Parts
 @using WebApp.Models.Parts
@@ -28,9 +29,16 @@
 }
 else
 {
-    <FileDownload ButtonName="CSVダウンロード" GetDataFunction="DownLoadCSV"/>
-    <PDFViewer ButtonName="PDF表示" GetDataFunction="DownLoadPDF" IsPortrait="true"/>
-    <PDFViewer ButtonName="PDF表示(別ウインドウ)" GetDataFunction="DownLoadPDF" IsNewWindow="true"/>
+    <div class="row page-header">
+        <div class="col">
+            <button @onclick="@(() => ToEdit(string.Empty))" class="btn btn-outline-success">新規作成</button>
+        </div>
+        <div class="col">
+            <FileDownload ButtonName="CSVダウンロード" GetDataFunction="DownLoadCSV"/>
+            <PDFViewer ButtonName="PDF表示" GetDataFunction="DownLoadPDF" IsPortrait="true"/>
+            <PDFViewer ButtonName="PDF表示(別ウインドウ)" GetDataFunction="DownLoadPDF" IsNewWindow="true"/>
+        </div>
+    </div>
 
     <table class="table fiexed-header">
         <thead>
@@ -40,6 +48,7 @@ else
                 <th>UnitPrice</th>
                 <th>Qty</th>
                 <th>TotalPrice</th>
+                <th>編集</th>
             </tr>
         </thead>
         <tbody>
@@ -51,6 +60,7 @@ else
                     <td>@oder.UnitPrice</td>
                     <td>@oder.Qty</td>
                     <td>@oder.TotalPrice</td>
+                    <td><button @onclick="@(() => ToEdit(oder.ProductName))" class="btn btn-outline-success">編集</button></td>
                 </tr>
             }
         </tbody>
@@ -104,6 +114,16 @@ else
                 Logger.LogInformation(await GetLogMessage("終了"));
             }
         }
+    }
+
+    /// <summary>
+    /// 新規・編集
+    /// </summary>
+    /// <param name="productName">製品名</param>
+    private void ToEdit(string productName)
+    {
+        // 画面遷移
+        Navigation.NavigateTo($"/order-edit/{productName}");
     }
 
     /// <summary>

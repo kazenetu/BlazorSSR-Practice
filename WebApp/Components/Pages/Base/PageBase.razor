@@ -80,6 +80,20 @@
     }
 
     /// <summary>
+    /// ユーザーマスタ取得
+    /// </summary>
+    /// <returns>ユーザーマスタ</returns>
+    protected async Task<UserModel?> GetUserAsync()
+    {
+        var userMasterString = await GetAsync<string>(UserModel.SessionUser);
+        if(userMasterString is not null)
+        {
+            return userMasterString!.Deserialize<UserModel>();
+        }
+        return null;
+    }
+
+    /// <summary>
     /// ログメッセージ文字列取得
     /// </summary>
     /// <param name="message">独自メッセージ</param>
@@ -88,11 +102,10 @@
     protected async Task<string> GetLogMessage(string message, [System.Runtime.CompilerServices.CallerMemberName] string memberName = "")
     {
         var userData = string.Empty;
-        var session = await GetAsync<string>(UserModel.SessionUser);
-        if(session is not null)
+        var userModel = await GetUserAsync();
+        if(userModel is not null)
         {
-            var userModel = session!.Deserialize<UserModel>();
-            userData = $"{userModel?.ID} {userModel?.Fullname} ";
+            userData = $"{userModel.ID} {userModel.Fullname} ";
         }
 
         return $"{userData}{message} url={Navigation.Uri} method={memberName}";
@@ -107,11 +120,10 @@
     protected async Task<string> GetLogError(Exception exception, [System.Runtime.CompilerServices.CallerMemberName] string memberName = "")
     {
         var userData = string.Empty;
-        var session = await GetAsync<string>(UserModel.SessionUser);
-        if(session is not null)
+        var userModel = await GetUserAsync();
+        if(userModel is not null)
         {
-            var userModel = session!.Deserialize<UserModel>();
-            userData = $"{userModel?.ID} {userModel?.Fullname} ";
+            userData = $"{userModel.ID} {userModel.Fullname} ";
         }
 
         return $"Error {userData}Message[{exception.Message}] StackTrace[{exception.StackTrace}] url={Navigation.Uri} method={memberName}";

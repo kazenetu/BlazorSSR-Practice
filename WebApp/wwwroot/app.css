@@ -55,3 +55,8 @@ table.fiexed-header thead{
     top: 3.4rem;
     background-color: wheat;
 }
+
+.page-header
+{
+    padding-bottom:1rem;
+}

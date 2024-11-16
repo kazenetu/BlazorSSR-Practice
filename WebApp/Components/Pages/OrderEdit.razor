@@ -157,6 +157,22 @@
                 }
             }
 
+            // 新規登録時に「既存データのキー項目を入力」チェック
+            if(string.IsNullOrEmpty(Product) && Model is not null)
+            {
+                // DB取得
+                var dbResult = orderRepository.GetOder(Model.ProductName);
+
+                // データが存在する場合はエラーとする
+                if(!string.IsNullOrEmpty(dbResult.ProductName))
+                {
+                    Logger.LogInformation(await GetLogMessage($"既存データ登録済エラー 対象データ:{dbResult.ProductName}"));
+
+                    await ShowAlert("登録済みです。");
+                    return;
+                }
+            }
+
             // 登録・更新
             var userModel = await GetUserAsync();
             if(orderRepository.Save(Model!, userModel!.ID, GetType().Name))

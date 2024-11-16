@@ -168,7 +168,7 @@
                 {
                     Logger.LogInformation(await GetLogMessage($"既存データ登録済エラー 対象データ:{dbResult.ProductName}"));
 
-                    await ShowAlert("登録済みです。");
+                    await ShowAlert($"{dbResult.ProductName}は登録済みです。");
                     return;
                 }
             }

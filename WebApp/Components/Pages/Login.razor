@@ -2,7 +2,7 @@
 @inherits Base.PageBase
 @using WebApp.Models
 @using WebApp.Repositories.Interfaces
-@inject IUserRepository userRepository
+@inject IUserRepository repository
 @inject NavigationManager Navigation
 @inject ILogger<Login> Logger
 
@@ -136,7 +136,7 @@
             }
 
             // ログイン成功
-            var userModel = userRepository.GetUser(loginModel!.ID!);
+            var userModel = repository.GetUser(loginModel!.ID!);
             await SetAsync(UserModel.SessionFullName, userModel!.Fullname);
             await SetAsync(UserModel.SessionLoggedIn, true);
             await SetAsync(UserModel.SessionAdminRole, userModel!.AdminRole);
@@ -160,7 +160,7 @@
 
     private bool EqalsPassword(LoginModel model)
     {
-        return userRepository.EqalsPassword(model.ID!, model.Password!);
+        return repository.EqalsPassword(model.ID!, model.Password!);
     }
 
     public class LoginModel

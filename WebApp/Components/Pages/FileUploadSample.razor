@@ -1,0 +1,126 @@
+@page "/file-upload-sample"
+@inherits Base.PageBase
+@inject ILogger<FileUploadSample> Logger
+@using WebApp.Components.Parts
+@using WebApp.Models.Parts
+
+@if (IsBeforeLoginCheck)
+{
+    // ログイン確認前は表示なし
+    return;
+}
+
+<PageTitle>ファイルアップロードサンプル</PageTitle>
+
+<h1>ファイルアップロードサンプル</h1>
+
+<div class="row page-header">
+    <div class="col">
+        <FileUpLoad LoadFileFunction="LoadFile" />
+    </div>
+</div>
+
+@if(Outputs.Any())
+{
+    @foreach (var output in Outputs)
+    {
+        <div>
+        @output
+        </div>
+    }
+}
+
+
+@code{
+    private List<string> Outputs{set;get;} = new();
+
+    /// <summary>
+    /// 初期処理
+    /// </summary>
+    /// <param name="firstRender">初回表示か否か</param>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                Logger.LogInformation(await GetLogMessage("開始"));
+
+                // 未ログインの場合は即時終了
+                if (!await LoginCheck())
+                {
+                    Logger.LogInformation(await GetLogMessage("ログインチェック失敗"));
+                    return;
+                }
+
+                // ログイン確認完了
+                IsBeforeLoginCheck = false;
+
+                Logger.LogInformation(await GetLogMessage("ログインチェック成功"));
+
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, await GetLogError(ex));
+                GotoErrorPage();
+            }
+            finally
+            {
+                Logger.LogInformation(await GetLogMessage("終了"));
+            }
+        }
+    }
+
+    /// <summary>
+    /// ファイル読込
+    /// </summary>
+    /// <param name="fileModel">ファイルアップロードモデル</param>
+    private async void LoadFile(UpLoadeModel fileModel)
+    {
+        try
+        {
+            Logger.LogInformation(await GetLogMessage("ファイル読み込み開始"));
+
+            // ファイル内容のクリア
+            Outputs.Clear();
+            StateHasChanged();
+
+            // ファイルが存在しないか確認
+            if (fileModel.IsNull)
+            {
+                Logger.LogInformation(await GetLogMessage("ファイル指定なし"));
+
+                await ShowAlert("ファイルを指定してください");
+                return;
+            }
+
+            // ContentTypeがCSVか確認
+            if(fileModel.ContentType != "text/csv")
+            {
+                Logger.LogInformation(await GetLogMessage("CSVファイル以外"));
+
+                await ShowAlert("CSVファイルを指定してください");
+                return;
+            }
+
+            // ファイル内容確認
+            await foreach(string line in fileModel.ReadLineAsync())
+            {
+                if(string.IsNullOrEmpty(line)) continue;
+                Outputs.Add(line);
+            }
+
+            // 画面反映
+            StateHasChanged();
+        }
+        catch(Exception ex)
+        {
+            Logger.LogError(ex, await GetLogError(ex));
+            GotoErrorPage();
+        }
+        finally{
+            Logger.LogInformation(await GetLogMessage("ファイル読み込み終了"));
+        }
+    }
+}

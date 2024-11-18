@@ -2,7 +2,6 @@ using PdfReport.Interfaces;
 using PdfSharp.Drawing;
 using PdfSharp.Drawing.Layout;
 using PdfSharp.Pdf;
-using PdfSharp.Quality;
 using System;
 using System.Collections.Generic;
 using System.Linq;

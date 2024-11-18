@@ -1,6 +1,4 @@
 using Npgsql;
-using System;
-using System.Collections.Generic;
 using System.Data;
 using static WebApp.DBAccess.DB.DatabaseFactory;
 

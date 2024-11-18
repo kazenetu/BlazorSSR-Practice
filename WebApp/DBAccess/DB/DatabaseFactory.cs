@@ -1,5 +1,3 @@
-using System;
-
 namespace WebApp.DBAccess.DB
 {
   /// <summary>

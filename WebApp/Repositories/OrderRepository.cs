@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Options;
-using System.Text;
 using System.Data;
+using System.Text;
 using WebApp.DBAccess;
-using WebApp.Repositories.Interfaces;
 using WebApp.Models;
+using WebApp.Repositories.Interfaces;
 
 namespace WebApp.Repositories
 {

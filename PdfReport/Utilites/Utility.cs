@@ -1,4 +1,3 @@
-using PdfSharp.Pdf;
 using PdfSharp.Quality;
 
 namespace PdfReport.Utilites

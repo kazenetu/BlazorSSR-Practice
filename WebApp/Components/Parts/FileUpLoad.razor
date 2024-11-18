@@ -1,0 +1,22 @@
+@namespace WebApp.Components.Parts
+@using WebApp.Models.Parts
+
+<InputFile OnChange="ChangeFile" class="form-control" />
+
+@code {
+    /// <summary>
+    /// ファイル受信時に呼び出すメソッド
+    /// </summary>
+    [Parameter]
+    public EventCallback<UpLoadeModel> LoadFileFunction { get; set; }
+
+    /// <summary>
+    /// 受信ファイル変更イベント
+    /// </summary>
+    /// <param name="e">受信ファイル情報</param>
+    private async Task ChangeFile(InputFileChangeEventArgs e)
+    {
+        // メソッド呼び出し
+        await LoadFileFunction.InvokeAsync(new UpLoadeModel(e.File));
+    }
+}

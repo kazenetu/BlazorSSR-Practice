@@ -1,0 +1,2 @@
+# wwwrootディレクトリ内を除外
+WebApp/wwwroot/**/* linguist-vendored

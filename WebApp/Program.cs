@@ -1,6 +1,6 @@
+using Microsoft.AspNetCore.StaticFiles;
 using NLog.Extensions.Logging;
 using NLog.Web;
-using Microsoft.AspNetCore.StaticFiles;
 using WebApp.Components;
 using WebApp.DBAccess;
 using WebApp.Repositories;

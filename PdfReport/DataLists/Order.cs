@@ -8,7 +8,7 @@ namespace PdfReport.DataLists
     /// <summary>
     /// 注文帳票用データ
     /// </summary>
-    public class Order :IData
+    public class Order : IData
     {
         /// <summary>
         /// 番号(1〜)
@@ -58,7 +58,7 @@ namespace PdfReport.DataLists
         /// <returns>対象の文字列</returns>
         public (Type type, object value) GetColumn(int colIndex)
         {
-            switch(colIndex)
+            switch (colIndex)
             {
                 case 0:
                     return GetColumnResult(_no);
@@ -68,7 +68,7 @@ namespace PdfReport.DataLists
                     return GetColumnResult(_unitPrice);
                 case 3:
                     return GetColumnResult(_qty);
-                case 4 :
+                case 4:
                     return GetColumnResult(_totalPrice);
                 default:
                     return (typeof(string), string.Empty);
@@ -83,14 +83,14 @@ namespace PdfReport.DataLists
         /// <returns>対象の文字列</returns>
         public (Type type, object value) GetColumnTotal(List<IData> dataList, int colIndex)
         {
-            var orders = dataList.Select(data=>(Order)data);
-            switch(colIndex)
+            var orders = dataList.Select(data => (Order)data);
+            switch (colIndex)
             {
                 case 2:
                     return GetColumnResult(orders.Sum((item) => item._unitPrice));
                 case 3:
                     return GetColumnResult(orders.Sum((item) => item._qty));
-                case 4 :
+                case 4:
                     return GetColumnResult(orders.Sum((item) => item._totalPrice));
                 default:
                     return (typeof(string), string.Empty);

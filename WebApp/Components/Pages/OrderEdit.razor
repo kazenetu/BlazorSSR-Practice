@@ -26,33 +26,33 @@
 </div>
 
 <EditForm method="post" Model="Model" OnValidSubmit="Save" id="edit">
-        <div class="card col-md-8 offset-md-2">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col">
-                        <label class="col-md-4" for="ProductName">商品名</label>
-                        <InputText class="col-md-5" id="ProductName" @bind-Value="Model!.ProductName" />
-                    </div>
+    <div class="card col-md-8 offset-md-2">
+        <div class="card-body">
+            <div class="row">
+                <div class="col">
+                    <label class="col-md-4" for="ProductName">商品名</label>
+                    <InputText class="col-md-5" id="ProductName" @bind-Value="Model!.ProductName" />
                 </div>
-                <div class="row">
-                    <div class="col">
-                        <label class="col-md-4" for="UnitPrice">単価</label>
-                        <InputNumber class="col-md-5" id="UnitPrice" @bind-Value="Model!.UnitPrice" TValue="decimal" />
-                    </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <label class="col-md-4" for="UnitPrice">単価</label>
+                    <InputNumber class="col-md-5" id="UnitPrice" @bind-Value="Model!.UnitPrice" TValue="decimal" />
                 </div>
-                <div class="row">
-                    <div class="col">
-                        <label class="col-md-4" for="Qty">数量</label>
-                        <InputNumber class="col-md-5" id="Qty" @bind-Value="Model!.Qty" TValue="decimal" />
-                    </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <label class="col-md-4" for="Qty">数量</label>
+                    <InputNumber class="col-md-5" id="Qty" @bind-Value="Model!.Qty" TValue="decimal" />
                 </div>
             </div>
         </div>
+    </div>
 </EditForm>
 
 
 
-@code{
+@code {
     /// <summary>
     /// 製品名パラメータ
     /// </summary>
@@ -90,7 +90,7 @@
                 Logger.LogInformation(await GetLogMessage("ログインチェック成功"));
 
                 // 対象データを検索
-                Model = repository.GetOder(Product??string.Empty);
+                Model = repository.GetOder(Product ?? string.Empty);
 
                 StateHasChanged();
 
@@ -146,9 +146,10 @@
             }
 
             // 楽観的ロック確認
-            if(!string.IsNullOrEmpty(Product) && Model is not null){
+            if (!string.IsNullOrEmpty(Product) && Model is not null)
+            {
                 var dbModel = repository.GetOder(Product);
-                if(Model.Version != dbModel.Version)
+                if (Model.Version != dbModel.Version)
                 {
                     Logger.LogInformation(await GetLogMessage($"楽観ロックエラー 取得時:{Model.Version} 最新:{dbModel.Version}"));
 
@@ -158,13 +159,13 @@
             }
 
             // 新規登録時に「既存データのキー項目を入力」チェック
-            if(string.IsNullOrEmpty(Product) && Model is not null)
+            if (string.IsNullOrEmpty(Product) && Model is not null)
             {
                 // DB取得
                 var dbResult = repository.GetOder(Model.ProductName);
 
                 // データが存在する場合はエラーとする
-                if(!string.IsNullOrEmpty(dbResult.ProductName))
+                if (!string.IsNullOrEmpty(dbResult.ProductName))
                 {
                     Logger.LogInformation(await GetLogMessage($"既存データ登録済エラー 対象データ:{dbResult.ProductName}"));
 
@@ -175,7 +176,7 @@
 
             // 登録・更新
             var userModel = await GetUserAsync();
-            if(repository.Save(Model!, userModel!.ID, GetType().Name))
+            if (repository.Save(Model!, userModel!.ID, GetType().Name))
             {
                 Logger.LogInformation(await GetLogMessage($"保存成功"));
                 await ShowAlert("保存しました。");
@@ -189,12 +190,13 @@
                 await ShowAlert("保存失敗しました。");
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Logger.LogError(ex, await GetLogError(ex));
             GotoErrorPage();
         }
-        finally{
+        finally
+        {
             Logger.LogInformation(await GetLogMessage("保存終了"));
         }
     }
@@ -213,7 +215,8 @@
     /// <returns></returns>
     private async Task ShowConfirmYes()
     {
-        await Task.Run(()=>{
+        await Task.Run(() =>
+        {
             // 画面遷移
             Navigation.NavigateTo("/order");
         });

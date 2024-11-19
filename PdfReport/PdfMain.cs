@@ -1,4 +1,4 @@
-﻿using PdfReport.Interfaces;
+using PdfReport.Interfaces;
 using PdfReport.Layout;
 using PdfSharp.Pdf;
 using System;
@@ -48,8 +48,8 @@ namespace PdfReport
             {
                 case LayoutKinds.Order:
                     SetParams(new OrderLayout(), dataList);
-                break;
-                
+                    break;
+
                 default:
                     throw new Exception("帳票レイアウトが指定されていません");
             }
@@ -71,17 +71,17 @@ namespace PdfReport
         /// <param name="stream">出力用Stream</param>
         public void Create(Stream stream)
         {
-            if(_layout is null)
+            if (_layout is null)
                 throw new Exception("帳票レイアウトが指定されていません。");
 
-            if(_dataList is null || !_dataList.Any())
+            if (_dataList is null || !_dataList.Any())
                 throw new Exception("出力用データリストが指定されていません。");
 
-            if(_document is null)
+            if (_document is null)
                 throw new Exception("ドキュメントが生成されていません。");
 
             //帳票レイアウト書き込み
-            if(!_layout.Create(_document, _dataList))
+            if (!_layout.Create(_document, _dataList))
                 throw new Exception("帳票レイアウト失敗");
 
             // 出力用Streamに出力

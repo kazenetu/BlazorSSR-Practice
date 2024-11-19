@@ -13,7 +13,7 @@ namespace PdfReport.Interfaces
         /// </summary>
         /// <param name="colIndex">カラム番号</param>
         /// <returns>値と型のタプル</returns>
-        (Type type,object value)  GetColumn(int colmunIndex);
+        (Type type, object value) GetColumn(int colmunIndex);
 
         /// <summary>
         /// カラム番号によってサマリした文字列を返す
@@ -21,6 +21,6 @@ namespace PdfReport.Interfaces
         /// <param name="dataList">データリスト</param>
         /// <param name="colIndex">カラム番号</param>
         /// <returns>値と型のタプル</returns>
-        (Type type,object value) GetColumnTotal(List<IData> dataList, int colIndex);
+        (Type type, object value) GetColumnTotal(List<IData> dataList, int colIndex);
     }
 }

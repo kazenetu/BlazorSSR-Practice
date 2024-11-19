@@ -13,10 +13,10 @@
 {
     <div class=" col-md-6 offset-md-3" style="border: 1px red solid; margin-bottom: 1em;color:red;">
         <ul style="margin-block-end:0em">
-        @foreach (var item in errorMessages)
-        {
-            <li>@item </li>
-        }
+            @foreach (var item in errorMessages)
+            {
+                <li>@item </li>
+            }
         </ul>
     </div>
 }
@@ -68,7 +68,8 @@
     {
         if (firstRender)
         {
-            try{
+            try
+            {
                 Logger.LogInformation(await GetLogMessage("開始"));
 
                 // セッションクリア
@@ -77,12 +78,13 @@
                 // 画面反映
                 StateHasChanged();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Logger.LogError(ex, await GetLogError(ex));
                 GotoErrorPage();
-           }
-            finally{
+            }
+            finally
+            {
                 Logger.LogInformation(await GetLogMessage("終了"));
             }
         }
@@ -115,7 +117,7 @@
             }
             if (errorMessages.Any())
             {
-                Logger.LogInformation(await GetLogMessage($"入力エラー ログインID:{loginModel?.ID??"なし"}"));
+                Logger.LogInformation(await GetLogMessage($"入力エラー ログインID:{loginModel?.ID ?? "なし"}"));
 
                 // 画面反映
                 StateHasChanged();
@@ -127,7 +129,8 @@
             {
                 errorMessages.Add("IDまたはパスワードが間違っています。");
             }
-            if (errorMessages.Any()){
+            if (errorMessages.Any())
+            {
                 Logger.LogInformation(await GetLogMessage($"ログインチェックエラー ログインID:{loginModel!.ID}"));
 
                 // 画面反映
@@ -148,12 +151,13 @@
             Navigation.NavigateTo("/");
             Navigation.Refresh(true);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Logger.LogError(ex, await GetLogError(ex));
             GotoErrorPage();
         }
-        finally{
+        finally
+        {
             Logger.LogInformation(await GetLogMessage("終了"));
         }
     }

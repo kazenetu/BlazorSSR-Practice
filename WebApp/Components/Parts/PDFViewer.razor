@@ -5,47 +5,50 @@
 <button class="btn btn-primary" @onclick="Preview">@ButtonName</button>
 
 <dialog id="PDFViewerDialog">
-    @if(@IsPortrait){
-        <iframe id="iframe" style="height:80vh;width:55vw"/>
-    }else{
-        <iframe id="iframe" style="height:55vh;width:80vw"/>
+    @if (@IsPortrait)
+    {
+        <iframe id="iframe" style="height:80vh;width:55vw" />
+    }
+    else
+    {
+        <iframe id="iframe" style="height:55vh;width:80vw" />
     }
     <div style="text-align: center;">
-        <button id="PDFViewerCloseButton" type="button"  class="btn btn-outline-success btn-sm">
+        <button id="PDFViewerCloseButton" type="button" class="btn btn-outline-success btn-sm">
             閉じる
         </button>
     </div>
 </dialog>
 
 <script>
-  @* PDFモーダル表示 *@
-  window.setSource = async (elementId, stream, title) => {
-    const element = document.getElementById(elementId);
-    const dialog = document.getElementById('PDFViewerDialog');
-    element.setAttribute("src", "data:application/pdf;base64," + stream + '#navpanes=0');
-    element.title = title;
+    @* PDFモーダル表示 *@
+        window.setSource = async (elementId, stream, title) => {
+            const element = document.getElementById(elementId);
+            const dialog = document.getElementById('PDFViewerDialog');
+            element.setAttribute("src", "data:application/pdf;base64," + stream + '#navpanes=0');
+            element.title = title;
 
     @* モーダル表示 *@
-    dialog.showModal();
+                dialog.showModal();
 
     @* 閉じる：モーダルを閉じる *@
     const cancelButton = document.getElementById('PDFViewerCloseButton');
-    cancelButton?.addEventListener('click', () => {
-        element.setAttribute("src", "");
-        dialog.close();
-    });
-  }
+            cancelButton?.addEventListener('click', () => {
+                element.setAttribute("src", "");
+                dialog.close();
+            });
+        }
 
-  @* PDF別ウィンドウ表示(pdf.js使用) *@
-  window.OpenPDFWindow = async (elementId, stream, title) => {
+    @* PDF別ウィンドウ表示(pdf.js使用) *@
+        window.OpenPDFWindow = async (elementId, stream, title) => {
 
-    const arrayBuffer = stream.buffer;
-    const blob = new Blob([arrayBuffer]);
-    const url = URL.createObjectURL(blob);
+            const arrayBuffer = stream.buffer;
+            const blob = new Blob([arrayBuffer]);
+            const url = URL.createObjectURL(blob);
 
-    const windowFeatures = "popup,width="+window.screen.width+",height="+window.screen.height
-    window.open("/pdfjs/web/viewer.html?file="+url+"&title="+title, "_blank", windowFeatures);
-  }
+            const windowFeatures = "popup,width=" + window.screen.width + ",height=" + window.screen.height
+            window.open("/pdfjs/web/viewer.html?file=" + url + "&title=" + title, "_blank", windowFeatures);
+        }
 
 </script>
 
@@ -81,19 +84,20 @@
     {
         try
         {
-            if(GetDataFunction is null)
+            if (GetDataFunction is null)
                 return;
 
             // ダウンロードファイル情報取得
             var model = GetDataFunction();
 
             // エラーメッセージが設定されている場合はエラーメッセージ表示
-            if(!string.IsNullOrEmpty(model.ErrorMessage)){
+            if (!string.IsNullOrEmpty(model.ErrorMessage))
+            {
                 await JS.InvokeVoidAsync("showAlert", model.ErrorMessage);
             }
 
             // ファイル名やデータが設定されていない場合は終了
-            if(string.IsNullOrEmpty(model.FileName) || model.Data is null)
+            if (string.IsNullOrEmpty(model.FileName) || model.Data is null)
                 return;
 
             if (IsNewWindow)
@@ -105,12 +109,12 @@
             {
                 // JavaScript経由でPDF表示
                 var bytes = model.Data as byte[];
-                if(bytes is null) return;
+                if (bytes is null) return;
                 var base64 = Convert.ToBase64String(bytes);
                 await JS.InvokeVoidAsync("setSource", "iframe", base64, model.FileName, IsPortrait);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             throw ex;
         }

@@ -20,19 +20,19 @@
     </div>
 </div>
 
-@if(Outputs.Any())
+@if (Outputs.Any())
 {
     @foreach (var output in Outputs)
     {
         <div>
-        @output
+            @output
         </div>
     }
 }
 
 
-@code{
-    private List<string> Outputs{set;get;} = new();
+@code {
+    private List<string> Outputs { set; get; } = new();
 
     /// <summary>
     /// 初期処理
@@ -96,7 +96,7 @@
             }
 
             // ContentTypeがCSVか確認
-            if(fileModel.ContentType != "text/csv")
+            if (fileModel.ContentType != "text/csv")
             {
                 Logger.LogInformation(await GetLogMessage("CSVファイル以外"));
 
@@ -105,21 +105,22 @@
             }
 
             // ファイル内容確認
-            await foreach(string line in fileModel.ReadLineAsync())
+            await foreach (string line in fileModel.ReadLineAsync())
             {
-                if(string.IsNullOrEmpty(line)) continue;
+                if (string.IsNullOrEmpty(line)) continue;
                 Outputs.Add(line);
             }
 
             // 画面反映
             StateHasChanged();
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Logger.LogError(ex, await GetLogError(ex));
             GotoErrorPage();
         }
-        finally{
+        finally
+        {
             Logger.LogInformation(await GetLogMessage("ファイル読み込み終了"));
         }
     }

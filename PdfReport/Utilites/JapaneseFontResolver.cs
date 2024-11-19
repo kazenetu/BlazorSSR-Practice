@@ -49,7 +49,7 @@ namespace PdfReport.Utilites
 
             // デフォルトのフォント
             var defaultFont = PlatformFontResolver.ResolveTypeface("Verdana", isBold, isItalic);
-            if(defaultFont is null)
+            if (defaultFont is null)
                 throw new ArgumentException("No familyName with name " + familyName);
 
             return defaultFont;

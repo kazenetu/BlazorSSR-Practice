@@ -99,12 +99,13 @@
             count = 0;
             await DeleteAsync("Count");
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Logger.LogError(ex, await GetLogError(ex));
             GotoErrorPage();
         }
-        finally{
+        finally
+        {
             Logger.LogInformation(await GetLogMessage("終了"));
         }
     }

@@ -9,7 +9,7 @@
 <dialog id="alertDialog">
     <h2 id="alertMessage"></h2>
     <div style="text-align: center;">
-        <button id="alertCloseButton" type="button"  class="btn btn-outline-success btn-sm">
+        <button id="alertCloseButton" type="button" class="btn btn-outline-success btn-sm">
             閉じる
         </button>
     </div>
@@ -20,7 +20,7 @@
     <h2 id="confirmMessage"></h2>
     <div class="row text-center">
         <div class="col">
-            <button id="confirmCancelButton" type="button"  class="btn btn-outline-success btn-sm">
+            <button id="confirmCancelButton" type="button" class="btn btn-outline-success btn-sm">
                 キャンセル
             </button>
         </div>
@@ -29,7 +29,7 @@
                 はい
             </button>
         </div>
-        <button  id="confirmYesHiddenButton" @onclick="ConfirmYes" style="display: none;" />
+        <button id="confirmYesHiddenButton" @onclick="ConfirmYes" style="display: none;" />
     </div>
 </dialog>
 
@@ -65,14 +65,12 @@
         });
     }
 
-    function addMessageTag(tagName, message)
-    {
+    function addMessageTag(tagName, message) {
         const element = document.getElementById(tagName);
-        element.innerHTML="";
+        element.innerHTML = "";
         const messages = message.split('\n');
 
-        for(let msg of messages)
-        {
+        for (let msg of messages) {
             let div = document.createElement("div");
             div.textContent = msg;
             element.append(div);

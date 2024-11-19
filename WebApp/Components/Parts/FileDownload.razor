@@ -39,19 +39,20 @@
     {
         try
         {
-            if(GetDataFunction is null)
+            if (GetDataFunction is null)
                 return;
 
             // ダウンロードファイル情報取得
             var model = GetDataFunction();
 
             // エラーメッセージが設定されている場合はエラーメッセージ表示
-            if(!string.IsNullOrEmpty(model.ErrorMessage)){
+            if (!string.IsNullOrEmpty(model.ErrorMessage))
+            {
                 await JS.InvokeVoidAsync("showAlert", model.ErrorMessage);
             }
 
             // ファイル名やデータが設定されていない場合は終了
-            if(string.IsNullOrEmpty(model.FileName) || model.Data is null)
+            if (string.IsNullOrEmpty(model.FileName) || model.Data is null)
                 return;
 
             // データ書き出しとファイル出力JSメソッド呼び出し
@@ -66,9 +67,9 @@
                 await JS.InvokeVoidAsync("downloadFileFromStream", model!.FileName, streamRef);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-           throw ex;
+            throw ex;
         }
     }
 }

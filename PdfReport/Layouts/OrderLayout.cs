@@ -45,7 +45,7 @@ namespace PdfReport.Layout
             var rect = new XRect((width - 200) / 2, 10, 200, 40);
 
             // 矩形描画
-            gfx.DrawRectangle (pen, rect);
+            gfx.DrawRectangle(pen, rect);
 
             // 文字描画
             rect.X += 5;
@@ -75,7 +75,7 @@ namespace PdfReport.Layout
                 new List<string> { "No.", "製品名", "単価", "数量", "金額" };
             var headerWidth = new List<int> { 25, 250, 80, 50, 150 };
 
-            var startX = (((int) page.Width.Value) - headerWidth.Sum()) / 2;
+            var startX = (((int)page.Width.Value) - headerWidth.Sum()) / 2;
             var y = 100;
             var isDrawHeader = false;
             foreach (var order in items)
@@ -94,7 +94,7 @@ namespace PdfReport.Layout
                     for (int col = 0; col < headerWidth.Count; col++)
                     {
                         var gridRect = new XRect(x, y, headerWidth[col], 20);
-                        gfx.DrawRectangle (singlePen, headerBrush, gridRect);
+                        gfx.DrawRectangle(singlePen, headerBrush, gridRect);
                         gfx
                             .DrawString($"{headerNames[col]}",
                             gridFont,
@@ -115,7 +115,7 @@ namespace PdfReport.Layout
                 for (int col = 0; col < headerWidth.Count; col++)
                 {
                     var gridRect = new XRect(x, y, headerWidth[col], 20);
-                    gfx.DrawRectangle (singlePen, gridRect);
+                    gfx.DrawRectangle(singlePen, gridRect);
                     gridRect.X += 5;
                     gridRect.Width -= 10;
                     gfx
@@ -133,7 +133,7 @@ namespace PdfReport.Layout
             var totalX = startX;
             var totalGridRect =
                 new XRect(totalX, y, headerWidth[0] + headerWidth[1], 20);
-            gfx.DrawRectangle (singlePen, totalGridRect);
+            gfx.DrawRectangle(singlePen, totalGridRect);
             gfx
                 .DrawString("合計",
                 gridFont,
@@ -144,7 +144,7 @@ namespace PdfReport.Layout
             for (int col = 2; col < headerWidth.Count; col++)
             {
                 var gridRect = new XRect(totalX, y, headerWidth[col], 20);
-                gfx.DrawRectangle (singlePen, gridRect);
+                gfx.DrawRectangle(singlePen, gridRect);
                 gridRect.X += 5;
                 gridRect.Width -= 10;
                 gfx
@@ -169,7 +169,7 @@ namespace PdfReport.Layout
         {
             var colmunItem = order.GetColumn(colIndex);
 
-            switch(colIndex)
+            switch (colIndex)
             {
                 case 0:
                     return GetValue(colmunItem, string.Empty);
@@ -177,7 +177,7 @@ namespace PdfReport.Layout
                     return GetValue(colmunItem, "C");
                 case 3:
                     return GetValue(colmunItem, "#,#");
-                case 4 :
+                case 4:
                     return GetValue(colmunItem, "C");
                 default:
                     return GetValue(colmunItem, string.Empty);
@@ -192,21 +192,21 @@ namespace PdfReport.Layout
         /// <returns>対象の文字列</returns>
         private string GetTotalString(List<IData> orders, int colIndex)
         {
-            if(!orders.Any())
+            if (!orders.Any())
                 return string.Empty;
 
             var colmunItem = orders[0].GetColumnTotal(orders, colIndex);
 
-            switch(colIndex)
+            switch (colIndex)
             {
                 case 2:
                     return GetValue(colmunItem, "C");
                 case 3:
                     return GetValue(colmunItem, "#,#");
-                case 4 :
+                case 4:
                     return GetValue(colmunItem, "C");
                 default:
-                        return string.Empty;
+                    return string.Empty;
             };
         }
 
@@ -216,13 +216,13 @@ namespace PdfReport.Layout
         /// <param name="target">取得対象</param>
         /// <param name="param">ToStrigする際の書式文字列</param>
         /// <returns></returns>
-        private string GetValue((Type type,object value) target,string param)
+        private string GetValue((Type type, object value) target, string param)
         {
-            if(target.type == typeof(int))
+            if (target.type == typeof(int))
                 return ((int)target.value).ToString();
-            if(target.type == typeof(decimal))
+            if (target.type == typeof(decimal))
                 return ((decimal)target.value).ToString(param);
-            if(target.type == typeof(string))
+            if (target.type == typeof(string))
                 return ((string)target.value).ToString();
 
             return string.Empty;
@@ -235,7 +235,7 @@ namespace PdfReport.Layout
         /// <returns>XStringFormats</returns>
         private XStringFormat GetAlignment(int colIndex)
         {
-            switch(colIndex)
+            switch (colIndex)
             {
                 case 0:
                     var no0 = XStringFormats.Center;
@@ -253,7 +253,7 @@ namespace PdfReport.Layout
                     var no3 = XStringFormats.Center;
                     no3.Alignment = XStringAlignment.Far;
                     return no3;
-                case 4 :
+                case 4:
                     var no4 = XStringFormats.Center;
                     no4.Alignment = XStringAlignment.Far;
                     return no4;

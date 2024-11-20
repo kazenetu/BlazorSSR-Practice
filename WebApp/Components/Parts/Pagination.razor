@@ -1,9 +1,10 @@
 @if (TotalPages > 1)
 {
     <style>
-        .page-link{
-            width: 2.5em;
+        .page-link {
+            width: 3em;
         }
+
         .page-link:focus {
             box-shadow: var(--bs-pagination-focus-box-shadow);
             background-color: white;
@@ -20,7 +21,8 @@
                     </button>
                 </li>
             }
-            else{
+            else
+            {
                 <li class="page-item disabled">
                     <button type="button" class="page-link">
                         <span aria-hidden="true">&laquo;</span>
@@ -33,7 +35,8 @@
                 @if (CurrentPageNumber > 1)
                 {
                     <li class="page-item">
-                        <button type="button" class="page-link" @onclick="async () => await OnPageChangedAsync(CurrentPageNumber-1)">&lt;</button>
+                        <button type="button" class="page-link"
+                            @onclick="async () => await OnPageChangedAsync(CurrentPageNumber-1)">&lt;</button>
                     </li>
                 }
                 else
@@ -50,13 +53,16 @@
                     string disabledClass = CurrentPageNumber == i ? "disabled" : string.Empty;
 
                     <li class="page-item @subClass">
-                        <button type="button" class="page-link" @onclick="async () => await OnPageChangedAsync(pageNumber)">@i</button>
+                        <button type="button" class="page-link"
+                            @onclick="async () => await OnPageChangedAsync(pageNumber)">@i</button>
                     </li>
                 }
 
-                @if (CurrentPageNumber < TotalPages){
+                @if (CurrentPageNumber < TotalPages)
+                {
                     <li class="page-item">
-                        <button type="button" class="page-link" @onclick="async () => await OnPageChangedAsync(CurrentPageNumber+1)">&gt;</button>
+                        <button type="button" class="page-link"
+                            @onclick="async () => await OnPageChangedAsync(CurrentPageNumber+1)">&gt;</button>
                     </li>
                 }
                 else
@@ -85,6 +91,7 @@
             }
         </ul>
     </nav>
+    <div>@DisplayRecordCount()</div>
 }
 
 @code {
@@ -188,10 +195,10 @@
     {
         var startPageIndex = StartPage;
         var maxPageIndex = MaxPage;
-        if(maxPageIndex - startPageIndex < MaxIPageCount)
+        if (maxPageIndex - startPageIndex < MaxIPageCount)
         {
             startPageIndex = maxPageIndex - MaxIPageCount;
-            if(startPageIndex <= 0) startPageIndex = 1;
+            if (startPageIndex <= 0) startPageIndex = 1;
         }
         return startPageIndex;
     }
@@ -208,5 +215,21 @@
             endPageIndex = TotalPages;
         }
         return endPageIndex;
+    }
+
+    /// <summary>
+    /// 表示中のレコード数、最大件数の文字列取得
+    /// </summary>
+    /// <returns>表示中のレコード数、最大件数</returns>
+    private string DisplayRecordCount()
+    {
+        var startRecord = RecordsPerPage * (CurrentPageNumber - 1) + 1;
+        var endRecord = startRecord + RecordsPerPage - 1;
+        if (endRecord > TotalRecords)
+        {
+            endRecord = TotalRecords;
+        }
+
+        return $"全{TotalRecords:##,#}件中 {startRecord:##,#}～{endRecord:##,#}件を表示";
     }
 }

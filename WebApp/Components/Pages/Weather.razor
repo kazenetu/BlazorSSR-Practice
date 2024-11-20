@@ -93,10 +93,11 @@ else
                 // 検索結果を取得
                 var startDate = DateOnly.FromDateTime(DateTime.Now);
                 var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
+                var summariesIndex = 1;
                 allForecasts = Enumerable.Range(1, 1001).Select(index => new WeatherForecast
                 {
                     Date = startDate.AddDays(index),
-                    TemperatureC = Random.Shared.Next(-20, 55),
+                    TemperatureC = summariesIndex++,
                     Summary = summaries[Random.Shared.Next(summaries.Length)]
                 }).ToArray();
 

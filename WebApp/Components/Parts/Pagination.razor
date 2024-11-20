@@ -46,7 +46,7 @@
                     </li>
                 }
 
-                @for (int i = GetStartPage(); i <= GetEndPage(); i++)
+                @for (int i = GetStartPage(); i < GetEndPage(); i++)
                 {
                     int pageNumber = i;
                     string subClass = CurrentPageNumber == i ? "active" : string.Empty;

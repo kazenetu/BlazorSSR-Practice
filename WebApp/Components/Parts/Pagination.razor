@@ -193,11 +193,13 @@
     /// <remarks>ページアイコン描画時に使用</remarks>
     private int GetStartPage()
     {
-        var startPageIndex = StartPage;
-        var maxPageIndex = MaxPage;
+        var startPageIndex = CurrentPageNumber - 2;
+        if (startPageIndex <= 0) startPageIndex = 1;
+
+        var maxPageIndex = TotalPages;
         if (maxPageIndex - startPageIndex < MaxIPageCount)
         {
-            startPageIndex = maxPageIndex - MaxIPageCount;
+            startPageIndex = TotalPages - MaxIPageCount + 1;
             if (startPageIndex <= 0) startPageIndex = 1;
         }
         return startPageIndex;
@@ -210,9 +212,9 @@
     private int GetEndPage()
     {
         var endPageIndex = GetStartPage() + MaxIPageCount;
-        if (endPageIndex > TotalPages)
+        if (endPageIndex >= TotalPages)
         {
-            endPageIndex = TotalPages;
+            endPageIndex = TotalPages + 1;
         }
         return endPageIndex;
     }

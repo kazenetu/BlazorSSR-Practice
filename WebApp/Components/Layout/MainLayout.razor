@@ -13,7 +13,12 @@
         <div class="top-row px-4">
             @if (loggedIn)
             {
-                <button @onclick="Logout" class="btn btn-outline-success">ログアウト</button>
+                <div class="col">
+                    @userName
+                </div>
+                <div class="col text-end">
+                    <button @onclick="Logout" class="btn btn-outline-success">ログアウト</button>
+                </div>
             }
         </div>
 
@@ -25,7 +30,20 @@
 
 @code
 {
+    /// <summary>
+    /// ログイン状態
+    /// </summary>
     private bool loggedIn { set; get; }
+
+    /// <summary>
+    /// ユーザーID
+    /// </summary>
+    private string? userId { set; get; } = "";
+
+    /// <summary>
+    /// ユーザー名
+    /// </summary>
+    private string? userName { set; get; } = "";
 
     /// <summary>
     /// セッション管理プロバイダークラス
@@ -42,7 +60,20 @@
     {
         if (firstRender)
         {
+            // ログイン状態を取得
             loggedIn = await GetAsync<bool>(UserModel.SessionLoggedIn);
+
+            if (loggedIn)
+            {
+                // ユーザー情報取得
+                var userMasterString = await GetAsync<string>(UserModel.SessionUser);
+                if (userMasterString is not null)
+                {
+                    var userMaster = userMasterString!.Deserialize<UserModel>();
+                    userId = userMaster?.ID;
+                    userName = userMaster?.Fullname;
+                }
+            }
 
             // 画面反映
             StateHasChanged();

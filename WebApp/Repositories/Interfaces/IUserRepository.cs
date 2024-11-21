@@ -14,6 +14,15 @@ namespace WebApp.Repositories.Interfaces
         /// <returns>ユーザー</returns>
         public UserModel? GetUser(string userID);
 
+        /// <summary>
+        /// ユーザーの保存
+        /// </summary>
+        /// <param name="target">登録対象</param>
+        /// <param name="userId">ユーザーID</param>
+        /// <param name="programId">プログラムID</param>
+        /// <returns>成功/失敗</returns>
+        /// <remarks>パスワードは平文を設定すること。Saltは未設定</remarks>
+        bool Save(UserModel target, string userId, string programId);
 
         /// <summary>
         /// パスワードチェック

@@ -1,0 +1,5 @@
+# wwwrootディレクトリ内を除外
+WebApp/wwwroot/**/* linguist-vendored
+
+# razorをCSに設定
+*.razor linguist-language=C#

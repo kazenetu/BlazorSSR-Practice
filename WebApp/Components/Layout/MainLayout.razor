@@ -17,6 +17,9 @@
                     @userName
                 </div>
                 <div class="col text-end">
+                    <button @onclick="ChangePasssword" class="btn btn-outline-success">パスワード変更</button>
+                </div>
+                <div class="col text-end">
                     <button @onclick="Logout" class="btn btn-outline-success">ログアウト</button>
                 </div>
             }
@@ -74,7 +77,6 @@
                     userName = userMaster?.Fullname;
                 }
             }
-
             // 画面反映
             StateHasChanged();
         }
@@ -101,6 +103,15 @@
     /// </summary>
     [CascadingParameter]
     private DialogProvider? dialogProvider { get; set; }
+
+    /// <summary>
+    /// パスワード変更
+    /// </summary>
+    private void ChangePasssword()
+    {
+        Navigation.NavigateTo($"/password-change/{userId}");
+    }
+
 
     /// <summary>
     /// ログアウト用JS呼び出し

@@ -41,7 +41,13 @@
         </div>
     </div>
 </EditForm>
-
+<script>
+    setTimeout(() => {
+        if (document.getElementById('logout') !== null) {
+            location.reload();
+        }
+    }, 100);
+</script>
 
 @code
 {

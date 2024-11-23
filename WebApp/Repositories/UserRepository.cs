@@ -90,6 +90,147 @@ namespace WebApp.Repositories
 
         #endregion
 
+        #region 登録・更新
+
+        /// <summary>
+        /// ユーザーの保存
+        /// </summary>
+        /// <param name="target">登録対象</param>
+        /// <param name="userId">ユーザーID</param>
+        /// <param name="programId">プログラムID</param>
+        /// <returns>成功/失敗</returns>
+        /// <remarks>パスワードは平文を設定すること。Saltは未設定</remarks>
+        public bool Save(UserModel target, string userId, string programId)
+        {
+            var result = false;
+            try
+            {
+                // トランザクション開始
+                BeginTransaction();
+
+                // DB存在確認
+                var dbResult = GetUser(target.ID);
+                if (dbResult is not null)
+                {
+                    result = Update(target, userId ?? string.Empty, programId);
+                }
+                else
+                {
+                    result = Insert(target, userId ?? string.Empty, programId);
+                }
+
+                // 登録・更新結果でコミット・ロールバック
+                if (result)
+                {
+                    Commit();
+                }
+                else
+                {
+                    Rollback();
+                }
+
+            }
+            catch (Exception)
+            {
+                Rollback();
+                throw;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 登録
+        /// </summary>
+        /// <param name="target">登録対象</param>
+        /// <param name="userId">ユーザーID</param>
+        /// <param name="programId">プログラムID</param>
+        /// <returns>登録結果成功/失敗</returns>
+        private bool Insert(UserModel target, string userId, string programId)
+        {
+            var sql = new StringBuilder();
+            sql.AppendLine("INSERT ");
+            sql.AppendLine("INTO m_user(unique_name,password,salt,fullname,admin_role,version) ");
+            sql.AppendLine("VALUES (@unique_name,@password,@salt,@fullname,@admin_role, @version) ");
+
+            // ソルトが未設定の場合はパスワード再生成
+            var password = target.Password;
+            var salt = target.Salt;
+            if(string.IsNullOrEmpty(salt))
+            {
+                var passAndSalt = CreateEncryptedPassword(password);
+                password = passAndSalt.encryptedPassword;
+                salt = passAndSalt.salt;
+            }
+
+            // Param設定
+            var date = DateTime.Now;
+            db!.ClearParam();
+            db.AddParam("@unique_name", target.ID);
+            db.AddParam("@password", password);
+            db.AddParam("@salt", salt);
+            db.AddParam("@fullname", target.Fullname);
+            db.AddParam("@admin_role", target.AdminRole);
+            db.AddParam("@version", 1);
+
+            // SQL発行
+            if (db.ExecuteNonQuery(sql.ToString()) == 1)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// 更新
+        /// </summary>
+        /// <param name="target">更新対象</param>
+        /// <param name="userId">ユーザーID</param>
+        /// <param name="programId">プログラムID</param>
+        /// <returns>更新結果成功/失敗</returns>
+        private bool Update(UserModel target, string userId, string programId)
+        {
+            var sql = new StringBuilder();
+            sql.AppendLine("UPDATE m_user");
+            sql.AppendLine("SET");
+            sql.AppendLine("unique_name=@unique_name,");
+            sql.AppendLine("password=@password,");
+            sql.AppendLine("salt=@salt,");
+            sql.AppendLine("fullname=@fullname,");
+            sql.AppendLine("admin_role=@admin_role,");
+            sql.AppendLine("version=version+1");
+            sql.AppendLine("WHERE");
+            sql.AppendLine("  unique_name = @unique_name");
+
+            // ソルトが未設定の場合はパスワード再生成
+            var password = target.Password;
+            var salt = target.Salt;
+            if(string.IsNullOrEmpty(salt))
+            {
+                var passAndSalt = CreateEncryptedPassword(password);
+                password = passAndSalt.encryptedPassword;
+                salt = passAndSalt.salt;
+            }
+
+            // Param設定
+            var date = DateTime.Now;
+            db!.ClearParam();
+            db.AddParam("@unique_name", target.ID);
+            db.AddParam("@password", password);
+            db.AddParam("@salt", salt);
+            db.AddParam("@fullname", target.Fullname);
+            db.AddParam("@admin_role", target.AdminRole);
+            db.AddParam("@version", target.Version);
+
+            // SQL発行
+            if (db.ExecuteNonQuery(sql.ToString()) == 1)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// パスワード作成
         /// </summary>
@@ -117,6 +258,6 @@ namespace WebApp.Repositories
             return (encryptedPassword, saltBase64);
         }
 
-
+        #endregion
     }
 }

@@ -13,7 +13,15 @@
         <div class="top-row px-4">
             @if (loggedIn)
             {
-                <button @onclick="Logout" class="btn btn-outline-success">ログアウト</button>
+                <div class="col">
+                    @userName
+                </div>
+                <div class="col text-end">
+                    <button @onclick="ChangePasssword" class="btn btn-outline-success @DisablePassrordChange()">パスワード変更</button>
+                </div>
+                <div class="col text-end">
+                    <button id="logout" @onclick="Logout" class="btn btn-outline-success">ログアウト</button>
+                </div>
             }
         </div>
 
@@ -25,7 +33,20 @@
 
 @code
 {
+    /// <summary>
+    /// ログイン状態
+    /// </summary>
     private bool loggedIn { set; get; }
+
+    /// <summary>
+    /// ユーザーID
+    /// </summary>
+    private string? userId { set; get; } = "";
+
+    /// <summary>
+    /// ユーザー名
+    /// </summary>
+    private string? userName { set; get; } = "";
 
     /// <summary>
     /// セッション管理プロバイダークラス
@@ -42,11 +63,35 @@
     {
         if (firstRender)
         {
+            // ログイン状態を取得
             loggedIn = await GetAsync<bool>(UserModel.SessionLoggedIn);
 
+            if (loggedIn)
+            {
+                // ユーザー情報取得
+                var userMasterString = await GetAsync<string>(UserModel.SessionUser);
+                if (userMasterString is not null)
+                {
+                    var userMaster = userMasterString!.Deserialize<UserModel>();
+                    userId = userMaster?.ID;
+                    userName = userMaster?.Fullname;
+                }
+            }
             // 画面反映
             StateHasChanged();
         }
+    }
+
+    /// <summary>
+    /// パスワード変更ページの場合のみボタン無効化
+    /// </summary>
+    private string DisablePassrordChange()
+    {
+        if(Navigation.Uri.Contains("/password-change"))
+        {
+            return "disabled";
+        }
+        return string.Empty;
     }
 
     /// <summary>
@@ -70,6 +115,18 @@
     /// </summary>
     [CascadingParameter]
     private DialogProvider? dialogProvider { get; set; }
+
+    /// <summary>
+    /// パスワード変更
+    /// </summary>
+    private async Task ChangePasssword()
+    {
+        if (sessionStorageProvider is null) return;
+
+        await sessionStorageProvider.SetAsync(UserModel.SessioPasswordChangeBeforePage, Navigation.Uri);
+        Navigation.NavigateTo($"/password-change/{userId}");
+    }
+
 
     /// <summary>
     /// ログアウト用JS呼び出し

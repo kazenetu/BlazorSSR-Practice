@@ -119,8 +119,11 @@
     /// <summary>
     /// パスワード変更
     /// </summary>
-    private void ChangePasssword()
+    private async Task ChangePasssword()
     {
+        if (sessionStorageProvider is null) return;
+
+        await sessionStorageProvider.SetAsync(UserModel.SessioPasswordChangeBeforePage, Navigation.Uri);
         Navigation.NavigateTo($"/password-change/{userId}");
     }
 

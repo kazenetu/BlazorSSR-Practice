@@ -28,6 +28,11 @@ namespace WebApp.Models
         public const string SessionLoggedIn = "SessionLoggedIn";
 
         /// <summary>
+        /// セッション名：パスワード変更前野ページURL
+        /// </summary>
+        public const string SessioPasswordChangeBeforePage = "SessioPasswordChangeBeforePage";
+
+        /// <summary>
         /// セッション名：ユーザー情報
         /// </summary>
         public const string SessionUser = "SessionUser";

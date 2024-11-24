@@ -1,4 +1,5 @@
 ﻿@page "/weather"
+@page "/weather/{page:int}"
 @inherits Base.PageBase
 @attribute [StreamRendering]
 @inject ILogger<Weather> Logger
@@ -22,7 +23,7 @@
 }
 else
 {
-    <Pagination TotalRecords="GetTotalRecords()" RecordsPerPage="@PageCount" PageChanged="ShowPage" />
+    <Pagination PageName="/weather" CurrentPageNumber="@Page" TotalRecords="GetTotalRecords()" RecordsPerPage="@PageCount" PageChanged="ShowPage" />
     <table class="table">
         <thead>
             <tr>
@@ -47,6 +48,13 @@ else
 }
 
 @code {
+
+    /// <summary>
+    /// ページング用：現在のページ数
+    /// </summary>
+    [Parameter]
+    public int Page { get; set; }
+
     /// <summary>
     /// 定数：ページング用：1ページのレコード数
     /// </summary>
@@ -101,8 +109,12 @@ else
                     Summary = summaries[Random.Shared.Next(summaries.Length)]
                 }).ToArray();
 
-                // 1ページ目を表示
-                ShowPage(1);
+                // ページを表示
+                if (Page == 0)
+                {
+                    Page = 1;
+                }
+                ShowPage(Page);
 
                 Logger.LogInformation(await GetLogMessage($"検索結果:{allForecasts.Count()}件"));
             }

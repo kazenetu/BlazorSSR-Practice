@@ -1,3 +1,5 @@
+@inject NavigationManager Navigation
+
 @if (TotalPages > 1)
 {
     <style>
@@ -16,7 +18,7 @@
             @if (CurrentPageNumber > 1)
             {
                 <li class="page-item">
-                    <button type="button" class="page-link" @onclick="async () => await OnPageChangedAsync(1)">
+                    <button type="button" class="page-link" @onclick="() => OnPageChangedAsync(1)">
                         <span aria-hidden="true">&laquo;</span>
                     </button>
                 </li>
@@ -36,7 +38,7 @@
                 {
                     <li class="page-item">
                         <button type="button" class="page-link"
-                            @onclick="async () => await OnPageChangedAsync(CurrentPageNumber-1)">&lt;</button>
+                            @onclick="() => OnPageChangedAsync(CurrentPageNumber-1)">&lt;</button>
                     </li>
                 }
                 else
@@ -54,7 +56,7 @@
 
                     <li class="page-item @subClass">
                         <button type="button" class="page-link"
-                            @onclick="async () => await OnPageChangedAsync(pageNumber)">@i</button>
+                            @onclick="() => OnPageChangedAsync(pageNumber)">@i</button>
                     </li>
                 }
 
@@ -62,7 +64,7 @@
                 {
                     <li class="page-item">
                         <button type="button" class="page-link"
-                            @onclick="async () => await OnPageChangedAsync(CurrentPageNumber+1)">&gt;</button>
+                            @onclick="() => OnPageChangedAsync(CurrentPageNumber+1)">&gt;</button>
                     </li>
                 }
                 else
@@ -76,7 +78,7 @@
             @if (CurrentPageNumber < TotalPages)
             {
                 <li class="page-item">
-                    <button class="page-link" @onclick="async () => await OnPageChangedAsync(TotalPages)">
+                    <button class="page-link" @onclick="() => OnPageChangedAsync(TotalPages)">
                         <span aria-hidden="true">&raquo;</span>
                     </button>
                 </li>
@@ -107,6 +109,18 @@
     public int RecordsPerPage { get; set; } = 20;
 
     /// <summary>
+    /// ページ名
+    /// </summary>
+    [Parameter]
+    public string PageName { get; set; } = "";
+
+    /// <summary>
+    /// 選択中のページ
+    /// </summary>
+    [Parameter]
+    public int CurrentPageNumber { get; set; } = 1;
+
+    /// <summary>
     /// 総レコード数
     /// </summary>
     [Parameter]
@@ -119,21 +133,18 @@
     public EventCallback<int> PageChanged { get; set; }
 
     /// <summary>
-    /// 選択中のページ
-    /// </summary>
-    private int CurrentPageNumber = 1;
-
-    /// <summary>
     /// ページ変更イベント
     /// </summary>
     /// <param name="pageNumber">選択されたページ数</param>
     private async Task OnPageChangedAsync(int pageNumber)
     {
-        // 呼び出し元のインデックスを取得
+        if (string.IsNullOrEmpty(PageName)) return;
+
+        // 対象ページ表示
         await PageChanged.InvokeAsync(pageNumber);
 
-        // 選択ページを変更
-        CurrentPageNumber = pageNumber;
+        //　URL変更(他ページから復帰用)
+        Navigation.NavigateTo($"{PageName}/{pageNumber}");
     }
 
     /// <summary>

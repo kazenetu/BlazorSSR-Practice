@@ -147,11 +147,12 @@
     /// アラートメッセージ表示
     /// </summary>
     /// <param name="message">メッセージ本文</param>
-    protected async Task ShowAlert(string message)
+    /// <param name="submitFunction">「OK」クリック時のコールバックメソッド</param>
+    protected async Task ShowAlert(string message, Func<Task>? submitFunction = null)
     {
         if(dialogProvider is null)  return;
 
-        await dialogProvider.ShowAlert(message);
+        await dialogProvider.ShowAlert(message, submitFunction);
     }
 
     /// <summary>

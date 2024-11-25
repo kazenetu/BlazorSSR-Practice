@@ -12,6 +12,7 @@
         <button id="alertCloseButton" type="button" class="btn btn-outline-success btn-sm">
             閉じる
         </button>
+        <button id="alertOKHiddenButton" @onclick="alertOK" style="display: none;" />
     </div>
 </dialog>
 
@@ -42,6 +43,7 @@
         // モーダルを閉じる
         const closeButton = document.getElementById('alertCloseButton');
         closeButton?.addEventListener('click', () => {
+            document.getElementById('alertOKHiddenButton').click();
             dialog.close();
         });
     }
@@ -84,15 +86,29 @@
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// アラートメッセージ表示
-    /// </summary>
-    /// <param name="message">メッセージ本文</param>
-    public async Task ShowAlert(string message) => await JS.InvokeVoidAsync("showAlert", message);
-
-    /// <summary>
     /// 確認メッセージ用コールバックメソッド（呼び出し側のメソッド）
     /// </summary>
     private Func<Task>? SubmitFunction { get; set; }
+
+    /// <summary>
+    /// アラートメッセージ表示
+    /// </summary>
+    /// <param name="message">メッセージ本文</param>
+    /// <param name="submitFunction">「はい」クリック時のコールバックメソッド（呼び出し側のメソッド）</param>
+    public async Task ShowAlert(string message, Func<Task>? submitFunction){
+        SubmitFunction = submitFunction;
+        await JS.InvokeVoidAsync("showAlert", message);
+    }
+
+    /// <summary>
+    /// アラートOKボタンクリックイベント
+    /// </summary>
+    private void alertOK()
+    {
+        // コールバックメソッド設定している場合は実行
+        if (SubmitFunction is not null)
+            SubmitFunction();
+    }
 
     /// <summary>
     /// 確認メッセージ表示

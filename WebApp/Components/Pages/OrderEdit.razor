@@ -179,10 +179,7 @@
             if (repository.Save(Model!, userModel!.ID, GetType().Name))
             {
                 Logger.LogInformation(await GetLogMessage($"保存成功"));
-                await ShowAlert("保存しました。");
-
-                // 画面遷移
-                Navigation.NavigateTo("/order");
+                await ShowAlert("保存しました。", SaveeOK);
             }
             else
             {
@@ -199,6 +196,18 @@
         {
             Logger.LogInformation(await GetLogMessage("保存終了"));
         }
+    }
+
+    /// <summary>
+    /// 保存成功アラートOKボタンイベント
+    /// </summary>
+    private async Task SaveeOK()
+    {
+        await Task.Run(() =>
+        {
+            // 画面遷移
+            Navigation.NavigateTo("/order");
+        });
     }
 
     /// <summary>

@@ -18,7 +18,7 @@
             @if (CurrentPageNumber > 1)
             {
                 <li class="page-item">
-                    <button type="button" class="page-link" @onclick="() => OnPageChangedAsync(1)">
+                    <button type="button" class="page-link" @onclick="async () => await OnPageChangedAsync(1)">
                         <span aria-hidden="true">&laquo;</span>
                     </button>
                 </li>
@@ -38,7 +38,7 @@
                 {
                     <li class="page-item">
                         <button type="button" class="page-link"
-                            @onclick="() => OnPageChangedAsync(CurrentPageNumber-1)">&lt;</button>
+                            @onclick="async () => await OnPageChangedAsync(CurrentPageNumber-1)">&lt;</button>
                     </li>
                 }
                 else
@@ -56,7 +56,7 @@
 
                     <li class="page-item @subClass">
                         <button type="button" class="page-link"
-                            @onclick="() => OnPageChangedAsync(pageNumber)">@i</button>
+                            @onclick="async () => await OnPageChangedAsync(pageNumber)">@i</button>
                     </li>
                 }
 
@@ -64,7 +64,7 @@
                 {
                     <li class="page-item">
                         <button type="button" class="page-link"
-                            @onclick="() => OnPageChangedAsync(CurrentPageNumber+1)">&gt;</button>
+                            @onclick="async () => await OnPageChangedAsync(CurrentPageNumber+1)">&gt;</button>
                     </li>
                 }
                 else
@@ -78,7 +78,7 @@
             @if (CurrentPageNumber < TotalPages)
             {
                 <li class="page-item">
-                    <button class="page-link" @onclick="() => OnPageChangedAsync(TotalPages)">
+                    <button class="page-link" @onclick="async () => await OnPageChangedAsync(TotalPages)">
                         <span aria-hidden="true">&raquo;</span>
                     </button>
                 </li>

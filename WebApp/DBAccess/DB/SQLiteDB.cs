@@ -72,14 +72,21 @@ namespace WebApp.DBAccess.DB
         }
 
         /// <summary>
-        /// SELECTした行の一部だけを取り出すSQLの文字列を返す
+        /// SELECTした行の一部だけを取り出すSQLの文字列を返す(ORDER後に定義)
         /// </summary>
         /// <param name="limit">取り出す行数</param>
         /// <param name="offset">スキップ行</param>
-        /// <returns></returns>
+        /// <returns>範囲指定のSQL</returns>
         public string GetLimitSQL(long limit, long offset)
         {
-            return $" LIMIT {limit} OFFSET {offset} ";
+            var offsetSQL = $"OFFSET {offset} ";
+            if(offset <= 0)
+            {
+                // マイナスの場合OFFSETを指定しない
+                offsetSQL = string.Empty;
+            }
+
+            return $" LIMIT {limit} {offsetSQL}";
         }
 
         /// <summary>

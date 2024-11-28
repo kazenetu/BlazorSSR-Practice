@@ -179,7 +179,7 @@
             if (repository.Save(Model!, userModel!.ID, GetType().Name))
             {
                 Logger.LogInformation(await GetLogMessage($"保存成功"));
-                await ShowAlert("保存しました。", SaveeOK);
+                await ShowAlert("保存しました。", SaveOK);
             }
             else
             {
@@ -201,7 +201,7 @@
     /// <summary>
     /// 保存成功アラートOKボタンイベント
     /// </summary>
-    private async Task SaveeOK()
+    private async Task SaveOK()
     {
         await Task.Run(() =>
         {

@@ -35,6 +35,7 @@ public class Program
         // DI設定
         builder.Services.AddTransient<IOrderRepository, OrderRepository>();
         builder.Services.AddTransient<IUserRepository, UserRepository>();
+        builder.Services.AddTransient<IWeatherForecastRepository, WeatherForecastRepository>();
 
         // Configを専用Modelに設定
         var dbRoot = builder.Configuration.GetSection("DB");

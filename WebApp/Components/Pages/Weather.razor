@@ -3,7 +3,10 @@
 @inherits Base.PageBase
 @attribute [StreamRendering]
 @inject ILogger<Weather> Logger
+@inject IWeatherForecastRepository repository
 @using WebApp.Components.Parts
+@using WebApp.Models
+@using WebApp.Repositories.Interfaces
 
 @if (IsBeforeLoginCheck)
 {
@@ -37,7 +40,7 @@ else
             @foreach (var forecast in pageForecasts)
             {
                 <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
+                    <td>@forecast.TargetDate.ToShortDateString()</td>
                     <td>@forecast.TemperatureC</td>
                     <td>@forecast.TemperatureF</td>
                     <td>@forecast.Summary</td>
@@ -63,15 +66,8 @@ else
     /// <summary>
     /// 1ページの表示レコード
     /// </summary>
-    private WeatherForecast[]? pageForecasts;
+    private WeatherForecastModel[]? pageForecasts;
 
-    /// <summary>
-    /// 総レコード
-    /// </summary>
-    private WeatherForecast[]? allForecasts;
-
-    /// <summary>
-    /// 初期処理
     /// </summary>
     /// <param name="firstRender">初回表示か否か</param>
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -98,25 +94,16 @@ else
                 // Simulate asynchronous loading to demonstrate streaming rendering
                 await Task.Delay(500);
 
-                // 検索結果を取得
-                var startDate = DateOnly.FromDateTime(DateTime.Now);
-                var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
-                var summariesIndex = 1;
-                allForecasts = Enumerable.Range(1, 1001).Select(index => new WeatherForecast
-                {
-                    Date = startDate.AddDays(index),
-                    TemperatureC = summariesIndex++,
-                    Summary = summaries[Random.Shared.Next(summaries.Length)]
-                }).ToArray();
-
-                // ページを表示
+                // ページ指定なしの場合は1ページ
                 if (Page == 0)
                 {
                     Page = 1;
                 }
+
+                // 検索結果を取得
                 ShowPage(Page);
 
-                Logger.LogInformation(await GetLogMessage($"検索結果:{allForecasts.Count()}件"));
+                Logger.LogInformation(await GetLogMessage($"検索結果:{repository.GetTotalRecord()}件"));
             }
             catch (Exception ex)
             {
@@ -136,24 +123,21 @@ else
     /// <returns>総レコード数</returns>
     private int GetTotalRecords()
     {
-        if(allForecasts is null)
-            return 0;
-
-        // TODO DBから対象レコード数を返す
-        return allForecasts.Length;
+        // DBから対象レコード数を返す
+        return repository.GetTotalRecord();
     }
 
     /// <summary>
     /// 指定ページのレコード表示
     /// </summary>
-    /// <param name="pageIndex">指定ページ</param>
+    /// <param name="pageIndex">指定ページ(1ベース)</param>
     private void ShowPage(int pageIndex)
     {
-        if(allForecasts is null)
-            return;
+        // ゼロベースのページ数を設定
+        var zeroBasePageIndex = pageIndex - 1;
 
-        // TODO DBから1ページ分のレコード取得
-        pageForecasts = allForecasts.Skip((pageIndex-1) * PageCount).Take(PageCount).ToArray();
+        // DBから1ページ分のレコード取得
+        pageForecasts = repository.GetList(zeroBasePageIndex * PageCount,  PageCount);
         StateHasChanged();
     }
 

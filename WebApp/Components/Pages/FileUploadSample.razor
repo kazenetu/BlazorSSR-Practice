@@ -1,8 +1,11 @@
 @page "/file-upload-sample"
 @inherits Base.PageBase
+@inject IOrderRepository repository
 @inject ILogger<FileUploadSample> Logger
 @using WebApp.Components.Parts
+@using WebApp.Models
 @using WebApp.Models.Parts
+@using WebApp.Repositories.Interfaces
 
 @if (IsBeforeLoginCheck)
 {
@@ -104,15 +107,84 @@
                 return;
             }
 
+            // キーリスト取得
+            var oderKeys = repository.GetOderKeyList();
+
+            // 読み取りカラム数
+            var lineColmunCount = 3;
+
             // ファイル内容確認
+            List<OrderModel> saveItems = new();
+            var lineIndex = 0;
             await foreach (string line in fileModel.ReadLineAsync())
             {
+                lineIndex++;
                 if (string.IsNullOrEmpty(line)) continue;
-                Outputs.Add(line);
+
+                var items = line.Split(",");
+
+                // エラー：項目がlineColmunCountではない
+                if (items.Length != lineColmunCount)
+                {
+                    Outputs.Add(GetErrorMessage(lineIndex, $"項目数が{lineColmunCount}ではありません"));
+                    continue;
+                }
+
+                // 各カラムの取得
+                var productName = items[0].Replace("\"", string.Empty);
+                var unitPrice = decimal.Parse(items[1].Replace("\"", string.Empty));
+                var qty = decimal.Parse(items[2].Replace("\"", string.Empty));
+                var total = unitPrice * qty;
+
+                // 主キーの商品名で既存レコードのインデックスを取得
+                var existRecordIndex = oderKeys.FindIndex(key => key.ProductName == productName);
+
+                // 既存レコードがある場合は登録なし
+                if (existRecordIndex >= 0)
+                {
+                    var existRecord = oderKeys[existRecordIndex];
+                    // さらに金額が一致しないとエラー
+                    if (existRecord.TotalPrice != total)
+                    {
+                        var msg = $"金額が一致しません。 商品名:{productName} 単価:{unitPrice}✕数量:{qty}＝合計金額:{total}　データの合計金額:{existRecord.TotalPrice}";
+                        Outputs.Add(GetErrorMessage(lineIndex, msg));
+                    }
+                    continue;
+                }
+
+                saveItems.Add(new OrderModel(0, productName, unitPrice, qty, total, 1));
+            }
+
+            // 登録対象なしの場合はエラー
+            if (!Outputs.Any() && saveItems.Count == 0)
+            {
+                Outputs.Add("登録件数がゼロ件です。");
             }
 
             // 画面反映
             StateHasChanged();
+
+            //　エラーがある場合はその旨のメッセージ表示
+            if (Outputs.Any())
+            {
+                await ShowAlert("エラーがあります。ご確認ください。");
+
+                // そのまま終了
+                return;
+            }
+
+            // 一括登録
+            var userModel = await GetUserAsync();
+            if (repository.Save(saveItems, userModel!.ID, GetType().Name))
+            {
+                Logger.LogInformation(await GetLogMessage($"取り込み成功"));
+                await ShowAlert("取り込みが成功しました。");
+            }
+            else
+            {
+                Logger.LogInformation(await GetLogMessage($"取り込み失敗"));
+                await ShowAlert("取り込みが失敗しました。");
+            }
         }
         catch (Exception ex)
         {
@@ -122,6 +194,12 @@
         finally
         {
             Logger.LogInformation(await GetLogMessage("ファイル読み込み終了"));
+        }
+
+        // エラメッセージを返す
+        string GetErrorMessage(int lineNumber,string message)
+        {
+            return $"{lineNumber}行目　{message}";
         }
     }
 }

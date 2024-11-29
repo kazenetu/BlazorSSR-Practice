@@ -14,6 +14,12 @@ namespace WebApp.Repositories.Interfaces
         List<OrderModel> GetOderList();
 
         /// <summary>
+        /// 注文キーリストを取得
+        /// </summary>
+        /// <returns>注文リスト</returns>
+        List<OrderModel> GetOderKeyList();
+
+        /// <summary>
         /// 注文情報を取得
         /// </summary>
         /// <param name="productName">製品名</param>

@@ -31,6 +31,32 @@ namespace WebApp.Repositories
         }
 
         /// <summary>
+        /// 注文キーリストを取得
+        /// </summary>
+        /// <returns>注文リスト</returns>
+        public List<OrderModel> GetOderKeyList()
+        {
+            var result = new List<OrderModel>();
+
+            // パラメータ初期化
+            db!.ClearParam();
+
+            var sql = new StringBuilder();
+            sql.AppendLine("SELECT  productName, unitPrice*qty AS Total FROM t_order");
+            sql.AppendLine("ORDER BY productName");
+
+            var sqlResult = db.Fill(sql.ToString());
+            foreach (DataRow row in sqlResult.Rows)
+            {
+                // 注文キー情報
+                var product = Parse<string>(row["productName"]);
+                var totalPrice = Parse<decimal>(row["Total"]);
+                result.Add(new OrderModel(0, product, 0, 0, totalPrice, 0));
+            }
+            return result;
+        }
+
+        /// <summary>
         /// 注文情報を取得
         /// </summary>
         /// <param name="productName">製品名</param>

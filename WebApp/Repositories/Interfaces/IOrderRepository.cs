@@ -34,5 +34,14 @@ namespace WebApp.Repositories.Interfaces
         /// <param name="programId">プログラムID</param>
         /// <returns>成功/失敗</returns>
         bool Save(OrderModel target, string userId, string programId);
+
+        /// <summary>
+        /// 注文情報リストの登録(バルクインサート)
+        /// </summary>
+        /// <param name="targets">登録対象リスト</param>
+        /// <param name="userId">ユーザーID</param>
+        /// <param name="programId">プログラムID</param>
+        /// <returns>成功/失敗</returns>
+        bool Save(IReadOnlyList<OrderModel> targets, string userId, string programId);
     }
 }

@@ -216,7 +216,7 @@ namespace PdfReport.Layout
         /// </summary>
         /// <param name="target">取得対象</param>
         /// <param name="param">ToStrigする際の書式文字列</param>
-        /// <returns></returns>
+        /// <returns>型情報ごとの文字列</returns>
         private string GetValue((Type type, object value) target, string param)
         {
             if (target.type == typeof(int))
@@ -237,10 +237,10 @@ namespace PdfReport.Layout
         }
 
         /// <summary>
-        /// カラム番号によってXStringFormatsを返す
+        /// カラム番号によってXStringFormats(文字寄せ状態)を返す
         /// </summary>
         /// <param name="order">注文情報</param>
-        /// <returns>XStringFormats</returns>
+        /// <returns>XStringFormats(文字寄せ状態)</returns>
         private XStringFormat GetAlignment(int colIndex)
         {
             switch (colIndex)

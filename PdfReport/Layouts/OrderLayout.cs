@@ -4,6 +4,7 @@ using PdfSharp.Drawing.Layout;
 using PdfSharp.Pdf;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace PdfReport.Layout
@@ -221,7 +222,14 @@ namespace PdfReport.Layout
             if (target.type == typeof(int))
                 return ((int)target.value).ToString();
             if (target.type == typeof(decimal))
-                return ((decimal)target.value).ToString(param);
+                if (param == "C")
+                {
+                    return ((decimal)target.value).ToString(param, CultureInfo.CreateSpecificCulture("ja-JP"));
+                }
+                else
+                {
+                    return ((decimal)target.value).ToString(param);
+                }
             if (target.type == typeof(string))
                 return ((string)target.value).ToString();
 

@@ -4,6 +4,7 @@ using PdfSharp.Drawing.Layout;
 using PdfSharp.Pdf;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace PdfReport.Layout
@@ -215,13 +216,20 @@ namespace PdfReport.Layout
         /// </summary>
         /// <param name="target">取得対象</param>
         /// <param name="param">ToStrigする際の書式文字列</param>
-        /// <returns></returns>
+        /// <returns>型情報ごとの文字列</returns>
         private string GetValue((Type type, object value) target, string param)
         {
             if (target.type == typeof(int))
                 return ((int)target.value).ToString();
             if (target.type == typeof(decimal))
-                return ((decimal)target.value).ToString(param);
+                if (param == "C")
+                {
+                    return ((decimal)target.value).ToString(param, CultureInfo.CreateSpecificCulture("ja-JP"));
+                }
+                else
+                {
+                    return ((decimal)target.value).ToString(param);
+                }
             if (target.type == typeof(string))
                 return ((string)target.value).ToString();
 
@@ -229,10 +237,10 @@ namespace PdfReport.Layout
         }
 
         /// <summary>
-        /// カラム番号によってXStringFormatsを返す
+        /// カラム番号によってXStringFormats(文字寄せ状態)を返す
         /// </summary>
         /// <param name="order">注文情報</param>
-        /// <returns>XStringFormats</returns>
+        /// <returns>XStringFormats(文字寄せ状態)</returns>
         private XStringFormat GetAlignment(int colIndex)
         {
             switch (colIndex)

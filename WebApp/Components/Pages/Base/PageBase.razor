@@ -8,6 +8,11 @@
 @code{
     #region セッション管理
     /// <summary>
+    /// セッション定数；遷移前URL
+    /// </summary>
+    private const string SessionBeforeNavigateTo ="SessionBeforeNavigateTo";
+
+    /// <summary>
     /// セッション管理プロバイダークラス
     /// </summary>
     [CascadingParameter]
@@ -141,6 +146,34 @@
     protected void GotoErrorPage()
     {
         Navigation.NavigateTo("/error");
+    }
+
+    /// <summary>
+    /// 指定ページに遷移する
+    /// </summary>
+    /// <param name="url">対象ページのURL</param>
+    protected async Task GotoPage(string url)
+    {
+        // 現在のURLをセッションに格納する
+        await SetAsync(SessionBeforeNavigateTo, Navigation.Uri);
+
+        // 画面遷移
+        Navigation.NavigateTo(url);
+    }
+
+    /// <summary>
+    /// セッションに格納したURLに遷移する
+    /// </summary>
+    protected async Task PageBack()
+    {
+        // 現在のURLをセッションから取得
+        var url = await GetAsync<string>(SessionBeforeNavigateTo);
+
+        // セッション削除
+        await DeleteAsync(SessionBeforeNavigateTo);
+
+        // 画面遷移
+        Navigation.NavigateTo(url!);
     }
     #endregion
 

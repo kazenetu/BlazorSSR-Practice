@@ -15,6 +15,11 @@ namespace PdfReport.Layout
     public class OrderLayout : ILayout
     {
         /// <summary>
+        /// 1ページの最大行数
+        /// </summary>
+        private const decimal PageMaxRecord = 35;
+
+        /// <summary>
         /// 帳票作成
         /// </summary>
         /// <param name="document">PdfDocumentインスタンス</param>
@@ -22,6 +27,32 @@ namespace PdfReport.Layout
         /// <returns>成功/失敗</returns>
         public bool Create(PdfDocument document, List<IData> items)
         {
+            // レコード数+合計行の行数
+            var maxRecord = items.Count + 1m;
+
+            // 最大ページ数
+            var maxPage = Math.Ceiling(maxRecord / PageMaxRecord);
+
+            // ページ単位に描画
+            for (var pageIndex = 1; pageIndex <= maxPage; pageIndex++)
+            {
+                CreatePage(document, items, pageIndex, (int)maxPage);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        ///  ページ作成
+        /// </summary>
+        /// <param name="document">PdfDocumentインスタンス</param>
+        /// <param name="items">データリスト</param>
+        /// <param name="maxPage">最大ページ数(レコード数+サマリ行)</param>
+        /// <returns>成功/失敗</returns>
+        private bool CreatePage(PdfDocument document, List<IData> items, int currentPage, int maxPage)
+        {
+            var targetRecords = items.Skip((currentPage - 1) * (int)PageMaxRecord).Take((int)PageMaxRecord);
+
             // Create an empty page in this document.
             var page = document.AddPage();
 
@@ -72,6 +103,15 @@ namespace PdfReport.Layout
                     XFontStyleEx.BoldItalic,
                     new XPdfFontOptions(PdfFontEmbedding
                             .EmbedCompleteFontFile));
+
+            // ページ数描画
+            gfx
+                .DrawString($"{currentPage}/{maxPage}",
+                gridFont,
+                XBrushes.Black,
+                new XRect(width-100, 10 ,100,10),
+                XStringFormats.Center);
+
             var headerNames =
                 new List<string> { "No.", "製品名", "単価", "数量", "金額" };
             var headerWidth = new List<int> { 25, 250, 80, 50, 150 };
@@ -79,7 +119,7 @@ namespace PdfReport.Layout
             var startX = (((int)page.Width.Value) - headerWidth.Sum()) / 2;
             var y = 100;
             var isDrawHeader = false;
-            foreach (var order in items)
+            foreach (var order in targetRecords)
             {
                 var addY = 0;
 
@@ -129,6 +169,9 @@ namespace PdfReport.Layout
                 }
                 y += addY;
             }
+
+            // ページが最終行出ない場合はサマリ行描画なし
+            if (maxPage != currentPage) return true;
 
             // サマリ行
             var totalX = startX;

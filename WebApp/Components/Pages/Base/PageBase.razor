@@ -6,6 +6,7 @@
 @inject NavigationManager Navigation
 
 @code{
+    #resion セッション管理
     /// <summary>
     /// セッション管理プロバイダークラス
     /// </summary>
@@ -93,7 +94,9 @@
         }
         return null;
     }
+    #endregion
 
+    #resion ログ出力
     /// <summary>
     /// ログメッセージ文字列取得
     /// </summary>
@@ -129,7 +132,9 @@
 
         return $"Error {userData}Message[{exception.Message}] StackTrace[{exception.StackTrace}] url={Navigation.Uri} method={memberName} requestID={Activity.Current?.Id}";
     }
+    #endregion
 
+    #resion 画面遷移
     /// <summary>
     /// 例外時エラーページに遷移する
     /// </summary>
@@ -137,7 +142,9 @@
     {
         Navigation.NavigateTo("/error");
     }
+    #endregion
 
+    #resion ダイアログ表示
     /// <summary>
     /// ダイアログプロバイダークラス
     /// </summary>
@@ -167,5 +174,5 @@
 
         await dialogProvider.ShowConfirm(message, submitFunction);
     }
-
+    #endregion
 }

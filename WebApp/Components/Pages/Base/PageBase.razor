@@ -152,7 +152,7 @@
     /// 指定ページに遷移する
     /// </summary>
     /// <param name="url">対象ページのURL</param>
-    protected async Task GotoPage(string url)
+    protected async Task GotoPageAsync(string url)
     {
         // 現在のURLをセッションに格納する
         await SetAsync(SessionBeforeNavigateTo, Navigation.Uri);
@@ -164,7 +164,7 @@
     /// <summary>
     /// セッションに格納したURLに遷移する
     /// </summary>
-    protected async Task PageBack()
+    protected async Task PageBackAsync()
     {
         // 現在のURLをセッションから取得
         var url = await GetAsync<string>(SessionBeforeNavigateTo);

@@ -27,6 +27,20 @@ namespace WebApp.Repositories.Interfaces
         OrderModel GetOder(string productName);
 
         /// <summary>
+        /// レコード数を返す
+        /// </summary>
+        /// <returns>対象レコード数</returns>
+        int GetTotalRecord();
+
+        /// <summary>
+        /// 対象レコード配列を返す
+        /// </summary>
+        /// <param name="startIndex">取得開始レコードインデックス</param>
+        /// <param name="recordCount">取得レコード数</param>
+        /// <returns>指定範囲のレコード配列</returns>
+        OrderModel[] GetList(int startIndex, int recordCount);
+
+        /// <summary>
         /// 注文情報の登録
         /// </summary>
         /// <param name="target">登録対象</param>

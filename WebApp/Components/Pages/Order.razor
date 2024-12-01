@@ -112,8 +112,6 @@ else
     }
     #endregion
 
-    private OrderModel[]? orders;
-
     /// <summary>
     /// 初期処理
     /// </summary>
@@ -181,7 +179,8 @@ else
     /// <returns>ダウンロード用モデル</returns>
     private DownLoadModel DownLoadCSV()
     {
-        if (orders is null || !orders.Any())
+        var orders = repository.GetOderList();
+        if (!orders.Any())
         {
             return new DownLoadModel(string.Empty, null, "出力対象がありません。");
         }
@@ -204,7 +203,8 @@ else
     /// <remarks>Dataにはbyte[]配列を設定</remarks>
     private DownLoadModel DownLoadPDF()
     {
-        if (orders is null || !orders.Any())
+        var orders = repository.GetOderList();
+        if (!orders.Any())
         {
             return new DownLoadModel(string.Empty, null, "出力対象がありません。");
         }

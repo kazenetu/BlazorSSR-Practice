@@ -169,10 +169,10 @@ else
     /// 新規・編集
     /// </summary>
     /// <param name="productName">製品名</param>
-    private void ToEdit(string productName)
+    private async Task ToEdit(string productName)
     {
         // 画面遷移
-        Navigation.NavigateTo($"/order-edit/{productName}");
+        await GotoPageAsync($"/order-edit/{productName}");
     }
 
     /// <summary>

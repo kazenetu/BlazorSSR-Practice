@@ -6,6 +6,12 @@
 @inject NavigationManager Navigation
 
 @code{
+    #region セッション管理
+    /// <summary>
+    /// セッション定数；遷移前URL
+    /// </summary>
+    private const string SessionBeforeNavigateTo ="SessionBeforeNavigateTo";
+
     /// <summary>
     /// セッション管理プロバイダークラス
     /// </summary>
@@ -93,7 +99,9 @@
         }
         return null;
     }
+    #endregion
 
+    #region ログ出力
     /// <summary>
     /// ログメッセージ文字列取得
     /// </summary>
@@ -129,7 +137,9 @@
 
         return $"Error {userData}Message[{exception.Message}] StackTrace[{exception.StackTrace}] url={Navigation.Uri} method={memberName} requestID={Activity.Current?.Id}";
     }
+    #endregion
 
+    #region 画面遷移
     /// <summary>
     /// 例外時エラーページに遷移する
     /// </summary>
@@ -138,6 +148,36 @@
         Navigation.NavigateTo("/error");
     }
 
+    /// <summary>
+    /// 指定ページに遷移する
+    /// </summary>
+    /// <param name="url">対象ページのURL</param>
+    protected async Task GotoPageAsync(string url)
+    {
+        // 現在のURLをセッションに格納する
+        await SetAsync(SessionBeforeNavigateTo, Navigation.Uri);
+
+        // 画面遷移
+        Navigation.NavigateTo(url);
+    }
+
+    /// <summary>
+    /// セッションに格納したURLに遷移する
+    /// </summary>
+    protected async Task PageBackAsync()
+    {
+        // 現在のURLをセッションから取得
+        var url = await GetAsync<string>(SessionBeforeNavigateTo);
+
+        // セッション削除
+        await DeleteAsync(SessionBeforeNavigateTo);
+
+        // 画面遷移
+        Navigation.NavigateTo(url!);
+    }
+    #endregion
+
+    #region ダイアログ表示
     /// <summary>
     /// ダイアログプロバイダークラス
     /// </summary>
@@ -167,5 +207,5 @@
 
         await dialogProvider.ShowConfirm(message, submitFunction);
     }
-
+    #endregion
 }

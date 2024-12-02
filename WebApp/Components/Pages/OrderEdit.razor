@@ -203,11 +203,8 @@
     /// </summary>
     private async Task SaveOK()
     {
-        await Task.Run(() =>
-        {
-            // 画面遷移
-            Navigation.NavigateTo("/order");
-        });
+        // 呼び出し元ページに画面遷移
+        await PageBackAsync();
     }
 
     /// <summary>
@@ -224,10 +221,7 @@
     /// <returns></returns>
     private async Task ShowConfirmYes()
     {
-        await Task.Run(() =>
-        {
-            // 画面遷移
-            Navigation.NavigateTo("/order");
-        });
+        // 画面遷移
+        await PageBackAsync();
     }
 }

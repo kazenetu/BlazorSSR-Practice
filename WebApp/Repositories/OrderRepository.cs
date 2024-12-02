@@ -114,6 +114,71 @@ namespace WebApp.Repositories
             return result;
         }
 
+        #region ページング用
+        /// <summary>
+        /// レコード数を返す
+        /// </summary>
+        /// <returns>対象レコード数</returns>
+        public int GetTotalRecord()
+        {
+            var result = 0;
+
+            // パラメータ初期化
+            db!.ClearParam();
+
+            var sql = new StringBuilder();
+
+            sql.AppendLine("SELECT count(productName) AS cnt FROM t_order");
+            sql.AppendLine("ORDER BY productName");
+
+            var sqlResult = db.Fill(sql.ToString());
+            foreach (DataRow row in sqlResult.Rows)
+            {
+                result = Parse<int>(row["cnt"]);
+                break;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 対象レコード配列を返す
+        /// </summary>
+        /// <param name="startIndex">取得開始レコードインデックス</param>
+        /// <param name="recordCount">取得レコード数</param>
+        /// <returns>指定範囲のレコード配列</returns>
+        public OrderModel[] GetList(int startIndex, int recordCount)
+        {
+            var result = new List<OrderModel>();
+
+            // パラメータ初期化
+            db!.ClearParam();
+
+            var sql = new StringBuilder();
+
+            sql.AppendLine("SELECT productName, unitPrice, qty FROM t_order");
+            sql.AppendLine("ORDER BY productName");
+            sql.AppendLine(db!.GetLimitSQL(recordCount, startIndex));
+
+            var sqlResult = db.Fill(sql.ToString());
+            var noIndex = 1;
+            foreach (DataRow row in sqlResult.Rows)
+            {
+                // 注文
+                var no = startIndex + noIndex;
+                var product = Parse<string>(row["productName"]);
+                var unitPrice = Parse<decimal>(row["unitPrice"]);
+                var qty = Parse<decimal>(row["qty"]);
+                var totalPrice = unitPrice * qty;
+                result.Add(new OrderModel(no, product, unitPrice, qty, totalPrice, 1));
+
+                noIndex++;
+                
+            }
+            return [.. result];
+        }
+        #endregion
+
         #endregion
 
         #region 登録・更新

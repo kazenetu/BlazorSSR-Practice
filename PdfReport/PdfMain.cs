@@ -1,5 +1,5 @@
 using PdfReport.Interfaces;
-using PdfReport.Layout;
+using PdfReport.Layouts;
 using PdfSharp.Pdf;
 using System;
 using System.Collections.Generic;

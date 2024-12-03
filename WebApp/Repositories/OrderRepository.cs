@@ -5,364 +5,363 @@ using WebApp.DBAccess;
 using WebApp.Models;
 using WebApp.Repositories.Interfaces;
 
-namespace WebApp.Repositories
+namespace WebApp.Repositories;
+
+/// <summary>
+/// 注文用リポジトリ
+/// </summary>
+public class OrderRepository : RepositoryBase, IOrderRepository
 {
     /// <summary>
-    /// 注文用リポジトリ
+    /// コンストラクタ
     /// </summary>
-    public class OrderRepository : RepositoryBase, IOrderRepository
+    public OrderRepository(IOptions<DatabaseConfigModel> config) : base(config)
     {
-        /// <summary>
-        /// コンストラクタ
-        /// </summary>
-        public OrderRepository(IOptions<DatabaseConfigModel> config) : base(config)
+    }
+
+    #region 取得
+
+    /// <summary>
+    /// 注文リストを取得
+    /// </summary>
+    /// <returns>注文リスト</returns>
+    public List<OrderModel> GetOderList()
+    {
+        return Find(null);
+    }
+
+    /// <summary>
+    /// 注文キーリストを取得
+    /// </summary>
+    /// <returns>注文リスト</returns>
+    public List<OrderModel> GetOderKeyList()
+    {
+        var result = new List<OrderModel>();
+
+        // パラメータ初期化
+        db!.ClearParam();
+
+        var sql = new StringBuilder();
+        sql.AppendLine("SELECT  productName, unitPrice*qty AS Total FROM t_order");
+        sql.AppendLine("ORDER BY productName");
+
+        var sqlResult = db.Fill(sql.ToString());
+        foreach (DataRow row in sqlResult.Rows)
         {
+            // 注文キー情報
+            var product = Parse<string>(row["productName"]);
+            var totalPrice = Parse<decimal>(row["Total"]);
+            result.Add(new OrderModel(0, product, 0, 0, totalPrice, 0));
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// 注文情報を取得
+    /// </summary>
+    /// <param name="productName">製品名</param>
+    /// <returns>注文情報</returns>
+    public OrderModel GetOder(string productName)
+    {
+        var dbResult = Find(productName);
+        if (dbResult.Count != 0)
+        {
+            return dbResult.First();
+        }
+        return new OrderModel(0, string.Empty, 0, 0, 0);
+    }
+
+    /// <summary>
+    /// 注文リストを取得：メイン部分
+    /// </summary>
+    /// <param name="productName">商品名</param>
+    /// <returns>注文リスト</returns>
+    /// <remarks>メイン処理</remarks>
+    private List<OrderModel> Find(string? productName)
+    {
+        var result = new List<OrderModel>();
+
+        // パラメータ初期化
+        db!.ClearParam();
+
+        var sql = new StringBuilder();
+
+        sql.AppendLine("select ROW_NUMBER() OVER(ORDER BY productName) AS NoId,* from t_order");
+
+        // 商品名指定
+        if (productName is not null)
+        {
+            sql.AppendLine("WHERE");
+            sql.AppendLine("  productName = @product_name");
+
+            // Param設定
+            db.AddParam("@product_name", productName);
+        }
+        sql.AppendLine("ORDER BY productName");
+
+        var sqlResult = db.Fill(sql.ToString());
+        foreach (DataRow row in sqlResult.Rows)
+        {
+            // 注文
+            var no = Parse<int>(row["NoId"]);
+            var product = Parse<string>(row["productName"]);
+            var unitPrice = Parse<decimal>(row["unitPrice"]);
+            var qty = Parse<decimal>(row["qty"]);
+            var totalPrice = unitPrice * qty;
+            var version = Parse<int>(row["version"]);
+            result.Add(new OrderModel(no, product, unitPrice, qty, totalPrice, version));
+        }
+        return result;
+    }
+
+    #region ページング用
+    /// <summary>
+    /// レコード数を返す
+    /// </summary>
+    /// <returns>対象レコード数</returns>
+    public int GetTotalRecord()
+    {
+        var result = 0;
+
+        // パラメータ初期化
+        db!.ClearParam();
+
+        var sql = new StringBuilder();
+
+        sql.AppendLine("SELECT count(productName) AS cnt FROM t_order");
+        sql.AppendLine("ORDER BY productName");
+
+        var sqlResult = db.Fill(sql.ToString());
+        foreach (DataRow row in sqlResult.Rows)
+        {
+            result = Parse<int>(row["cnt"]);
+            break;
         }
 
-        #region 取得
+        return result;
+    }
 
-        /// <summary>
-        /// 注文リストを取得
-        /// </summary>
-        /// <returns>注文リスト</returns>
-        public List<OrderModel> GetOderList()
+    /// <summary>
+    /// 対象レコード配列を返す
+    /// </summary>
+    /// <param name="startIndex">取得開始レコードインデックス</param>
+    /// <param name="recordCount">取得レコード数</param>
+    /// <returns>指定範囲のレコード配列</returns>
+    public OrderModel[] GetList(int startIndex, int recordCount)
+    {
+        var result = new List<OrderModel>();
+
+        // パラメータ初期化
+        db!.ClearParam();
+
+        var sql = new StringBuilder();
+
+        sql.AppendLine("SELECT productName, unitPrice, qty FROM t_order");
+        sql.AppendLine("ORDER BY productName");
+        sql.AppendLine(db!.GetLimitSQL(recordCount, startIndex));
+
+        var sqlResult = db.Fill(sql.ToString());
+        var noIndex = 1;
+        foreach (DataRow row in sqlResult.Rows)
         {
-            return Find(null);
+            // 注文
+            var no = startIndex + noIndex;
+            var product = Parse<string>(row["productName"]);
+            var unitPrice = Parse<decimal>(row["unitPrice"]);
+            var qty = Parse<decimal>(row["qty"]);
+            var totalPrice = unitPrice * qty;
+            result.Add(new OrderModel(no, product, unitPrice, qty, totalPrice, 1));
+
+            noIndex++;
+
         }
+        return [.. result];
+    }
+    #endregion
 
-        /// <summary>
-        /// 注文キーリストを取得
-        /// </summary>
-        /// <returns>注文リスト</returns>
-        public List<OrderModel> GetOderKeyList()
+    #endregion
+
+    #region 登録・更新
+
+    /// <summary>
+    /// 注文情報の登録
+    /// </summary>
+    /// <param name="target">登録対象</param>
+    /// <param name="userId">ユーザーID</param>
+    /// <param name="programId">プログラムID</param>
+    /// <returns>成功/失敗</returns>
+    public bool Save(OrderModel target, string userId, string programId)
+    {
+        var result = false;
+        try
         {
-            var result = new List<OrderModel>();
+            // トランザクション開始
+            BeginTransaction();
 
-            // パラメータ初期化
-            db!.ClearParam();
-
-            var sql = new StringBuilder();
-            sql.AppendLine("SELECT  productName, unitPrice*qty AS Total FROM t_order");
-            sql.AppendLine("ORDER BY productName");
-
-            var sqlResult = db.Fill(sql.ToString());
-            foreach (DataRow row in sqlResult.Rows)
-            {
-                // 注文キー情報
-                var product = Parse<string>(row["productName"]);
-                var totalPrice = Parse<decimal>(row["Total"]);
-                result.Add(new OrderModel(0, product, 0, 0, totalPrice, 0));
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// 注文情報を取得
-        /// </summary>
-        /// <param name="productName">製品名</param>
-        /// <returns>注文情報</returns>
-        public OrderModel GetOder(string productName)
-        {
-            var dbResult = Find(productName);
+            // DB存在確認
+            var dbResult = Find(target.ProductName);
             if (dbResult.Count != 0)
             {
-                return dbResult.First();
+                result = Update(target, userId ?? string.Empty, programId);
             }
-            return new OrderModel(0, string.Empty, 0, 0, 0);
-        }
-
-        /// <summary>
-        /// 注文リストを取得：メイン部分
-        /// </summary>
-        /// <param name="productName">商品名</param>
-        /// <returns>注文リスト</returns>
-        /// <remarks>メイン処理</remarks>
-        private List<OrderModel> Find(string? productName)
-        {
-            var result = new List<OrderModel>();
-
-            // パラメータ初期化
-            db!.ClearParam();
-
-            var sql = new StringBuilder();
-
-            sql.AppendLine("select ROW_NUMBER() OVER(ORDER BY productName) AS NoId,* from t_order");
-
-            // 商品名指定
-            if (productName is not null)
+            else
             {
-                sql.AppendLine("WHERE");
-                sql.AppendLine("  productName = @product_name");
-
-                // Param設定
-                db.AddParam("@product_name", productName);
+                result = Insert(target, userId ?? string.Empty, programId);
             }
-            sql.AppendLine("ORDER BY productName");
 
-            var sqlResult = db.Fill(sql.ToString());
-            foreach (DataRow row in sqlResult.Rows)
+            // 登録・更新結果でコミット・ロールバック
+            if (result)
             {
-                // 注文
-                var no = Parse<int>(row["NoId"]);
-                var product = Parse<string>(row["productName"]);
-                var unitPrice = Parse<decimal>(row["unitPrice"]);
-                var qty = Parse<decimal>(row["qty"]);
-                var totalPrice = unitPrice * qty;
-                var version = Parse<int>(row["version"]);
-                result.Add(new OrderModel(no, product, unitPrice, qty, totalPrice, version));
+                Commit();
             }
-            return result;
-        }
-
-        #region ページング用
-        /// <summary>
-        /// レコード数を返す
-        /// </summary>
-        /// <returns>対象レコード数</returns>
-        public int GetTotalRecord()
-        {
-            var result = 0;
-
-            // パラメータ初期化
-            db!.ClearParam();
-
-            var sql = new StringBuilder();
-
-            sql.AppendLine("SELECT count(productName) AS cnt FROM t_order");
-            sql.AppendLine("ORDER BY productName");
-
-            var sqlResult = db.Fill(sql.ToString());
-            foreach (DataRow row in sqlResult.Rows)
-            {
-                result = Parse<int>(row["cnt"]);
-                break;
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// 対象レコード配列を返す
-        /// </summary>
-        /// <param name="startIndex">取得開始レコードインデックス</param>
-        /// <param name="recordCount">取得レコード数</param>
-        /// <returns>指定範囲のレコード配列</returns>
-        public OrderModel[] GetList(int startIndex, int recordCount)
-        {
-            var result = new List<OrderModel>();
-
-            // パラメータ初期化
-            db!.ClearParam();
-
-            var sql = new StringBuilder();
-
-            sql.AppendLine("SELECT productName, unitPrice, qty FROM t_order");
-            sql.AppendLine("ORDER BY productName");
-            sql.AppendLine(db!.GetLimitSQL(recordCount, startIndex));
-
-            var sqlResult = db.Fill(sql.ToString());
-            var noIndex = 1;
-            foreach (DataRow row in sqlResult.Rows)
-            {
-                // 注文
-                var no = startIndex + noIndex;
-                var product = Parse<string>(row["productName"]);
-                var unitPrice = Parse<decimal>(row["unitPrice"]);
-                var qty = Parse<decimal>(row["qty"]);
-                var totalPrice = unitPrice * qty;
-                result.Add(new OrderModel(no, product, unitPrice, qty, totalPrice, 1));
-
-                noIndex++;
-                
-            }
-            return [.. result];
-        }
-        #endregion
-
-        #endregion
-
-        #region 登録・更新
-
-        /// <summary>
-        /// 注文情報の登録
-        /// </summary>
-        /// <param name="target">登録対象</param>
-        /// <param name="userId">ユーザーID</param>
-        /// <param name="programId">プログラムID</param>
-        /// <returns>成功/失敗</returns>
-        public bool Save(OrderModel target, string userId, string programId)
-        {
-            var result = false;
-            try
-            {
-                // トランザクション開始
-                BeginTransaction();
-
-                // DB存在確認
-                var dbResult = Find(target.ProductName);
-                if (dbResult.Count != 0)
-                {
-                    result = Update(target, userId ?? string.Empty, programId);
-                }
-                else
-                {
-                    result = Insert(target, userId ?? string.Empty, programId);
-                }
-
-                // 登録・更新結果でコミット・ロールバック
-                if (result)
-                {
-                    Commit();
-                }
-                else
-                {
-                    Rollback();
-                }
-
-            }
-            catch (Exception)
+            else
             {
                 Rollback();
-                throw;
             }
-            return result;
-        }
 
-        /// <summary>
-        /// 登録
-        /// </summary>
-        /// <param name="target">登録対象</param>
-        /// <param name="userId">ユーザーID</param>
-        /// <param name="programId">プログラムID</param>
-        /// <returns>登録結果成功/失敗</returns>
-        private bool Insert(OrderModel target, string userId, string programId)
+        }
+        catch (Exception)
         {
-            var sql = new StringBuilder();
-            sql.AppendLine("INSERT ");
-            sql.AppendLine("INTO t_order(productName, unitPrice, qty, createDate,createUserId, createProgramId, updateDate, updateUserId, updateProgramId, version) ");
-            sql.AppendLine("VALUES (@productName, @unitPrice, @qty, @date, @user, @program, @date, @user, @program, 1) ");
-
-            // Param設定
-            var date = DateTime.Now;
-            db!.ClearParam();
-            db.AddParam("@productName", target.ProductName);
-            db.AddParam("@unitPrice", target.UnitPrice);
-            db.AddParam("@qty", target.Qty);
-            db.AddParam("@date", date.ToString());
-            db.AddParam("@user", userId);
-            db.AddParam("@program", programId);
-
-            // SQL発行
-            if (db.ExecuteNonQuery(sql.ToString()) == 1)
-            {
-                return true;
-            }
-
-            return false;
+            Rollback();
+            throw;
         }
-
-        /// <summary>
-        /// 更新
-        /// </summary>
-        /// <param name="target">更新対象</param>
-        /// <param name="userId">ユーザーID</param>
-        /// <param name="programId">プログラムID</param>
-        /// <returns>更新結果成功/失敗</returns>
-        private bool Update(OrderModel target, string userId, string programId)
-        {
-            var sql = new StringBuilder();
-            sql.AppendLine("UPDATE t_order");
-            sql.AppendLine("SET");
-            sql.AppendLine("productName=@productName,");
-            sql.AppendLine("unitPrice=@unitPrice,");
-            sql.AppendLine("qty=@qty,");
-            sql.AppendLine("updateDate=@date,");
-            sql.AppendLine("updateUserId=@user,");
-            sql.AppendLine("updateProgramId=@program,");
-            sql.AppendLine("version=version+1");
-            sql.AppendLine("WHERE");
-            sql.AppendLine("  productName = @productName");
-
-            // Param設定
-            var date = DateTime.Now;
-            db!.ClearParam();
-            db.AddParam("@productName", target.ProductName);
-            db.AddParam("@unitPrice", target.UnitPrice);
-            db.AddParam("@qty", target.Qty);
-            db.AddParam("@date", date.ToString());
-            db.AddParam("@user", userId);
-            db.AddParam("@program", programId);
-
-            // SQL発行
-            if (db.ExecuteNonQuery(sql.ToString()) == 1)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// 注文情報リストの登録(バルクインサート)
-        /// </summary>
-        /// <param name="targets">登録対象リスト</param>
-        /// <param name="userId">ユーザーID</param>
-        /// <param name="programId">プログラムID</param>
-        public bool Save(IReadOnlyList<OrderModel> targets, string userId, string programId)
-        {
-            var result = false;
-            try
-            {
-                // トランザクション開始
-                BeginTransaction();
-
-                // SQL作成
-                var sql = new StringBuilder();
-                sql.AppendLine("INSERT OR IGNORE INTO t_order(productName, unitPrice, qty, createDate,createUserId, createProgramId, updateDate, updateUserId, updateProgramId, version) VALUES ");
-                sql.AppendLine("(@productName, @unitPrice, @qty, @date, @user, @program, @date, @user, @program, 1) ");
-                var sqlString = sql.ToString();
-
-                var date = DateTime.Now;
-
-                // 登録処理
-                var insertCount = 0;
-                foreach(var target in targets)
-                {
-                    // Param設定
-                    db!.ClearParam();
-                    db.AddParam("@productName", target.ProductName);
-                    db.AddParam("@unitPrice", target.UnitPrice);
-                    db.AddParam("@qty", target.Qty);
-                    db.AddParam("@date", date.ToString());
-                    db.AddParam("@user", userId);
-                    db.AddParam("@program", programId);
-
-                    if (db.ExecuteNonQuery(sql.ToString()) != 1)
-                    {
-                        break;
-                    }
-                    insertCount++;
-                }
-
-                // 登録結果でコミット・ロールバック
-                if (targets.Count == insertCount)
-                {
-                    Commit();
-                    result = true;
-                }
-                else
-                {
-                    Rollback();
-                }
-
-            }
-            catch (Exception)
-            {
-                Rollback();
-                throw;
-            }
-            return result;
-        }
-        #endregion
+        return result;
     }
+
+    /// <summary>
+    /// 登録
+    /// </summary>
+    /// <param name="target">登録対象</param>
+    /// <param name="userId">ユーザーID</param>
+    /// <param name="programId">プログラムID</param>
+    /// <returns>登録結果成功/失敗</returns>
+    private bool Insert(OrderModel target, string userId, string programId)
+    {
+        var sql = new StringBuilder();
+        sql.AppendLine("INSERT ");
+        sql.AppendLine("INTO t_order(productName, unitPrice, qty, createDate,createUserId, createProgramId, updateDate, updateUserId, updateProgramId, version) ");
+        sql.AppendLine("VALUES (@productName, @unitPrice, @qty, @date, @user, @program, @date, @user, @program, 1) ");
+
+        // Param設定
+        var date = DateTime.Now;
+        db!.ClearParam();
+        db.AddParam("@productName", target.ProductName);
+        db.AddParam("@unitPrice", target.UnitPrice);
+        db.AddParam("@qty", target.Qty);
+        db.AddParam("@date", date.ToString());
+        db.AddParam("@user", userId);
+        db.AddParam("@program", programId);
+
+        // SQL発行
+        if (db.ExecuteNonQuery(sql.ToString()) == 1)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// 更新
+    /// </summary>
+    /// <param name="target">更新対象</param>
+    /// <param name="userId">ユーザーID</param>
+    /// <param name="programId">プログラムID</param>
+    /// <returns>更新結果成功/失敗</returns>
+    private bool Update(OrderModel target, string userId, string programId)
+    {
+        var sql = new StringBuilder();
+        sql.AppendLine("UPDATE t_order");
+        sql.AppendLine("SET");
+        sql.AppendLine("productName=@productName,");
+        sql.AppendLine("unitPrice=@unitPrice,");
+        sql.AppendLine("qty=@qty,");
+        sql.AppendLine("updateDate=@date,");
+        sql.AppendLine("updateUserId=@user,");
+        sql.AppendLine("updateProgramId=@program,");
+        sql.AppendLine("version=version+1");
+        sql.AppendLine("WHERE");
+        sql.AppendLine("  productName = @productName");
+
+        // Param設定
+        var date = DateTime.Now;
+        db!.ClearParam();
+        db.AddParam("@productName", target.ProductName);
+        db.AddParam("@unitPrice", target.UnitPrice);
+        db.AddParam("@qty", target.Qty);
+        db.AddParam("@date", date.ToString());
+        db.AddParam("@user", userId);
+        db.AddParam("@program", programId);
+
+        // SQL発行
+        if (db.ExecuteNonQuery(sql.ToString()) == 1)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// 注文情報リストの登録(バルクインサート)
+    /// </summary>
+    /// <param name="targets">登録対象リスト</param>
+    /// <param name="userId">ユーザーID</param>
+    /// <param name="programId">プログラムID</param>
+    public bool Save(IReadOnlyList<OrderModel> targets, string userId, string programId)
+    {
+        var result = false;
+        try
+        {
+            // トランザクション開始
+            BeginTransaction();
+
+            // SQL作成
+            var sql = new StringBuilder();
+            sql.AppendLine("INSERT OR IGNORE INTO t_order(productName, unitPrice, qty, createDate,createUserId, createProgramId, updateDate, updateUserId, updateProgramId, version) VALUES ");
+            sql.AppendLine("(@productName, @unitPrice, @qty, @date, @user, @program, @date, @user, @program, 1) ");
+            var sqlString = sql.ToString();
+
+            var date = DateTime.Now;
+
+            // 登録処理
+            var insertCount = 0;
+            foreach (var target in targets)
+            {
+                // Param設定
+                db!.ClearParam();
+                db.AddParam("@productName", target.ProductName);
+                db.AddParam("@unitPrice", target.UnitPrice);
+                db.AddParam("@qty", target.Qty);
+                db.AddParam("@date", date.ToString());
+                db.AddParam("@user", userId);
+                db.AddParam("@program", programId);
+
+                if (db.ExecuteNonQuery(sql.ToString()) != 1)
+                {
+                    break;
+                }
+                insertCount++;
+            }
+
+            // 登録結果でコミット・ロールバック
+            if (targets.Count == insertCount)
+            {
+                Commit();
+                result = true;
+            }
+            else
+            {
+                Rollback();
+            }
+
+        }
+        catch (Exception)
+        {
+            Rollback();
+            throw;
+        }
+        return result;
+    }
+    #endregion
 }

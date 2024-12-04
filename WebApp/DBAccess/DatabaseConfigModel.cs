@@ -1,20 +1,19 @@
-namespace WebApp.DBAccess
+namespace WebApp.DBAccess;
+
+/// <summary>
+/// 設定ファイル：DB
+/// </summary>
+public class DatabaseConfigModel
 {
     /// <summary>
-    /// 設定ファイル：DB
+    /// 生成するDB
     /// </summary>
-    public class DatabaseConfigModel
-    {
-        /// <summary>
-        /// 生成するDB
-        /// </summary>
-        /// <returns>DB種類</returns>
-        public string Target { set; get; } = "";
+    /// <returns>DB種類</returns>
+    public string Target { set; get; } = "";
 
-        /// <summary>
-        /// DBごとの接続文字列
-        /// </summary>
-        /// <returns>「DB名と接続文字列」情報</returns>
-        public Dictionary<string, string> ConnectionStrings { set; get; } = new();
-    }
+    /// <summary>
+    /// DBごとの接続文字列
+    /// </summary>
+    /// <returns>「DB名と接続文字列」情報</returns>
+    public Dictionary<string, string> ConnectionStrings { set; get; } = new();
 }

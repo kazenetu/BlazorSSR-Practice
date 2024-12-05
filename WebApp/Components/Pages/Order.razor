@@ -1,19 +1,18 @@
 ﻿@page "/order"
 @page "/order/{page:int}"
 @namespace WebApp.Components.Pages
-@inherits Base.PageBase
-@inject IOrderRepository repository
-@inject ILogger<Order> Logger
-@inject NavigationManager Navigation
 @using System.Text
 @using WebApp.Components.Parts
 @using WebApp.Models.Parts
 @using WebApp.Models
 @using WebApp.Repositories.Interfaces
-
 @using PdfReport;
 @using PdfReport.Interfaces;
 @using PdfReport.DataLists;
+@inherits Base.PageBase
+@inject IOrderRepository repository
+@inject ILogger<Order> Logger
+@inject NavigationManager Navigation
 
 @if (IsBeforeLoginCheck)
 {

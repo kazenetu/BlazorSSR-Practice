@@ -1,12 +1,12 @@
 @page "/file-upload-sample"
 @namespace WebApp.Components.Pages
-@inherits Base.PageBase
-@inject IOrderRepository repository
-@inject ILogger<FileUploadSample> Logger
 @using WebApp.Components.Parts
 @using WebApp.Models
 @using WebApp.Models.Parts
 @using WebApp.Repositories.Interfaces
+@inherits Base.PageBase
+@inject IOrderRepository repository
+@inject ILogger<FileUploadSample> Logger
 
 @if (IsBeforeLoginCheck)
 {

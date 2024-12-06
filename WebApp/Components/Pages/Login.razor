@@ -1,7 +1,8 @@
 ﻿@page "/login"
-@inherits Base.PageBase
+@namespace WebApp.Components.Pages
 @using WebApp.Models
 @using WebApp.Repositories.Interfaces
+@inherits Base.PageBase
 @inject IUserRepository repository
 @inject NavigationManager Navigation
 @inject ILogger<Login> Logger

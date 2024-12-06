@@ -1,12 +1,12 @@
 ﻿@page "/weather"
 @page "/weather/{page:int}"
-@inherits Base.PageBase
-@attribute [StreamRendering]
-@inject ILogger<Weather> Logger
-@inject IWeatherForecastRepository repository
+@namespace WebApp.Components.Pages
 @using WebApp.Components.Parts
 @using WebApp.Models
 @using WebApp.Repositories.Interfaces
+@inherits Base.PageBase
+@inject ILogger<Weather> Logger
+@inject IWeatherForecastRepository repository
 
 @if (IsBeforeLoginCheck)
 {

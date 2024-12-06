@@ -195,14 +195,14 @@ public class PostgreSQLDB : IDatabase
     /// </summary>
     public void BeginTransaction()
     {
-        if ((isTran && isSetSavePoint) || tran is null)
+        if (isTran && isSetSavePoint)
         {
             throw new Exception("トランザクションが設定できませんでした。");
         }
 
         if (isTran)
         {
-            tran.Save(SavePointName);
+            tran!.Save(SavePointName);
             isSetSavePoint = true;
         }
         else

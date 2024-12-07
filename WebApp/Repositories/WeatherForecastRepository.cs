@@ -30,7 +30,6 @@ public class WeatherForecastRepository : RepositoryBase, IWeatherForecastReposit
         var sql = new StringBuilder();
 
         sql.AppendLine("SELECT count(target_date) AS cnt FROM t_teather_forecast");
-        sql.AppendLine("ORDER BY target_date");
 
         var sqlResult = db.Fill(sql.ToString());
         foreach (DataRow row in sqlResult.Rows)

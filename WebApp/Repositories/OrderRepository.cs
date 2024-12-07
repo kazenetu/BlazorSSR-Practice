@@ -129,7 +129,6 @@ public class OrderRepository : RepositoryBase, IOrderRepository
         var sql = new StringBuilder();
 
         sql.AppendLine("SELECT count(productName) AS cnt FROM t_order");
-        sql.AppendLine("ORDER BY productName");
 
         var sqlResult = db.Fill(sql.ToString());
         foreach (DataRow row in sqlResult.Rows)
@@ -318,7 +317,7 @@ public class OrderRepository : RepositoryBase, IOrderRepository
 
             // SQL作成
             var sql = new StringBuilder();
-            sql.AppendLine("INSERT OR IGNORE INTO t_order(productName, unitPrice, qty, createDate,createUserId, createProgramId, updateDate, updateUserId, updateProgramId, version) VALUES ");
+            sql.AppendLine("INSERT INTO t_order(productName, unitPrice, qty, createDate,createUserId, createProgramId, updateDate, updateUserId, updateProgramId, version) VALUES ");
             sql.AppendLine("(@productName, @unitPrice, @qty, @date, @user, @program, @date, @user, @program, 1) ");
             var sqlString = sql.ToString();
 

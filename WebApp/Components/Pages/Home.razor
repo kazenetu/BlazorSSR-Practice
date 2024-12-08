@@ -60,6 +60,10 @@ Welcome to your new app.
                     var yomiKatakana = features[7];
                     result.Append($"{yomiKatakana}");
                 }
+                else
+                {
+                    result.Append(node.Surface);
+                }
             }
         }
         return result.ToString();

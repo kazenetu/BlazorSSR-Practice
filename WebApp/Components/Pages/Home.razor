@@ -25,11 +25,8 @@ Welcome to your new app.
 <div class="card" style="margin-top:3rem;width:35rem;">
     <div class="card-body">
         <div class="card-title">漢字→カタカナ変換サンプル</div>
-        <InputText @bind-Value="Value" />
+        <InputText @bind-Value="Value" @onblur="OnBlur" />
         <label>@Katakana</label>
-    </div>
-    <div class="container">
-        <button class="col-3 btn btn-primary" @onclick="ToKatakana">カタカナ変換</button>
     </div>
 </div>
 
@@ -37,6 +34,13 @@ Welcome to your new app.
 @code {
     private string? Katakana;
     private string? Value;
+
+    private async Task OnBlur()
+    {
+        await Task.Run(()=>{
+            ToKatakana();
+        });
+    }
 
     private void ToKatakana()
     {

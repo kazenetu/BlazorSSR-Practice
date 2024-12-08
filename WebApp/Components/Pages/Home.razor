@@ -41,6 +41,10 @@ Welcome to your new app.
             <div class="col">
                 <label class="col-md-2" for="UnitPrice">カタカナ</label>
                 <InputText class="col-md-9" id="kanji" @bind-Value="Katakana" />
+                <div class="container" style="margin-top:1rem">
+                    <button class="col-3 offset-md-8 btn btn-primary btn-sm" @onclick="ClearKatakana">クリア</button>
+                </div>
+
             </div>
         </div>
     </div>
@@ -83,6 +87,11 @@ Welcome to your new app.
             }
         }
         return result.ToString();
+    }
+
+    private void ClearKatakana()
+    {
+        Katakana = string.Empty;
     }
 
     private async Task ShowAlertTest()

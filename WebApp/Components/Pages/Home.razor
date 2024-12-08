@@ -58,6 +58,7 @@ Welcome to your new app.
     private async Task OnBlur()
     {
         await Task.Run(()=>{
+            if (!string.IsNullOrEmpty(Katakana)) return;
             Katakana = ToKatakana(Value);
         });
     }

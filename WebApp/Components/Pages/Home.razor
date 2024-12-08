@@ -38,17 +38,19 @@ Welcome to your new app.
     private async Task OnBlur()
     {
         await Task.Run(()=>{
-            ToKatakana();
+            Katakana = ToKatakana(Value);
         });
     }
 
-    private void ToKatakana()
+    private string ToKatakana(string? kanjiValue)
     {
+        if(kanjiValue is null) return string.Empty;
+
         var result = new System.Text.StringBuilder();
         var parameter = new MeCabParam();
         var tagger = MeCabTagger.Create(parameter);
 
-        foreach (var node in tagger.ParseToNodes(Value))
+        foreach (var node in tagger.ParseToNodes(kanjiValue))
         {
             if (node.CharType > 0)
             {
@@ -60,7 +62,7 @@ Welcome to your new app.
                 }
             }
         }
-        Katakana = result.ToString();
+        return result.ToString();
     }
 
     private async Task ShowAlertTest()

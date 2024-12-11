@@ -4,7 +4,7 @@
 @using System.Diagnostics
 @using WebApp.Components.Providers
 @using WebApp.Models
-
+@inject IJSRuntime JS
 @inject NavigationManager Navigation
 
 @code{
@@ -249,5 +249,24 @@
         }
         return result.ToString();
     }
+
+    /// <summary>
+    /// 漢字フリガナ変換JavaScriptの初期化処理実行
+    /// </summary>
+    protected async Task InitKanjiToFurigana()
+    {
+        await JS.InvokeVoidAsync("import", "./Components/Pages/Base/PageBase.razor.js");
+    }
+
+    /// <summary>
+    /// 漢字フリガナ変換JavaScriptの処理実行
+    /// </summary>
+    /// <param name="kanjiId">漢字ID</param>
+    /// <param name="furiganaId">フリガナID</param>
+    protected async Task KanjiToFurigana(string kanjiId, string furiganaId)
+    {
+        await JS.InvokeVoidAsync("kanjiToFurigana", kanjiId, furiganaId);
+    }
+
     #endregion
 }

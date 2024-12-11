@@ -57,19 +57,17 @@ Welcome to your new app.
 <script>
     let tokenizerInstance = undefined;
     window.initKanjiToKana = () => {
-            console.log('onload')
         kuromoji.builder({ dicPath: "dict" }).build((err, tokenizer)=>{
             tokenizerInstance = tokenizer; 
 	    });
     };
 
-    window.kanjiToKana = () => {
-        const name = document.getElementById('name2');
-        const furigana = document.getElementById('furigana2');
-
-        var items = tokenizerInstance.tokenize(name.value);
+    window.kanjiToKana = (textID, furiganaID) => {
+        const text = document.getElementById(textID);
+        const furigana = document.getElementById(furiganaID);
 
         let result = '';
+        let items = tokenizerInstance.tokenize(text.value);
         for(let i=0;i<items.length;i++){
             if(items[i].reading == undefined) result += items[i].surface_form;
             else result += items[i].reading;
@@ -90,7 +88,7 @@ Welcome to your new app.
             if (!string.IsNullOrEmpty(Katakana)) return;
             Katakana = ToKatakana(Value);
         });
-        await JS.InvokeVoidAsync("kanjiToKana");
+        await JS.InvokeVoidAsync("kanjiToKana","name2","furigana2");
     }
 
 

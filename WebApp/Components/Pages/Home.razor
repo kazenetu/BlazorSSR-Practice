@@ -1,7 +1,6 @@
 ﻿@page "/"
 @inherits Base.PageBase
 @inject ILogger<Home> Logger
-@inject IJSRuntime JS
 
 @if (IsBeforeLoginCheck)
 {
@@ -54,28 +53,6 @@ Welcome to your new app.
     <InputText  @bind-Value="Value" id="name2" @onblur="OnBlur" />
     <input name="furigana2" id="furigana2">
 </div>
-<script>
-    let tokenizerInstance = undefined;
-    window.initKanjiToKana = () => {
-        kuromoji.builder({ dicPath: "dict" }).build((err, tokenizer)=>{
-            tokenizerInstance = tokenizer; 
-	    });
-    };
-
-    window.kanjiToKana = (textID, furiganaID) => {
-        const text = document.getElementById(textID);
-        const furigana = document.getElementById(furiganaID);
-
-        let result = '';
-        let items = tokenizerInstance.tokenize(text.value);
-        for(let i=0;i<items.length;i++){
-            if(items[i].reading == undefined) result += items[i].surface_form;
-            else result += items[i].reading;
-        }
-
-        furigana.value = result;
-    }; 
-</script>
 
 
 @code {
@@ -88,7 +65,9 @@ Welcome to your new app.
             if (!string.IsNullOrEmpty(Katakana)) return;
             Katakana = ToKatakana(Value);
         });
-        await JS.InvokeVoidAsync("kanjiToKana","name2","furigana2");
+
+        // 漢字フリガナ変換の実施
+        await KanjiToFurigana("name2","furigana2");
     }
 
 
@@ -135,7 +114,8 @@ Welcome to your new app.
 
                 Logger.LogInformation(await GetLogMessage("ログインチェック成功"));
 
-                await JS.InvokeVoidAsync("initKanjiToKana");
+                // 漢字フリガナ変換の初期化
+                await InitKanjiToFurigana();
             }
             catch (Exception ex)
             {

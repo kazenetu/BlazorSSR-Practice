@@ -1,5 +1,4 @@
 @namespace WebApp.Components.Pages.Base
-@using MeCab
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using System.Diagnostics
 @using WebApp.Components.Providers
@@ -213,44 +212,6 @@
 
     #region 漢字→フリガナ変換
     /// <summary>
-    /// 漢字→フリガナ変換
-    /// </summary>
-    /// <param name="kanjiValue">漢字文字列</param>
-    /// <returns>フリガナ文字列(kanjiValueがnullの場合はstring.Empty)</returns>
-    protected string ToKatakana(string? kanjiValue)
-    {
-        // kanjiValueがnullの場合は空文字
-        if(kanjiValue is null) return string.Empty;
-
-        var result = new System.Text.StringBuilder();
-
-        // 字句解析インスタンスを生成
-        var parameter = new MeCabParam();
-        var tagger = MeCabTagger.Create(parameter);
-
-        // 漢字をフリガナ変換
-        foreach (var node in tagger.ParseToNodes(kanjiValue))
-        {
-            if (node.CharType > 0)
-            {
-                var features = node.Feature.Split(',');
-                if (features.Length > 8)
-                {
-                    // 単語単位で変換結果を格納
-                    var yomiKatakana = features[7];
-                    result.Append($"{yomiKatakana}");
-                }
-                else
-                {
-                    // 半角英数字の場合はそのまま出力
-                    result.Append(node.Surface);
-                }
-            }
-        }
-        return result.ToString();
-    }
-
-    /// <summary>
     /// 漢字フリガナ変換JavaScriptの初期化処理実行
     /// </summary>
     protected async Task InitKanjiToFurigana()
@@ -267,6 +228,5 @@
     {
         await JS.InvokeVoidAsync("kanjiToFurigana", kanjiId, furiganaId);
     }
-
     #endregion
 }

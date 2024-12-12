@@ -28,7 +28,7 @@ Welcome to your new app.
         <div class="row">
             <div class="col">
                 <label class="col-md-2" for="kanji">漢字</label>
-                <InputText class="col-md-9" id="kanji" @bind-Value="Value" @onblur="OnBlur" />
+                <InputText class="col-md-9" id="kanji" @bind-Value="Value" @onblur="@(() => OnBlur("kanji", "furigana"))" />
             </div>
         </div>
         <div class="row">
@@ -53,10 +53,10 @@ Welcome to your new app.
     private string? Katakana;
     private string? Value;
 
-    private async Task OnBlur()
+    private async Task OnBlur(string kanjiId, string furiganaId)
     {
         // 漢字フリガナ変換の実施
-        await KanjiToFurigana("kanji","furigana");
+        await KanjiToFurigana(kanjiId, furiganaId);
     }
 
     private void ClearKatakana()

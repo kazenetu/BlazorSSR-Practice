@@ -28,7 +28,7 @@ Welcome to your new app.
         <div class="row">
             <div class="col">
                 <label class="col-md-2" for="kanji">漢字</label>
-                <InputText class="col-md-9" id="kanji" @bind-Value="Value" @onblur="@(() => OnBlur("kanji", "furigana"))" />
+                <InputText class="col-md-9" id="kanji" @bind-Value="Kanji" @onblur="@(() => OnBlur("kanji", "furigana"))" />
             </div>
         </div>
         <div class="row">
@@ -51,7 +51,7 @@ Welcome to your new app.
 
 @code {
     private string? Katakana;
-    private string? Value;
+    private string? Kanji;
 
     private async Task OnBlur(string kanjiId, string furiganaId)
     {

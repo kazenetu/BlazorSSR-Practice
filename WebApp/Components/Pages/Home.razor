@@ -50,15 +50,30 @@ Welcome to your new app.
 </div>
 
 @code {
-    private string? Katakana;
+    /// <summary>
+    /// 漢字テキスト用文字列
+    /// </summary>
     private string? Kanji;
 
+    /// <summary>
+    /// カタカナテキスト用文字列
+    /// </summary>
+    private string? Katakana;
+
+    /// <summary>
+    /// 漢字テキストのフォーカスロストイベント
+    /// </summary>
+    /// <param name="kanjiId">漢字テキストのID</param>
+    /// <param name="furiganaId">フリガナテキストのID</param>
     private async Task OnBlur(string kanjiId, string furiganaId)
     {
         // 漢字フリガナ変換の実施
         await KanjiToFurigana(kanjiId, furiganaId);
     }
 
+    /// <summary>
+    /// カタカナテキストのクリア
+    /// </summary>
     private void ClearKatakana()
     {
         Katakana = string.Empty;

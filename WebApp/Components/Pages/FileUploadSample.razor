@@ -20,7 +20,7 @@
 
 <div class="row page-header">
     <div class="col">
-        <FileUpLoad LoadFileFunction="LoadFile" />
+        <FileUpLoad IniteFunction="OnUploadInit" ErrorFunction="OnUploadError" LoadFileFunction="LoadFile" />
     </div>
 </div>
 
@@ -77,36 +77,44 @@
     }
 
     /// <summary>
+    /// アップロード読み込み初期化
+    /// </summary>
+    private void OnUploadInit()
+    {
+        // ファイル内容のクリア
+        Outputs.Clear();
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// アップロード入力エラー
+    /// </summary>
+    /// <param name="(string alertMsg, string logMsg)">表示エラーとログメッセージ</param>
+    private async Task OnUploadError((string alertMsg, string logMsg) messages)
+    {
+        //タプルを分解
+        var (alertMsg, logMsg) = messages;
+
+        // ログ書き出し
+        Logger.LogInformation(await GetLogMessage(logMsg));
+
+        // 警告メッセージ表示
+        await ShowAlert(alertMsg);
+
+        // ログ書き出しエラー表示に追加
+        Outputs.Add(alertMsg);
+        StateHasChanged();
+    }
+
+    /// <summary>
     /// ファイル読込
     /// </summary>
     /// <param name="fileModel">ファイルアップロードモデル</param>
-    private async void LoadFile(UpLoadeModel fileModel)
+    private async Task LoadFile(UpLoadeModel fileModel)
     {
         try
         {
             Logger.LogInformation(await GetLogMessage("ファイル読み込み開始"));
-
-            // ファイル内容のクリア
-            Outputs.Clear();
-            StateHasChanged();
-
-            // ファイルが存在しないか確認
-            if (fileModel.IsNull)
-            {
-                Logger.LogInformation(await GetLogMessage("ファイル指定なし"));
-
-                await ShowAlert("ファイルを指定してください");
-                return;
-            }
-
-            // ContentTypeがCSVか確認
-            if (fileModel.ContentType != "text/csv")
-            {
-                Logger.LogInformation(await GetLogMessage("CSVファイル以外"));
-
-                await ShowAlert("CSVファイルを指定してください");
-                return;
-            }
 
             // キーリスト取得
             var oderKeys = repository.GetOderKeyList();

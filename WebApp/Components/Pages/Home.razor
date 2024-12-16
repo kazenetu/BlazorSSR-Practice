@@ -28,7 +28,7 @@ Welcome to your new app.
         <div class="row">
             <div class="col">
                 <label class="col-md-2" for="kanji">漢字</label>
-                <InputText class="col-md-9" id="kanji" @bind-Value="Value" @onblur="OnBlur" />
+                <InputText class="col-md-9" id="kanji" @bind-Value="Kanji" @onblur="@(() => OnBlur("kanji", "furigana"))" />
             </div>
         </div>
         <div class="row">
@@ -38,8 +38,8 @@ Welcome to your new app.
         </div>
         <div class="row">
             <div class="col">
-                <label class="col-md-2" for="UnitPrice">カタカナ</label>
-                <InputText class="col-md-9" id="kanji" @bind-Value="Katakana" />
+                <label class="col-md-2" for="furigana">カタカナ</label>
+                <InputText class="col-md-9" id="furigana" @bind-Value="Katakana" />
                 <div class="container" style="margin-top:1rem">
                     <button class="col-3 offset-md-8 btn btn-primary btn-sm" @onclick="ClearKatakana">クリア</button>
                 </div>
@@ -49,20 +49,34 @@ Welcome to your new app.
     </div>
 </div>
 
-
 @code {
-    private string? Katakana;
-    private string? Value;
+    /// <summary>
+    /// 漢字テキスト用文字列
+    /// </summary>
+    private string? Kanji;
 
-    private async Task OnBlur()
+    /// <summary>
+    /// カタカナテキスト用文字列
+    /// </summary>
+    private string? Katakana;
+
+    /// <summary>
+    /// 漢字テキストのフォーカスロストイベント
+    /// </summary>
+    /// <param name="kanjiId">漢字テキストのID</param>
+    /// <param name="furiganaId">フリガナテキストのID</param>
+    private async Task OnBlur(string kanjiId, string furiganaId)
     {
-        await Task.Run(()=>{
-            if (!string.IsNullOrEmpty(Katakana)) return;
-            Katakana = ToKatakana(Value);
-        });
+        // フリガナが入力されている場合は漢字フリガナ変換は未実施
+        if (!string.IsNullOrEmpty(Katakana)) return;
+
+        // 漢字フリガナ変換の実施
+        await KanjiToFurigana(kanjiId, furiganaId);
     }
 
-
+    /// <summary>
+    /// カタカナテキストのクリア
+    /// </summary>
     private void ClearKatakana()
     {
         Katakana = string.Empty;
@@ -105,6 +119,9 @@ Welcome to your new app.
                 StateHasChanged();
 
                 Logger.LogInformation(await GetLogMessage("ログインチェック成功"));
+
+                // 漢字フリガナ変換の初期化
+                await InitKanjiToFurigana();
             }
             catch (Exception ex)
             {

@@ -5,10 +5,32 @@
 
 @code {
     /// <summary>
-    /// ファイル受信時に呼び出すメソッド
+    /// チェック対象の拡張子
+    /// </summary>
+    /// <remarks>
+    /// 省略時はCSV
+    /// </remarks>
+    [Parameter]
+    public string Exiextension { get; set; } = "csv";
+
+    /// <summary>
+    /// 初期化時に呼び出すメソッド
     /// </summary>
     [Parameter]
-    public EventCallback<UpLoadeModel> LoadFileFunction { get; set; }
+    public EventCallback OnInit { get; set; }
+
+    /// <summary>
+    /// ファイル読み込み時に呼び出すメソッド
+    /// </summary>
+    [Parameter]
+    public EventCallback<UpLoadeModel> OnLoad { get; set; }
+
+    /// <summary>
+    /// エラー時に呼び出すメソッド
+    /// </summary>
+    /// <param name="(string alertMsg, string logMsg)">表示エラーとログメッセージ</param>
+    [Parameter]
+    public EventCallback<(string alertMsg, string logMsg)> OnError { get; set; }
 
     /// <summary>
     /// 受信ファイル変更イベント
@@ -16,7 +38,27 @@
     /// <param name="e">受信ファイル情報</param>
     private async Task ChangeFile(InputFileChangeEventArgs e)
     {
+        // 初期化メソッド呼び出し
+        await OnInit.InvokeAsync();
+
+        // Model作成
+        var fileModel = new UpLoadeModel(e.File);
+
+        // 入力チェック：ファイルが存在しないか確認
+        if (fileModel.IsNull)
+        {
+            await OnError.InvokeAsync(("ファイルを指定してください", "ファイル指定なし"));
+            return;
+        }
+
+        // 入力チェック：ContentTypeがCSVか確認
+        if (fileModel.ContentType != "text/csv")
+        {
+            await OnError.InvokeAsync(("CSVファイルを指定してください", "CSVファイル以外"));
+            return;
+        }
+
         // メソッド呼び出し
-        await LoadFileFunction.InvokeAsync(new UpLoadeModel(e.File));
+        await OnLoad.InvokeAsync(fileModel);
     }
 }

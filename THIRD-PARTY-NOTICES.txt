@@ -1,12 +1,4 @@
 ####################################################################################################
-Package:MeCab.DotNet
-Version:1.2.0
-project URL:https://github.com/kekyo/MeCab.DotNet.git
-Description:MeCab.DotNet - Morphological analysis engine for .NET 7,6,5, .NET Core and .NET Frameworks managed library.
-licenseUrl:https://licenses.nuget.org/GPL-2.0-only%20OR%20LGPL-2.1-only
-license Type:GPL-2.0-only OR LGPL-2.1-only
-
-####################################################################################################
 Package:Microsoft.Data.Sqlite
 Version:8.0.10
 project URL:https://docs.microsoft.com/dotnet/standard/data/sqlite/

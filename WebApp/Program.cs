@@ -69,6 +69,7 @@ public class Program
         // pdf.jsのftlが取得できるように設定
         var provider = new FileExtensionContentTypeProvider();
         provider.Mappings[".ftl"] = "text/plain";
+        provider.Mappings[".dat.gz"] = "text/plain";
         app.UseStaticFiles(new StaticFileOptions
         {
             ContentTypeProvider = provider

@@ -77,7 +77,7 @@
     }
 
     /// <summary>
-    /// アップロード読み込み初期化
+    /// アップロード読み込み初期化イベント
     /// </summary>
     private void OnUploadInit()
     {
@@ -87,7 +87,7 @@
     }
 
     /// <summary>
-    /// アップロード入力エラー
+    /// アップロード入力エラーイベント
     /// </summary>
     /// <param name="(string alertMsg, string logMsg)">表示エラーとログメッセージ</param>
     private async Task OnUploadError((string alertMsg, string logMsg) messages)
@@ -107,7 +107,7 @@
     }
 
     /// <summary>
-    /// ファイル読込
+    /// ファイル読込イベント
     /// </summary>
     /// <param name="fileModel">ファイルアップロードモデル</param>
     private async Task OnLoadFile(UpLoadeModel fileModel)

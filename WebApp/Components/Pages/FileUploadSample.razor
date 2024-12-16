@@ -20,7 +20,7 @@
 
 <div class="row page-header">
     <div class="col">
-        <FileUpLoad OnInit="OnUploadInit" OnError="OnUploadError" OnLoad="LoadFile" />
+        <FileUpLoad OnInit="OnUploadInit" OnError="OnUploadError" OnLoad="OnLoadFile" />
     </div>
 </div>
 
@@ -110,7 +110,7 @@
     /// ファイル読込
     /// </summary>
     /// <param name="fileModel">ファイルアップロードモデル</param>
-    private async Task LoadFile(UpLoadeModel fileModel)
+    private async Task OnLoadFile(UpLoadeModel fileModel)
     {
         try
         {

@@ -18,6 +18,11 @@ public class UpLoadeModel
     public bool IsNull => _formFile is null;
 
     /// <summary>
+    /// ファイル名取得
+    /// </summary>
+    public string FileName => _formFile?.Name ?? string.Empty;
+
+    /// <summary>
     /// ContentType取得
     /// </summary>
     public string ContentType => _formFile?.ContentType ?? string.Empty;

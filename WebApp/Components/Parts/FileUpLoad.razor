@@ -51,8 +51,8 @@
             return;
         }
 
-        // 入力チェック：ContentTypeがCSVか確認
-        if (fileModel.ContentType != "text/csv")
+        // ファイル名がCSVか確認
+        if (!fileModel.FileName.EndsWith(".csv") || fileModel.FileName.Where(item=>item == '.').Count() != 1)
         {
             await OnError.InvokeAsync(("CSVファイルを指定してください", "CSVファイル以外"));
             return;

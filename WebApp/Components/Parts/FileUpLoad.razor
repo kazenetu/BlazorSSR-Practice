@@ -54,7 +54,9 @@
         // ファイル名がCSVか確認
         if (!fileModel.FileName.EndsWith(".csv") || fileModel.FileName.Where(item=>item == '.').Count() != 1)
         {
-            await OnError.InvokeAsync(("CSVファイルを指定してください", "CSVファイル以外"));
+            var errorFileName = fileModel.FileName;
+            await OnError.InvokeAsync(($"下記のファイルはCSVファイルではありません。\r\n{errorFileName}\r\nCSVファイルを指定してください" ,
+                                       $"CSVファイル以外 ファイル名={errorFileName}"));
             return;
         }
 

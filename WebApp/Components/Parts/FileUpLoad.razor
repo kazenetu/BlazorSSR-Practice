@@ -51,12 +51,13 @@
             return;
         }
 
-        // ファイル名がCSVか確認
-        if (!fileModel.FileName.EndsWith(".csv") || fileModel.FileName.Where(item=>item == '.').Count() != 1)
+        // ファイル名がExiextensionか確認
+        if (!fileModel.FileName.EndsWith($".{Exiextension}") || fileModel.FileName.Where(item=>item == '.').Count() != 1)
         {
+            var exiextension = Exiextension.ToUpper();
             var errorFileName = fileModel.FileName;
-            await OnError.InvokeAsync(($"下記のファイルはCSVファイルではありません。\r\n{errorFileName}\r\nCSVファイルを指定してください" ,
-                                       $"CSVファイル以外 ファイル名={errorFileName}"));
+            await OnError.InvokeAsync(($"下記のファイルは{exiextension}ファイルではありません。\r\n{errorFileName}\r\n{exiextension}ファイルを指定してください" ,
+                                       $"{exiextension}ファイル以外 ファイル名={errorFileName}"));
             return;
         }
 

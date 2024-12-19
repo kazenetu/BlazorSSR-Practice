@@ -16,6 +16,15 @@
 
 <body>
     <Routes  @rendermode="InteractiveServer" />
+
+    <div id="components-reconnect-modal" style="display: none;position: fixed; inset: 0px; z-index: 1050;overflow: hidden; background-color: rgb(255, 255, 255); opacity: 0.8; text-align: center; font-weight: bold; transition: visibility linear 500ms; visibility: visible;padding-top: 20vh;">
+        <div id="loading-caption">再接続中...</div>
+        <div id="loading-progress"></div>
+        <div id="loading-failed" style="display: none;">
+            システム担当者に連絡してください
+        </div>
+    </div>
+
     <script src="_framework/blazor.web.js"></script>
 </body>
 

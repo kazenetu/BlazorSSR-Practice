@@ -118,6 +118,17 @@ else
     }
 
     /// <summary>
+    /// ページ変更イベント
+    /// </summary>
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        // 検索結果を取得
+        ShowPage(Page);
+    }
+
+    /// <summary>
     /// 総レコード数取得
     /// </summary>
     /// <returns>総レコード数</returns>

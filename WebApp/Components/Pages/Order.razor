@@ -98,6 +98,17 @@ else
     }
 
     /// <summary>
+    /// ページ変更イベント
+    /// </summary>
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        // 検索結果を取得
+        ShowPage(Page);
+    }
+
+    /// <summary>
     /// 指定ページのレコード表示
     /// </summary>
     /// <param name="pageIndex">指定ページ(1ベース)</param>

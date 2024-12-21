@@ -91,9 +91,6 @@ else
 
                 Logger.LogInformation(await GetLogMessage("ログインチェック成功"));
 
-                // Simulate asynchronous loading to demonstrate streaming rendering
-                await Task.Delay(500);
-
                 // ページ指定なしの場合は1ページ
                 if (Page == 0)
                 {

@@ -128,24 +128,17 @@
     public int TotalRecords { get; set; }
 
     /// <summary>
-    /// ページ変更イベント(呼び出しページで定義)
-    /// </summary>
-    [Parameter]
-    public EventCallback<int> PageChanged { get; set; }
-
-    /// <summary>
     /// ページ変更イベント
     /// </summary>
     /// <param name="pageNumber">選択されたページ数</param>
     private async Task OnPageChangedAsync(int pageNumber)
     {
-        if (string.IsNullOrEmpty(PageName)) return;
+        await Task.Run(() => {
+            if (string.IsNullOrEmpty(PageName)) return;
 
-        // 対象ページ表示
-        await PageChanged.InvokeAsync(pageNumber);
-
-        //　URL変更(他ページから復帰用)
-        Navigation.NavigateTo($"{PageName}/{pageNumber}");
+            //　URL変更(他ページから復帰用)
+            Navigation.NavigateTo($"{PageName}/{pageNumber}");
+        } );
     }
 
     /// <summary>

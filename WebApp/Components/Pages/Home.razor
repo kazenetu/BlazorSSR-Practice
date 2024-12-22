@@ -49,7 +49,69 @@ Welcome to your new app.
     </div>
 </div>
 
+<div>
+    <button class="btn btn-primary" @onclick="ShowDialogTest">ダイアログ表示</button>
+</div>
+<dialog id="saveDialog" style="width:80vw;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5">注文編集</h1>
+        <button type="button" class="btn-close" aria-label="Close" @onclick="CloseDialogTest"></button>
+      </div>
+      <div class="modal-body">
+        <EditForm method="post" Model="OrderEditModel" OnValidSubmit="Save" id="edit">
+            <div class="row">
+                <div class="col">
+                    <label class="col-md-2" for="ProductName">商品名</label>
+                    <InputText class="col-md-6" id="ProductName" @bind-Value="OrderEditModel!.ProductName" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <label class="col-md-2" for="UnitPrice">単価</label>
+                    <InputNumber class="col-md-6" id="UnitPrice" @bind-Value="OrderEditModel!.UnitPrice" TValue="decimal" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <label class="col-md-2" for="Qty">数量</label>
+                    <InputNumber class="col-md-6" id="Qty" @bind-Value="OrderEditModel!.Qty" TValue="decimal" />
+                </div>
+            </div>
+        </EditForm>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" form="edit" class="btn btn-outline-success">保存</button>
+      </div>
+    </div>
+</dialog>
+
 @code {
+#region ダイアログ表示サンプル：登録系
+    [SupplyParameterFromForm]
+    private WebApp.Models.OrderModel OrderEditModel { get; set; } = new (0, string.Empty, 0, 0, 0);
+    
+    private async Task ShowDialogTest()
+    {
+        await ShowDialog("saveDialog");
+    }
+
+    private async Task CloseDialogTest()
+    {
+        await CloseDialog("saveDialog");
+    }
+
+    /// <summary>
+    /// 保存
+    /// </summary>
+    /// <param name="editContext"></param>
+    private async Task Save(EditContext editContext)
+    {
+        await ShowAlert("TODO 登録処理実装", CloseDialogTest);
+        //await CloseDialogTest();
+    }
+#endregion
+
     /// <summary>
     /// 漢字テキスト用文字列
     /// </summary>

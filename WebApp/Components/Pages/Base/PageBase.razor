@@ -208,6 +208,28 @@
 
         await dialogProvider.ShowConfirm(message, submitFunction);
     }
+
+    /// <summary>
+    /// 指定ダイアログ表示
+    /// </summary>
+    /// <param name="tagId">表示対象のid</param>
+    public async Task ShowDialog(string tagId)
+    {
+        if(dialogProvider is null)  return;
+
+        await dialogProvider.ShowDialog(tagId);
+    }
+
+    /// <summary>
+    /// 指定ダイアログ非表示
+    /// </summary>
+    /// <param name="tagId">非表示対象のid</param>
+    public async Task CloseDialog(string tagId)
+    {
+        if(dialogProvider is null)  return;
+
+        await dialogProvider.CloseDialog(tagId);
+    }
     #endregion
 
     #region 漢字→フリガナ変換

@@ -77,7 +77,15 @@
             div.textContent = msg;
             element.append(div);
         }
+    }
 
+    window.showDialog = async (tagId) => {
+        const dialog = document.getElementById(tagId);
+        dialog.showModal();
+    }
+    window.closeDialog = async (tagId) => {
+        const dialog = document.getElementById(tagId);
+        dialog.close();
     }
 </script>
 
@@ -131,4 +139,21 @@
             SubmitFunction();
     }
 
+    /// <summary>
+    /// 指定ダイアログ表示
+    /// </summary>
+    /// <param name="tagId">表示対象のid</param>
+    public async Task ShowDialog(string tagId)
+    {
+        await JS.InvokeVoidAsync("showDialog", tagId);
+    }
+
+    /// <summary>
+    /// 指定ダイアログ非表示
+    /// </summary>
+    /// <param name="tagId">非表示対象のid</param>
+    public async Task CloseDialog(string tagId)
+    {
+        await JS.InvokeVoidAsync("closeDialog", tagId);
+    }
 }

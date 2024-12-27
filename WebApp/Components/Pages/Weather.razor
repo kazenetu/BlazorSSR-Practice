@@ -26,7 +26,25 @@
 }
 else
 {
-    <Pagination PageName="/weather" CurrentPageNumber="@Page" TotalRecords="GetTotalRecords()" RecordsPerPage="@PageCount" />
+    <EditForm method="post" Model="Model" OnValidSubmit="Search" id="seach">
+        <div class="card col-md-8 offset-md-2">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col">
+                        <label class="col-md-4" for="StartDate">開始Date</label>
+                        <InputDate class="col-md-5" id="StartDate" @bind-Value="Model!.StartDate" />
+                    </div>
+                    <div class="col">
+                        <label class="col-md-4" for="EndDate">終了Date</label>
+                        <InputDate class="col-md-5" id="EndDate" @bind-Value="Model!.EndDate" />
+                    </div>
+                </div>
+            </div>
+            <button type="submit" form="seach" class="btn btn-outline-success">検索</button>
+        </div>
+    </EditForm>
+
+    <Pagination PageName="/weather" CurrentPageNumber="@Page" TotalRecords="GetTotalRecords()" RecordsPerPage="@PageCount" PageChanged="ShowPage" />
     <table class="table">
         <thead>
             <tr>
@@ -51,6 +69,7 @@ else
 }
 
 @code {
+    private InputWeatherForecastModel Model { get; set; } = new();
 
     /// <summary>
     /// ページング用：現在のページ数
@@ -91,6 +110,9 @@ else
 
                 Logger.LogInformation(await GetLogMessage("ログインチェック成功"));
 
+                // Simulate asynchronous loading to demonstrate streaming rendering
+                await Task.Delay(500);
+
                 // ページ指定なしの場合は1ページ
                 if (Page == 0)
                 {
@@ -100,7 +122,7 @@ else
                 // 検索結果を取得
                 ShowPage(Page);
 
-                Logger.LogInformation(await GetLogMessage($"検索結果:{repository.GetTotalRecord()}件"));
+                Logger.LogInformation(await GetLogMessage($"検索結果:{repository.GetTotalRecord(Model)}件"));
             }
             catch (Exception ex)
             {
@@ -114,15 +136,8 @@ else
         }
     }
 
-    /// <summary>
-    /// ページ変更イベント
-    /// </summary>
-    protected override async Task OnParametersSetAsync()
+    private void Search()
     {
-        await base.OnParametersSetAsync();
-
-        // 検索結果を取得
-        ShowPage(Page);
     }
 
     /// <summary>
@@ -132,7 +147,7 @@ else
     private int GetTotalRecords()
     {
         // DBから対象レコード数を返す
-        return repository.GetTotalRecord();
+        return repository.GetTotalRecord(Model);
     }
 
     /// <summary>
@@ -145,7 +160,7 @@ else
         var zeroBasePageIndex = pageIndex - 1;
 
         // DBから1ページ分のレコード取得
-        pageForecasts = repository.GetList(zeroBasePageIndex * PageCount,  PageCount);
+        pageForecasts = repository.GetList(Model, zeroBasePageIndex * PageCount,  PageCount);
         StateHasChanged();
     }
 

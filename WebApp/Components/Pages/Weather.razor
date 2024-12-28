@@ -29,6 +29,7 @@ else
     <EditForm method="post" Model="Model" OnValidSubmit="Search" id="seach">
         <div class="card col-md-8 offset-md-2">
             <div class="card-body">
+
                 <div class="row">
                     <div class="col">
                         <label class="col-md-4" for="StartDate">開始Date</label>
@@ -39,6 +40,18 @@ else
                         <InputDate class="col-md-5" id="EndDate" @bind-Value="Model!.EndDate" />
                     </div>
                 </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label class="col-md-4" for="StartDate">開始温度</label>
+                        <InputNumber class="col-md-5" id="StartDate" @bind-Value="Model!.StartTemperatureC" />
+                    </div>
+                    <div class="col">
+                        <label class="col-md-4" for="EndDate">終了温度</label>
+                        <InputNumber class="col-md-5" id="EndDate" @bind-Value="Model!.EndTemperatureC" />
+                    </div>
+                </div>
+
             </div>
             <button type="submit" form="seach" class="btn btn-outline-success">検索</button>
         </div>

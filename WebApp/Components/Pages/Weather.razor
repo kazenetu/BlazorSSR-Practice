@@ -110,9 +110,6 @@ else
 
                 Logger.LogInformation(await GetLogMessage("ログインチェック成功"));
 
-                // Simulate asynchronous loading to demonstrate streaming rendering
-                await Task.Delay(500);
-
                 // ページ指定なしの場合は1ページ
                 if (Page == 0)
                 {
@@ -134,6 +131,17 @@ else
                 Logger.LogInformation(await GetLogMessage("終了"));
             }
         }
+    }
+
+    /// <summary>
+    /// ページ変更イベント
+    /// </summary>
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        // 検索結果を取得
+        ShowPage(Page);
     }
 
     private void Search()

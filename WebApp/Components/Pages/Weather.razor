@@ -26,29 +26,29 @@
 }
 else
 {
-    <EditForm method="post" Model="Model" OnValidSubmit="Search" id="seach">
-        <div class="card col-md-8 offset-md-2">
+    <EditForm method="post" Model="Model" OnSubmit="Search" id="seach">
+        <div class="card col-md-8 offset-md-2 mb-5">
             <div class="card-body">
 
                 <div class="row">
                     <div class="col">
                         <label class="col-md-4" for="StartDate">開始Date</label>
-                        <InputDate class="col-md-5" id="StartDate" @bind-Value="Model!.StartDate" />
+                        <InputDate class="col-md-6" id="StartDate" @bind-Value="Model!.StartDate" />
                     </div>
                     <div class="col">
                         <label class="col-md-4" for="EndDate">終了Date</label>
-                        <InputDate class="col-md-5" id="EndDate" @bind-Value="Model!.EndDate" />
+                        <InputDate class="col-md-6" id="EndDate" @bind-Value="Model!.EndDate" />
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col">
                         <label class="col-md-4" for="StartDate">開始温度</label>
-                        <InputNumber class="col-md-5" id="StartDate" @bind-Value="Model!.StartTemperatureC" />
+                        <InputNumber class="col-md-4 text-end" id="StartDate" @bind-Value="Model!.StartTemperatureC" />
                     </div>
                     <div class="col">
                         <label class="col-md-4" for="EndDate">終了温度</label>
-                        <InputNumber class="col-md-5" id="EndDate" @bind-Value="Model!.EndTemperatureC" />
+                        <InputNumber class="col-md-4 text-end" id="EndDate" @bind-Value="Model!.EndTemperatureC" />
                     </div>
                 </div>
 

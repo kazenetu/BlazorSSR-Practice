@@ -108,6 +108,11 @@ else
 }
 
 @code {
+    /// <summary>
+    /// セッション定数：検索条件
+    /// </summary>
+    public const string SessionOrderSearch = "SessionOrderSearch"; 
+
     private InputOrderModel Model { get; set; } = new();
 
     #region ページング用
@@ -196,6 +201,11 @@ else
                     Page = 1;
                 }
 
+                // 検索条件の復元
+                var tempModel = await GetAsync<InputOrderModel>(SessionOrderSearch);
+                if (tempModel is not null) 
+                    Model = tempModel;
+
                 // 検索結果を取得(総レコード数更新)
                 ShowPage(Page, true);
 
@@ -216,10 +226,13 @@ else
     /// <summary>
     /// 検索イベント
     /// </summary>
-    private void Search()
+    private async Task Search()
     {
         // 1ページ
         Page = 1;
+
+        // 検索条件の保存
+        await SetAsync(SessionOrderSearch, Model);
 
         // 検索結果を取得(総レコード数更新)
         ShowPage(Page, true);

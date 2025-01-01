@@ -180,6 +180,7 @@ else
     /// <param name="firstRender">初回表示か否か</param>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        var oldPage = Page;
         if (firstRender)
         {
             try
@@ -224,6 +225,14 @@ else
             {
                 Logger.LogInformation(await GetLogMessage("終了"));
             }
+        }
+
+        if (oldPage <= 0)
+        {
+            await DeleteAsync(SessionOrderSearch);
+            Model = new();
+            TotalRecords = repository.GetTotalRecord(Model);
+            Navigation.NavigateTo("/order/1");
         }
     }
 

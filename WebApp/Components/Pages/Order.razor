@@ -155,6 +155,10 @@ else
     /// <param name="isRefreshTotalRecords">総レコード数を更新するか否か</param>
     private void ShowPage(int pageIndex, bool isRefreshTotalRecords = false)
     {
+        // ページ数がマイナスの場合は終了
+        if (pageIndex <= 0)
+            return;
+
         if (isRefreshTotalRecords)
         {
             // 総レコード数更新

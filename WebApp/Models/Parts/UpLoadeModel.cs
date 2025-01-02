@@ -65,4 +65,34 @@ public class UpLoadeModel
             }
         }
     }
+
+    /// <summary>
+    /// 1行読み込み(ShiftJis用)
+    /// </summary>
+    /// <returns>文字列</returns>
+    public async IAsyncEnumerable<string> ReadShiftJisLineAsync()
+    {
+        // ブラウザ取得情報がなければ終了
+        if (_formFile is null) yield break;
+
+        // エンコード取得
+        var provider = System.Text.CodePagesEncodingProvider.Instance;
+        var encoding = provider.GetEncoding(932);
+        if (encoding is null) yield break;
+
+        // ファイル内容の取得
+        using (var reader = new StreamReader(_formFile!.OpenReadStream(), encoding))
+        {
+            while (true)
+            {
+                string? result = await reader.ReadLineAsync();
+
+                // ファイル終了であれば終了
+                if (result is null) yield break;
+
+                // 一行を返す
+                yield return result;
+            }
+        }
+    }
 }

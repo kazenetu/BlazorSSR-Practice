@@ -118,8 +118,9 @@ public class OrderRepository : RepositoryBase, IOrderRepository
     /// <summary>
     /// レコード数を返す
     /// </summary>
+    /// <param name="inputModel">検索条件</param>
     /// <returns>対象レコード数</returns>
-    public int GetTotalRecord()
+    public int GetTotalRecord(InputOrderModel inputModel)
     {
         var result = 0;
 
@@ -129,6 +130,7 @@ public class OrderRepository : RepositoryBase, IOrderRepository
         var sql = new StringBuilder();
 
         sql.AppendLine("SELECT count(productName) AS cnt FROM t_order");
+        sql.Append(GetWhere(inputModel));
 
         var sqlResult = db.Fill(sql.ToString());
         foreach (DataRow row in sqlResult.Rows)
@@ -143,10 +145,11 @@ public class OrderRepository : RepositoryBase, IOrderRepository
     /// <summary>
     /// 対象レコード配列を返す
     /// </summary>
+    /// <param name="inputModel">検索条件</param>
     /// <param name="startIndex">取得開始レコードインデックス</param>
     /// <param name="recordCount">取得レコード数</param>
     /// <returns>指定範囲のレコード配列</returns>
-    public OrderModel[] GetList(int startIndex, int recordCount)
+    public OrderModel[] GetList(InputOrderModel inputModel, int startIndex, int recordCount)
     {
         var result = new List<OrderModel>();
 
@@ -155,7 +158,8 @@ public class OrderRepository : RepositoryBase, IOrderRepository
 
         var sql = new StringBuilder();
 
-        sql.AppendLine("SELECT productName, unitPrice, qty FROM t_order");
+        sql.AppendLine("SELECT productName, unitPrice, qty,unitPrice*qty AS totalPrice FROM t_order");
+        sql.Append(GetWhere(inputModel));
         sql.AppendLine("ORDER BY productName");
         sql.AppendLine(db!.GetLimitSQL(recordCount, startIndex));
 
@@ -175,6 +179,61 @@ public class OrderRepository : RepositoryBase, IOrderRepository
 
         }
         return [.. result];
+    }
+
+    /// <summary>
+    /// 検索条件を取得
+    /// </summary>
+    /// <param name="inputModel">検索条件</param>
+    /// <returns>検索条件文字列</returns>
+    private string GetWhere(InputOrderModel inputModel)
+    {
+        if(db is null) return string.Empty;
+
+        var where = new StringBuilder();
+        if(!string.IsNullOrEmpty(inputModel.ProductName))
+        {
+            if (where.Length > 0) where.Append(" AND ");
+            where.AppendLine(" productName like @ProductName");
+
+            // Param設定
+            db.AddParam("@ProductName", $"%{inputModel.ProductName}%");
+        }
+        if(inputModel.StartUnitPrice is not null)
+        {
+            if (where.Length > 0) where.Append(" AND ");
+            where.AppendLine(" unitPrice >= @StartUnitPrice");
+
+            // Param設定
+            db.AddParam("@StartUnitPrice", inputModel.StartUnitPrice);
+        }
+        if(inputModel.EndUnitPrice is not null)
+        {
+            if (where.Length > 0) where.Append(" AND ");
+            where.AppendLine(" unitPrice <= @EndUnitPrice");
+
+            // Param設定
+            db.AddParam("@EndUnitPrice", inputModel.EndUnitPrice);
+        }
+        if(inputModel.StartTotalPrice is not null)
+        {
+            if (where.Length > 0) where.Append(" AND ");
+            where.AppendLine(" cast(unitPrice*qty AS numeric) >= @StartTotalPrice");
+
+            // Param設定
+            db.AddParam("@StartTotalPrice", inputModel.StartTotalPrice);
+        }
+        if(inputModel.EndTotalPrice is not null)
+        {
+            if (where.Length > 0) where.Append(" AND ");
+            where.AppendLine(" cast(unitPrice*qty AS numeric) <= @EndTotalPrice");
+
+            // Param設定
+            db.AddParam("@EndTotalPrice", inputModel.EndTotalPrice);
+        }
+        if (where.Length > 0) return " WHERE " + where.ToString();
+
+        return string.Empty;
     }
     #endregion
 

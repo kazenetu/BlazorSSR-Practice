@@ -41,41 +41,93 @@ else
         </div>
     </div>
 
-    <Pagination PageName="/order" CurrentPageNumber="@Page" TotalRecords="GetTotalRecords()" RecordsPerPage="@PageCount" />
+    <EditForm method="post" Model="Model" OnSubmit="Search" id="seach">
+        <div class="card col-md-8 offset-md-2 mb-5">
+            <div class="card-body">
+
+                <div class="row">
+                    <div class="col">
+                        <label class="" for="SerchProductName">製品名(あいまい検索)</label>
+                        <InputText class="col-md-6" id="SerchProductName" @bind-Value="Model!.ProductName" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label class="col-md-4" for="StartUnitPrice">単価</label>
+                        <InputNumber class="col-md-4 text-end" id="StartUnitPrice" @bind-Value="Model!.StartUnitPrice" />
+                    </div>
+                    <div class="col">
+                        <label class="col-md-4" for="EndUnitPrice">〜</label>
+                        <InputNumber class="col-md-4 text-end" id="EndUnitPrice" @bind-Value="Model!.EndUnitPrice" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label class="col-md-4" for="StartTotalPrice">合計金額</label>
+                        <InputNumber class="col-md-4 text-end" id="StartTotalPrice" @bind-Value="Model!.StartTotalPrice" />
+                    </div>
+                    <div class="col">
+                        <label class="col-md-4" for="EndTotalPrice">〜</label>
+                        <InputNumber class="col-md-4 text-end" id="EndTotalPrice" @bind-Value="Model!.EndTotalPrice" />
+                    </div>
+                </div>
+
+            </div>
+            <button type="submit" form="seach" class="btn btn-outline-success">検索</button>
+        </div>
+    </EditForm>
+
+    <Pagination PageName="/order" CurrentPageNumber="@Page" TotalRecords="@TotalRecords" RecordsPerPage="@PageCount" />
     <table class="table">
         <thead>
             <tr>
-                <th>No</th>
-                <th>ProductName</th>
-                <th>UnitPrice</th>
-                <th>Qty</th>
-                <th>TotalPrice</th>
+                <th style="width:2rem">No</th>
+                <th style="min-width:15rem">ProductName</th>
+                <th style="width:5rem">UnitPrice</th>
+                <th style="width:3rem">Qty</th>
+                <th style="width:9rem">TotalPrice</th>
                 <th>編集</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var oder in pageRecords)
-            {
-                <tr>
-                    <td>@oder.No</td>
-                    <td>@oder.ProductName</td>
-                    <td>@oder.UnitPrice</td>
-                    <td>@oder.Qty</td>
-                    <td>@oder.TotalPrice</td>
-                    <td><button @onclick="@(() => ToEdit(oder.ProductName))" class="btn btn-outline-success">編集</button></td>
-                </tr>
+            @if(TotalRecords > 0) {
+                @foreach (var oder in pageRecords)
+                {
+                    <tr>
+                        <td class="text-end">@oder.No</td>
+                        <td>@oder.ProductName</td>
+                        <td class="text-end">@(oder.UnitPrice.ToString("#,#"))</td>
+                        <td class="text-end">@(oder.Qty.ToString("#,#"))</td>
+                        <td class="text-end">@(oder.TotalPrice.ToString("#,#"))</td>
+                        <td><button @onclick="@(() => ToEdit(oder.ProductName))" class="btn btn-outline-success">編集</button></td>
+                    </tr>
+                }
             }
         </tbody>
     </table>
 }
 
 @code {
+    /// <summary>
+    /// セッション定数：検索条件
+    /// </summary>
+    public const string SessionOrderSearch = "SessionOrderSearch"; 
+
+    private InputOrderModel Model { get; set; } = new();
+
     #region ページング用
     /// <summary>
     /// ページング用：現在のページ数
     /// </summary>
     [Parameter]
     public int Page { get; set; }
+
+    /// <summary>
+    /// ページング用：総レコード数
+    /// </summary>
+    public int TotalRecords { get; set; }
 
     /// <summary>
     /// 定数：ページング用：1ページのレコード数
@@ -86,16 +138,6 @@ else
     /// 1ページの表示レコード
     /// </summary>
     private OrderModel[]? pageRecords;
-
-    /// <summary>
-    /// 総レコード数取得
-    /// </summary>
-    /// <returns>総レコード数</returns>
-    private int GetTotalRecords()
-    {
-        // DBから対象レコード数を返す
-        return repository.GetTotalRecord();
-    }
 
     /// <summary>
     /// ページ変更イベント
@@ -112,13 +154,24 @@ else
     /// 指定ページのレコード表示
     /// </summary>
     /// <param name="pageIndex">指定ページ(1ベース)</param>
-    private void ShowPage(int pageIndex)
+    /// <param name="isRefreshTotalRecords">総レコード数を更新するか否か</param>
+    private void ShowPage(int pageIndex, bool isRefreshTotalRecords = false)
     {
+        // ページ数がマイナスの場合は終了
+        if (pageIndex <= 0)
+            return;
+
+        if (isRefreshTotalRecords)
+        {
+            // 総レコード数更新
+            TotalRecords = repository.GetTotalRecord(Model);
+        }
+
         // ゼロベースのページ数を設定
         var zeroBasePageIndex = pageIndex - 1;
 
         // DBから1ページ分のレコード取得
-        pageRecords = repository.GetList(zeroBasePageIndex * PageCount,  PageCount);
+        pageRecords = repository.GetList(Model, zeroBasePageIndex * PageCount,  PageCount);
         StateHasChanged();
     }
     #endregion
@@ -129,6 +182,7 @@ else
     /// <param name="firstRender">初回表示か否か</param>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        var oldPage = Page;
         if (firstRender)
         {
             try
@@ -154,10 +208,15 @@ else
                     Page = 1;
                 }
 
-                // 検索結果を取得
-                ShowPage(Page);
+                // 検索条件の復元
+                var tempModel = await GetAsync<InputOrderModel>(SessionOrderSearch);
+                if (tempModel is not null) 
+                    Model = tempModel;
 
-                Logger.LogInformation(await GetLogMessage($"検索結果:{repository.GetTotalRecord()}件"));
+                // 検索結果を取得(総レコード数更新)
+                ShowPage(Page, true);
+
+                Logger.LogInformation(await GetLogMessage($"検索結果:{repository.GetTotalRecord(Model)}件"));
             }
             catch (Exception ex)
             {
@@ -169,6 +228,30 @@ else
                 Logger.LogInformation(await GetLogMessage("終了"));
             }
         }
+
+        if (oldPage <= 0)
+        {
+            await DeleteAsync(SessionOrderSearch);
+            Model = new();
+            TotalRecords = repository.GetTotalRecord(Model);
+            Navigation.NavigateTo("/order/1");
+        }
+    }
+
+    /// <summary>
+    /// 検索イベント
+    /// </summary>
+    private async Task Search()
+    {
+        // 1ページ
+        Page = 1;
+
+        // 検索条件の保存
+        await SetAsync(SessionOrderSearch, Model);
+
+        // 検索結果を取得(総レコード数更新)
+        ShowPage(Page, true);
+        Navigation.NavigateTo("/order/1");
     }
 
     /// <summary>

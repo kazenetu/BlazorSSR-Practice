@@ -26,7 +26,38 @@
 }
 else
 {
-    <Pagination PageName="/weather" CurrentPageNumber="@Page" TotalRecords="GetTotalRecords()" RecordsPerPage="@PageCount" />
+    <EditForm method="post" Model="Model" OnSubmit="Search" id="seach">
+        <div class="card col-md-8 offset-md-2 mb-5">
+            <div class="card-body">
+
+                <div class="row">
+                    <div class="col">
+                        <label class="col-md-4" for="StartDate">日付</label>
+                        <InputDate class="col-md-6" id="StartDate" @bind-Value="Model!.StartDate" />
+                    </div>
+                    <div class="col">
+                        <label class="col-md-4" for="EndDate">〜</label>
+                        <InputDate class="col-md-6" id="EndDate" @bind-Value="Model!.EndDate" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label class="col-md-4" for="StartDate">温度</label>
+                        <InputNumber class="col-md-4 text-end" id="StartDate" @bind-Value="Model!.StartTemperatureC" />
+                    </div>
+                    <div class="col">
+                        <label class="col-md-4" for="EndDate">〜</label>
+                        <InputNumber class="col-md-4 text-end" id="EndDate" @bind-Value="Model!.EndTemperatureC" />
+                    </div>
+                </div>
+
+            </div>
+            <button type="submit" form="seach" class="btn btn-outline-success">検索</button>
+        </div>
+    </EditForm>
+
+    <Pagination PageName="/weather" CurrentPageNumber="@Page" TotalRecords="@TotalRecords" RecordsPerPage="@PageCount" />
     <table class="table">
         <thead>
             <tr>
@@ -51,12 +82,18 @@ else
 }
 
 @code {
+    private InputWeatherForecastModel Model { get; set; } = new();
 
     /// <summary>
     /// ページング用：現在のページ数
     /// </summary>
     [Parameter]
     public int Page { get; set; }
+
+    /// <summary>
+    /// ページング用：総レコード数
+    /// </summary>
+    public int TotalRecords { get; set; }
 
     /// <summary>
     /// 定数：ページング用：1ページのレコード数
@@ -97,10 +134,10 @@ else
                     Page = 1;
                 }
 
-                // 検索結果を取得
-                ShowPage(Page);
+                // 検索結果を取得(総レコード数更新)
+                ShowPage(Page, true);
 
-                Logger.LogInformation(await GetLogMessage($"検索結果:{repository.GetTotalRecord()}件"));
+                Logger.LogInformation(await GetLogMessage($"検索結果:{repository.GetTotalRecord(Model)}件"));
             }
             catch (Exception ex)
             {
@@ -126,26 +163,35 @@ else
     }
 
     /// <summary>
-    /// 総レコード数取得
+    /// 検索イベント
     /// </summary>
-    /// <returns>総レコード数</returns>
-    private int GetTotalRecords()
+    private void Search()
     {
-        // DBから対象レコード数を返す
-        return repository.GetTotalRecord();
+        // 1ページ
+        Page = 1;
+
+        // 検索結果を取得(総レコード数更新)
+        ShowPage(Page, true);
     }
 
     /// <summary>
     /// 指定ページのレコード表示
     /// </summary>
     /// <param name="pageIndex">指定ページ(1ベース)</param>
-    private void ShowPage(int pageIndex)
+    /// <param name="isRefreshTotalRecords">総レコード数を更新するか否か</param>
+    private void ShowPage(int pageIndex, bool isRefreshTotalRecords = false)
     {
+        if (isRefreshTotalRecords)
+        {
+            // 総レコード数更新
+            TotalRecords = repository.GetTotalRecord(Model);
+        }
+
         // ゼロベースのページ数を設定
         var zeroBasePageIndex = pageIndex - 1;
 
         // DBから1ページ分のレコード取得
-        pageForecasts = repository.GetList(zeroBasePageIndex * PageCount,  PageCount);
+        pageForecasts = repository.GetList(Model, zeroBasePageIndex * PageCount,  PageCount);
         StateHasChanged();
     }
 

@@ -230,7 +230,9 @@
     /// <returns>表示中のレコード数、最大件数</returns>
     private string DisplayRecordCount()
     {
-        var startRecord = RecordsPerPage * (CurrentPageNumber - 1) + 1;
+        var pageNumber = CurrentPageNumber;
+        if (pageNumber <= 0) pageNumber = 1;
+        var startRecord = RecordsPerPage * (pageNumber - 1) + 1;
         var endRecord = startRecord + RecordsPerPage - 1;
         if (endRecord > TotalRecords)
         {

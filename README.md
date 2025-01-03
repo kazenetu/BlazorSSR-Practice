@@ -17,17 +17,25 @@ Blazor静的サーバーレンダリング (SSR) の実装確認
 ## フォルダ構成
 ```
 Root
-├─assets        // SQLiteファイルやフォントファイルなどを格納する
-├─Components    // ページやナビゲーションを格納
-│  ├─Layout
-│  ├─Pages
-│  └─Providers  // SessionStorageなどを管理するクラスを格納
-├─DBAccess      // DBアクセスクラス
-├─Extentions    // 拡張関数を格納
-├─Models        // Repositoryとページで利用するModelクラス
-├─Repositories  // 「SQL発行とModelクラスを返す」メソッド群
-│  └─Interfaces // DI設定用インターフェイス
-└─wwwroot
+├─ExampleFiles      // ファイルアップロードサンプル用アップロードファイル
+├─PdfReport         // PDFSharpを利用したPDF出力
+│ ├─DataLists      // PDF出力用データリスト
+│ ├─Interfaces     // PDF用インターフェイス
+│ ├─Layouts        // PDF出力用レイアウト(C#ソースコードでのPDF定義)
+│ └─assets         // フォントファイルを格納する
+├─WebApp
+└─WebApp.sln
+　 ├─Components    // ページやパーツ、ナビゲーションを格納
+　 │ ├─Layout
+　 │ ├─Pages
+　 │ ├─Parts        // ページングなどのパーツを格納
+　 │ └─Providers    // SessionStorageなどを管理するクラスを格納
+　 ├─DBAccess       // DBアクセスクラス
+　 ├─Extentions     // 拡張関数を格納
+　 ├─Models         // Repositoryとページで利用するModelクラス
+　 ├─Repositories   // 「SQL発行とModelクラスを返す」メソッド群
+　 ├─Interfaces     // DI設定用インターフェイス
+　 └─assets         // SQLiteファイルを格納する(デバッグ時に利用)
 ```
 
 ## ログ出力

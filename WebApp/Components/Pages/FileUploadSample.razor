@@ -18,6 +18,15 @@
 
 <h1>ファイルアップロードサンプル</h1>
 
+<InputRadioGroup @bind-Value="IsShiftJisMode">
+    <label>
+        <InputRadio Value="true" />ShiftJIS読み込み
+    </label>
+    <label>
+        <InputRadio Value="false" />UTF8S読み込み
+    </label>
+</InputRadioGroup>
+
 <div class="row page-header">
     <div class="col">
         <FileUpLoad OnInit="OnUploadInit" OnError="OnUploadError" OnLoad="OnLoadFile" />
@@ -36,6 +45,11 @@
 
 
 @code {
+    /// <summary>
+    /// ShiftJIS読み込みか否か
+    /// </summary>
+    private bool IsShiftJisMode = false;
+
     private List<string> Outputs { set; get; } = new();
 
     /// <summary>
@@ -125,7 +139,13 @@
             // ファイル内容確認
             List<OrderModel> saveItems = new();
             var lineIndex = 0;
-            await foreach (string line in fileModel.ReadLineAsync())
+            Func<IAsyncEnumerable<string>> targetReadLineAsync;
+            if (IsShiftJisMode)
+                targetReadLineAsync = fileModel.ReadShiftJisLineAsync;
+            else
+                targetReadLineAsync = fileModel.ReadLineAsync;
+
+            await foreach (string line in targetReadLineAsync())
             {
                 lineIndex++;
                 if (string.IsNullOrEmpty(line)) continue;

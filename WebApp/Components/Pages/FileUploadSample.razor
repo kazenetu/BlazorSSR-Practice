@@ -125,7 +125,7 @@
             // ファイル内容確認
             List<OrderModel> saveItems = new();
             var lineIndex = 0;
-            await foreach (string line in fileModel.ReadLineAsync())
+            await foreach (string line in fileModel.ReadShiftJisLineAsync())
             {
                 lineIndex++;
                 if (string.IsNullOrEmpty(line)) continue;

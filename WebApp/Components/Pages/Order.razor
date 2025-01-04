@@ -45,14 +45,14 @@ else
         <div class="card col-md-8 offset-md-2 mb-5">
             <div class="card-body">
 
-                <div class="row">
+                <div class="row row-margin">
                     <div class="col">
                         <label class="" for="SerchProductName">製品名(あいまい検索)</label>
                         <InputText class="col-md-6" id="SerchProductName" @bind-Value="Model!.ProductName" />
                     </div>
                 </div>
 
-                <div class="row">
+                <div class="row row-margin">
                     <div class="col">
                         <label class="col-md-4" for="StartUnitPrice">単価</label>
                         <InputNumber class="col-md-4 text-end" id="StartUnitPrice" @bind-Value="Model!.StartUnitPrice" />
@@ -63,7 +63,7 @@ else
                     </div>
                 </div>
 
-                <div class="row">
+                <div class="row row-margin">
                     <div class="col">
                         <label class="col-md-4" for="StartTotalPrice">合計金額</label>
                         <InputNumber class="col-md-4 text-end" id="StartTotalPrice" @bind-Value="Model!.StartTotalPrice" />

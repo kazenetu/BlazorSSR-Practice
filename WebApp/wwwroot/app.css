@@ -60,3 +60,8 @@ table.fiexed-header thead{
 {
     padding-bottom:1rem;
 }
+
+.nav-menu-multi-line
+{
+    line-height: 1.5em;
+}

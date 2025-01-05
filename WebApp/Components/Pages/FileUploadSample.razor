@@ -18,14 +18,16 @@
 
 <h1>ファイルアップロードサンプル</h1>
 
-<InputRadioGroup @bind-Value="IsShiftJisMode">
-    <label>
-        <InputRadio Value="true" />ShiftJIS読み込み
-    </label>
-    <label>
-        <InputRadio Value="false" />UTF8S読み込み
-    </label>
-</InputRadioGroup>
+<div class="row-margin">
+    <InputRadioGroup @bind-Value="IsShiftJisMode">
+        <label>
+            <InputRadio Value="true" />ShiftJIS読み込み
+        </label>
+        <label>
+            <InputRadio Value="false" />UTF8S読み込み
+        </label>
+    </InputRadioGroup>
+</div>
 
 <div class="row page-header">
     <div class="col">

@@ -29,19 +29,19 @@
 <EditForm method="post" Model="Model" OnValidSubmit="Save" id="edit">
     <div class="card col-md-8 offset-md-2">
         <div class="card-body">
-            <div class="row">
+            <div class="row row-margin">
                 <div class="col">
                     <label class="col-md-4" for="ProductName">商品名</label>
                     <InputText class="col-md-5" id="ProductName" @bind-Value="Model!.ProductName" />
                 </div>
             </div>
-            <div class="row">
+            <div class="row row-margin">
                 <div class="col">
                     <label class="col-md-4" for="UnitPrice">単価</label>
                     <InputNumber class="col-md-5" id="UnitPrice" @bind-Value="Model!.UnitPrice" TValue="decimal" />
                 </div>
             </div>
-            <div class="row">
+            <div class="row row-margin">
                 <div class="col">
                     <label class="col-md-4" for="Qty">数量</label>
                     <InputNumber class="col-md-5" id="Qty" @bind-Value="Model!.Qty" TValue="decimal" />

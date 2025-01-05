@@ -25,7 +25,7 @@ Welcome to your new app.
     <div class="card-body">
         <div class="card-title">漢字→カタカナ変換サンプル</div>
 
-        <div class="row">
+        <div class="row row-margin">
             <div class="col">
                 <label class="col-md-2" for="kanji">漢字</label>
                 <InputText class="col-md-9" id="kanji" @bind-Value="Kanji" @onblur="@(() => OnBlur("kanji", "furigana"))" />
@@ -36,7 +36,7 @@ Welcome to your new app.
             ↓
             </div>
         </div>
-        <div class="row">
+        <div class="row row-margin">
             <div class="col">
                 <label class="col-md-2" for="furigana">カタカナ</label>
                 <InputText class="col-md-9" id="furigana" @bind-Value="Katakana" />
@@ -60,19 +60,19 @@ Welcome to your new app.
       </div>
       <div class="modal-body">
         <EditForm method="post" Model="OrderEditModel" OnValidSubmit="Save" id="edit">
-            <div class="row">
+            <div class="row row-margin">
                 <div class="col">
                     <label class="col-md-2" for="ProductName">商品名</label>
                     <InputText class="col-md-6" id="ProductName" @bind-Value="OrderEditModel!.ProductName" />
                 </div>
             </div>
-            <div class="row">
+            <div class="row row-margin">
                 <div class="col">
                     <label class="col-md-2" for="UnitPrice">単価</label>
                     <InputNumber class="col-md-6" id="UnitPrice" @bind-Value="OrderEditModel!.UnitPrice" TValue="decimal" />
                 </div>
             </div>
-            <div class="row">
+            <div class="row row-margin">
                 <div class="col">
                     <label class="col-md-2" for="Qty">数量</label>
                     <InputNumber class="col-md-6" id="Qty" @bind-Value="OrderEditModel!.Qty" TValue="decimal" />

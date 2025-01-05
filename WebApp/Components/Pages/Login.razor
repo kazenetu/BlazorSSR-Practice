@@ -1,4 +1,4 @@
-﻿@page "/login"
+@page "/login"
 @namespace WebApp.Components.Pages
 @using WebApp.Models
 @using WebApp.Repositories.Interfaces
@@ -22,22 +22,22 @@
     </div>
 }
 <EditForm method="post" Model="Model" OnValidSubmit="SubmitLogin">
-    <div class="form-row">
-        <div class="form-group col-md-6 offset-md-3">
-            <label class="col-2">ID</label>
+    <div class="row  row-margin">
+        <div class="col col-md-6 offset-md-3">
+            <label class="col-3">ID</label>
             <InputText @bind-Value="Model!.ID" />
         </div>
     </div>
 
-    <div class="form-row">
-        <div class="form-group col-md-6 offset-md-3">
-            <label class="col-2">パスワード</label>
+    <div class="row row-margin">
+        <div class="col col-md-6 offset-md-3">
+            <label class="col-3">パスワード</label>
             <InputText type="password" @bind-Value="Model!.Password" />
         </div>
     </div>
 
-    <div class="form-row" style="margin-top:1em;">
-        <div class="form-group col-md-6 offset-md-3">
+    <div class="row row-margin" style="margin-top:1em;">
+        <div class="col col-md-5 offset-md-5 text-right">
             <input class="btn btn-primary mb-2 float-right" id="send" type="submit" value="ログイン" />
         </div>
     </div>

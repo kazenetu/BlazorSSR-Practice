@@ -79,7 +79,7 @@ else
         </div>
     </EditForm>
 
-    <Pagination PageName="/order" CurrentPageNumber="@Page" TotalRecords="@TotalRecords" RecordsPerPage="@Common.PageCount" />
+    <Pagination PageName="/order" CurrentPageNumber="@Page" TotalRecords="@TotalRecords" RecordsPerPage="@Common.PageRecordCount" />
     <table class="table">
         <thead>
             <tr>
@@ -166,7 +166,7 @@ else
         var zeroBasePageIndex = pageIndex - 1;
 
         // DBから1ページ分のレコード取得
-        pageRecords = repository.GetList(Model, zeroBasePageIndex * Common.PageCount,  Common.PageCount);
+        pageRecords = repository.GetList(Model, zeroBasePageIndex * Common.PageRecordCount,  Common.PageRecordCount);
         StateHasChanged();
     }
     #endregion

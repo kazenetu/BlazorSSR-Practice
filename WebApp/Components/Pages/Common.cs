@@ -8,5 +8,5 @@ public static class Common
     /// <summary>
     /// 定数：ページング用：1ページのレコード数
     /// </summary>
-    public const int PageCount = 10;
+    public const int PageRecordCount = 10;
 }

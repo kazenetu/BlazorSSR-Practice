@@ -57,7 +57,7 @@ else
         </div>
     </EditForm>
 
-    <Pagination PageName="/weather" CurrentPageNumber="@Page" TotalRecords="@TotalRecords" RecordsPerPage="@PageCount" />
+    <Pagination PageName="/weather" CurrentPageNumber="@Page" TotalRecords="@TotalRecords" RecordsPerPage="@Common.PageCount" />
     <table class="table">
         <thead>
             <tr>
@@ -94,11 +94,6 @@ else
     /// ページング用：総レコード数
     /// </summary>
     public int TotalRecords { get; set; }
-
-    /// <summary>
-    /// 定数：ページング用：1ページのレコード数
-    /// </summary>
-    private const int PageCount = 10;
 
     /// <summary>
     /// 1ページの表示レコード
@@ -191,7 +186,7 @@ else
         var zeroBasePageIndex = pageIndex - 1;
 
         // DBから1ページ分のレコード取得
-        pageForecasts = repository.GetList(Model, zeroBasePageIndex * PageCount,  PageCount);
+        pageForecasts = repository.GetList(Model, zeroBasePageIndex * Common.PageCount,  Common.PageCount);
         StateHasChanged();
     }
 

@@ -26,7 +26,6 @@ public partial class DIClass
             if(item.IsStatic || item.ReturnType != typeof(void))
                 continue;
 
-            Console.WriteLine($"{item.Name} {item.MemberType} {item.ReturnType} {item.ReturnParameter}");
             item.Invoke(di, [services]);
         }
     }

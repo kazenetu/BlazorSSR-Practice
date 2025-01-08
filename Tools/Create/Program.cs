@@ -5,9 +5,6 @@ class Program
 {
     static void Main(string[] args)
     {
-        var webAppPath = GetWebAppPath().Replace("\\", "/");
-        Console.WriteLine($"{webAppPath}");
-
         // パラメータ取得
         var argManager = new ArgManagers(args);
 
@@ -40,39 +37,12 @@ class Program
             return;
         }
 
-        webAppPath = Environment.CurrentDirectory+"/Output";
-
         // ファイル生成
+        var outputPath = Environment.CurrentDirectory+"/Output";
         var mode = argManager.GetRequiredArg(0);
         var uri = argManager.GetRequiredArg(1);
         var editKeyType = argManager.GetOptionArg(new List<string>() { "--edit_key_type", "-ekt" });
-        var createFiles = new CreateFils(webAppPath, mode!, uri!, editKeyType);
+        var createFiles = new CreateFils(outputPath, mode!, uri!, editKeyType);
         createFiles.Create();
-    }
-
-    /// <summary>
-    /// WebAppのパスを取得する
-    /// </summary>
-    /// <returns>WebAppのパス(見つからない場合はstring.Empty)</returns>
-    private static string GetWebAppPath()
-    {
-        var result = string.Empty;
-
-        // カレントパスがルートパス
-        result = Path.Combine(Environment.CurrentDirectory, "WebApp");
-        if (Directory.Exists(result))
-        {
-            return result;
-        }
-
-        // カレントパスが本ツールのルートパス
-        result = Path.Combine(Environment.CurrentDirectory, "../../WebApp");
-        if (Directory.Exists(result))
-        {
-            return result;
-        }
-
-        // 見つからない
-        return string.Empty;
     }
 }

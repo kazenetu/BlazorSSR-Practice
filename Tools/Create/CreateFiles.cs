@@ -76,7 +76,19 @@ public class CreateFils
     {
         var rootPath = $"{System.AppDomain.CurrentDomain.BaseDirectory}Templates/list";
 
+        // ページ
         CreateFile(rootPath, "Components/Pages", "Page.txt", $"{ClassName}.razor");
+
+        // モデル
+        CreateFile(rootPath, "Models", "Model.txt", $"{ClassName}Model.cs");
+        CreateFile(rootPath, "Models", "InputModel.txt", $"Input{ClassName}Model.cs");
+
+        // リポジトリ
+        CreateFile(rootPath, "Repositories", "Repository.txt", $"{ClassName}Repository.cs");
+        CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{ClassName}Repository.cs");
+
+        // DI
+        CreateFile(rootPath, "DI", "DI.txt", $"DI{ClassName}.cs");
     }
 
     /// <summary>

@@ -1,9 +1,13 @@
 namespace WebApp.Models;
 
+/// <summary>
+/// Input$ClassName$Model 検索条件
+/// </summary>
 public class Input$ClassName$Model
 {
-    public DateOnly? StartDate { set; get; }
-    public DateOnly? EndDate { set; get; }
-    public int? StartTemperatureC { set; get; }
-    public int? EndTemperatureC { set; get; }
+    // TODO 検索条件追加
+    // public DateOnly? StartDate { set; get; }
+    // public DateOnly? EndDate { set; get; }
+    // public int? StartTemperatureC { set; get; }
+    // public int? EndTemperatureC { set; get; }
 }

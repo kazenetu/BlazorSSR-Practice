@@ -31,7 +31,8 @@ public class $ClassName$Repository : RepositoryBase, I$ClassName$Repository
 
         var sql = new StringBuilder();
 
-        sql.AppendLine("SELECT count(target_date) AS cnt FROM t_teather_forecast");
+        // TODO 発行SQL作成
+        // sql.AppendLine("SELECT count(target_date) AS cnt FROM t_teather_forecast");
         sql.Append(GetWhere(inputModel));
 
 
@@ -61,19 +62,20 @@ public class $ClassName$Repository : RepositoryBase, I$ClassName$Repository
 
         var sql = new StringBuilder();
 
-        sql.AppendLine("SELECT target_date, temperature_c, summary FROM t_teather_forecast");
-        sql.Append(GetWhere(inputModel));
-        sql.AppendLine("ORDER BY target_date");
+        // TODO 発行SQL作成
+        // sql.AppendLine("SELECT target_date, temperature_c, summary FROM t_teather_forecast");
+        // sql.Append(GetWhere(inputModel));
+        // sql.AppendLine("ORDER BY target_date");
         sql.AppendLine(db!.GetLimitSQL(recordCount, startIndex));
 
         var sqlResult = db.Fill(sql.ToString());
         foreach (DataRow row in sqlResult.Rows)
         {
-            // 天気予報情報
-            var targetDate = Parse<string>(row["target_date"]);
-            var temperatureC = Parse<int>(row["temperature_c"]);
-            var summary = Parse<string>(row["summary"]);
-            result.Add(new $ClassName$Model(DateOnly.Parse(targetDate), temperatureC, summary));
+            // TODO モデルに変換、追加
+            // var targetDate = Parse<string>(row["target_date"]);
+            // var temperatureC = Parse<int>(row["temperature_c"]);
+            // var summary = Parse<string>(row["summary"]);
+            // result.Add(new $ClassName$Model(DateOnly.Parse(targetDate), temperatureC, summary));
         }
         return [.. result];
     }
@@ -88,38 +90,42 @@ public class $ClassName$Repository : RepositoryBase, I$ClassName$Repository
         if(db is null) return string.Empty;
 
         var where = new StringBuilder();
-        if(inputModel.StartDate is not null)
-        {
-            if (where.Length > 0) where.Append(" AND ");
-            where.AppendLine(" target_date >= @startDate");
 
-            // Param設定
-            db.AddParam("@startDate", inputModel.StartDate);
-        }
-        if(inputModel.EndDate is not null)
-        {
-            if (where.Length > 0) where.Append(" AND ");
-            where.AppendLine(" target_date <= @endDate");
+        // TODO 条件の確認と追加
+        // if(inputModel.StartDate is not null)
+        // {
+        //     if (where.Length > 0) where.Append(" AND ");
+        //     where.AppendLine(" target_date >= @startDate");
 
-            // Param設定
-            db.AddParam("@endDate", inputModel.EndDate);
-        }
-        if(inputModel.StartTemperatureC is not null)
-        {
-            if (where.Length > 0) where.Append(" AND ");
-            where.AppendLine(" temperature_c >= @startTemperatureC");
+        //     // Param設定
+        //     db.AddParam("@startDate", inputModel.StartDate);
+        // }
+        // if(inputModel.EndDate is not null)
+        // {
+        //     if (where.Length > 0) where.Append(" AND ");
+        //     where.AppendLine(" target_date <= @endDate");
 
-            // Param設定
-            db.AddParam("@startTemperatureC", inputModel.StartTemperatureC);
-        }
-        if(inputModel.EndTemperatureC is not null)
-        {
-            if (where.Length > 0) where.Append(" AND ");
-            where.AppendLine(" temperature_c <= @endTemperatureC");
+        //     // Param設定
+        //     db.AddParam("@endDate", inputModel.EndDate);
+        // }
+        // if(inputModel.StartTemperatureC is not null)
+        // {
+        //     if (where.Length > 0) where.Append(" AND ");
+        //     where.AppendLine(" temperature_c >= @startTemperatureC");
 
-            // Param設定
-            db.AddParam("@endTemperatureC", inputModel.EndTemperatureC);
-        }
+        //     // Param設定
+        //     db.AddParam("@startTemperatureC", inputModel.StartTemperatureC);
+        // }
+        // if(inputModel.EndTemperatureC is not null)
+        // {
+        //     if (where.Length > 0) where.Append(" AND ");
+        //     where.AppendLine(" temperature_c <= @endTemperatureC");
+
+        //     // Param設定
+        //     db.AddParam("@endTemperatureC", inputModel.EndTemperatureC);
+        // }
+
+        // 条件が存在する場合は条件句を返す
         if (where.Length > 0) return " WHERE " + where.ToString();
 
         return string.Empty;

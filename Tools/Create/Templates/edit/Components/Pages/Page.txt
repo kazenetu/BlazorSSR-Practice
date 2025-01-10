@@ -1,0 +1,234 @@
+﻿@page "/$uri$/{key?}"
+@namespace WebApp.Components.Pages
+@using WebApp.Models
+@using WebApp.Repositories.Interfaces
+@inherits Base.PageBase
+@inject ILogger<$ClassName$> Logger
+@inject I$ClassName$Repository repository
+@inject NavigationManager Navigation
+
+@if (IsBeforeLoginCheck)
+{
+    // ログイン確認前は表示なし
+    return;
+}
+
+<PageTitle>$ClassName$</PageTitle>
+
+<h1>$ClassName$</h1>
+
+<div class="row page-header">
+    <div class="col">
+        <button @onclick="Cancel" class="btn btn-outline-success">キャンセル</button>
+    </div>
+    <div class="col">
+        <button type="submit" form="edit" class="btn btn-outline-success">保存</button>
+    </div>
+</div>
+
+<EditForm method="post" Model="Model" OnValidSubmit="Save" id="edit">
+    <div class="card col-md-8 offset-md-2">
+        <div class="card-body">
+            @* 入力項目 実装例 *@
+            @*
+            <div class="row row-margin">
+                <div class="col">
+                    <label class="col-md-4" for="ProductName">商品名</label>
+                    <InputText class="col-md-5" id="ProductName" @bind-Value="Model!.ProductName" />
+                </div>
+            </div>
+            <div class="row row-margin">
+                <div class="col">
+                    <label class="col-md-4" for="UnitPrice">単価</label>
+                    <InputNumber class="col-md-5" id="UnitPrice" @bind-Value="Model!.UnitPrice" TValue="decimal" />
+                </div>
+            </div>
+            <div class="row row-margin">
+                <div class="col">
+                    <label class="col-md-4" for="Qty">数量</label>
+                    <InputNumber class="col-md-5" id="Qty" @bind-Value="Model!.Qty" TValue="decimal" />
+                </div>
+            </div>
+            *@
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    /// <summary>
+    /// キー情報
+    /// </summary>
+    [Parameter]
+    public $EditKeyType$? Key { get; set; }
+
+    /// <summary>
+    /// 編集対象
+    /// </summary>
+    [SupplyParameterFromForm]
+    private $ClassName$Model? Model { get; set; }
+
+    /// <summary>
+    /// 初期処理
+    /// </summary>
+    /// <param name="firstRender">初回表示か否か</param>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                Logger.LogInformation(await GetLogMessage("開始"));
+
+                // 未ログインの場合は即時終了
+                if (!await LoginCheck())
+                {
+                    Logger.LogInformation(await GetLogMessage("ログインチェック失敗"));
+                    return;
+                }
+
+                // ログイン確認完了
+                IsBeforeLoginCheck = false;
+
+                Logger.LogInformation(await GetLogMessage("ログインチェック成功"));
+
+                // 対象データを検索
+                Model = repository.GetEditData(Key ?? string.Empty);
+
+                StateHasChanged();
+
+                Logger.LogInformation(await GetLogMessage("対象データ取得完了"));
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, await GetLogError(ex));
+                GotoErrorPage();
+            }
+            finally
+            {
+                Logger.LogInformation(await GetLogMessage("終了"));
+            }
+        }
+    }
+
+    /// <summary>
+    /// 保存
+    /// </summary>
+    /// <param name="editContext"></param>
+    private async Task Save(EditContext editContext)
+    {
+        try
+        {
+            Logger.LogInformation(await GetLogMessage("保存開始"));
+
+            // エラーメッセージ作成
+            var errorMessages = new System.Text.StringBuilder();
+
+            // 入力モデル作成
+            var model = editContext.Model as $ClassName$Model;
+
+            // TODO 入力チェック
+            @*
+            if (string.IsNullOrEmpty(model?.ProductName))
+            {
+                // エラーメッセージ
+                errorMessages.AppendLine("製品名を入力してください。");
+            }
+            if (model?.Qty <= 0)
+            {
+                // エラーメッセージ
+                errorMessages.AppendLine("数量は1以上にしてください。");
+            }
+            if (model?.UnitPrice <= 0)
+            {
+                // エラーメッセージ
+                errorMessages.AppendLine("単価は1以上にしてください。");
+            }
+            if (!string.IsNullOrEmpty(errorMessages.ToString()))
+            {
+                Logger.LogInformation(await GetLogMessage("入力エラー"));
+
+                await ShowAlert(errorMessages.ToString());
+                return;
+            }
+            *@
+
+            // 楽観的ロック確認
+            if (!string.IsNullOrEmpty(Key) && Model is not null)
+            {
+                var dbModel = repository.GetEditData(Key);
+                if (Model.Version != dbModel.Version)
+                {
+                    Logger.LogInformation(await GetLogMessage($"楽観ロックエラー 取得時:{Model.Version} 最新:{dbModel.Version}"));
+
+                    await ShowAlert($"すでに更新されています。{Environment.NewLine}キャンセルを押して、再度編集ボタンを押してください。");
+                    return;
+                }
+            }
+
+            // 新規登録時に「既存データのキー項目を入力」チェック
+            if (string.IsNullOrEmpty(Key) && Model is not null)
+            {
+                // DB取得
+                var dbResult = repository.GetEditData(Model.Key);
+
+                // データが存在する場合はエラーとする
+                if (!string.IsNullOrEmpty(dbResult.Key))
+                {
+                    Logger.LogInformation(await GetLogMessage($"既存データ登録済エラー 対象データ:{dbResult.Key}"));
+
+                    await ShowAlert($"{dbResult.Key}は登録済みです。");
+                    return;
+                }
+            }
+
+            // 登録・更新
+            var userModel = await GetUserAsync();
+            if (repository.Save(Model!, userModel!.ID, GetType().Name))
+            {
+                Logger.LogInformation(await GetLogMessage($"保存成功"));
+                await ShowAlert("保存しました。", SaveOK);
+            }
+            else
+            {
+                Logger.LogInformation(await GetLogMessage($"保存失敗"));
+                await ShowAlert("保存失敗しました。");
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, await GetLogError(ex));
+            GotoErrorPage();
+        }
+        finally
+        {
+            Logger.LogInformation(await GetLogMessage("保存終了"));
+        }
+    }
+
+    /// <summary>
+    /// 保存成功アラートOKボタンイベント
+    /// </summary>
+    private async Task SaveOK()
+    {
+        // 呼び出し元ページに画面遷移
+        await PageBackAsync();
+    }
+
+    /// <summary>
+    /// キャンセル確認
+    /// </summary>
+    private async Task Cancel()
+    {
+        await ShowConfirm("編集をキャンセルしますか？", ShowConfirmYes);
+    }
+
+    /// <summary>
+    /// キャンセル
+    /// </summary>
+    /// <returns></returns>
+    private async Task ShowConfirmYes()
+    {
+        // 画面遷移
+        await PageBackAsync();
+    }
+}

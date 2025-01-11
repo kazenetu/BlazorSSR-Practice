@@ -92,6 +92,27 @@ public class CreateFils
     }
 
     /// <summary>
+    /// 編集生成
+    /// </summary>
+    private void Edit()
+    {
+        var rootPath = $"{System.AppDomain.CurrentDomain.BaseDirectory}Templates/edit";
+
+        // ページ
+        CreateFile(rootPath, "Components/Pages", "Page.txt", $"{ClassName}.razor");
+
+        // モデル
+        CreateFile(rootPath, "Models", "Model.txt", $"{ClassName}Model.cs");
+
+        // リポジトリ
+        CreateFile(rootPath, "Repositories", "Repository.txt", $"{ClassName}Repository.cs");
+        CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{ClassName}Repository.cs");
+
+        // DI
+        CreateFile(rootPath, "DI", "DI.txt", $"DI{ClassName}.cs");
+    }
+
+    /// <summary>
     /// 
     /// </summary>
     /// <param name="rootPath"></param>
@@ -108,15 +129,9 @@ public class CreateFils
         contents = contents.Replace("$uri$", Uri);
         if (EditKeyType is not null)
             contents = contents.Replace("$EditKeyType$", EditKeyType);
+        else
+            contents = contents.Replace("$EditKeyType$", "int");
         CreateFile($"{RootPath}/{contentsPath}", outputFileName, contents);
-    }
-
-    /// <summary>
-    /// 編集生成
-    /// </summary>
-    private void Edit()
-    {
-
     }
 
     /// <summary>

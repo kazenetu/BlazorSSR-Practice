@@ -113,24 +113,36 @@ public class CreateFils
     }
 
     /// <summary>
-    /// 
+    /// テンプレートファイルをベースにスケルトンコードを自動生成
     /// </summary>
-    /// <param name="rootPath"></param>
-    /// <param name="contentsPath"></param>
-    /// <param name="temlateFileName"></param>
-    /// <param name="outputFileName"></param>
+    /// <param name="rootPath">テンプレートファイルの起点パス</param>
+    /// <param name="contentsPath">読込と書き込みのパス</param>
+    /// <param name="temlateFileName">テンプレートファイル名</param>
+    /// <param name="outputFileName">書き込みファイル名</param>
     /// <returns></returns>
     private void CreateFile(string rootPath, string contentsPath, string temlateFileName, string outputFileName)
     {
+        // テンプレートファイル読込
         var templatePath = Path.Combine(rootPath, contentsPath, temlateFileName);
         var contents = string.Empty;
         contents = ReadTemplate(templatePath);
+
+        // 実際のクラス名など置き換え
         contents = contents.Replace("$ClassName$", ClassName);
         contents = contents.Replace("$uri$", Uri);
+
+        var defaultEditKeyType = "default";
         if (EditKeyType is not null)
+        {
             contents = contents.Replace("$EditKeyType$", EditKeyType);
+            if (EditKeyType.ToLower() == "string")
+                defaultEditKeyType = "string.Empty";
+        }
         else
             contents = contents.Replace("$EditKeyType$", "int");
+        contents = contents.Replace("$DefaultEditKeyType$", defaultEditKeyType);
+        
+        // インスタンスフィールド「RootPath」起点でファイル書き出し
         CreateFile($"{RootPath}/{contentsPath}", outputFileName, contents);
     }
 
@@ -143,21 +155,21 @@ public class CreateFils
     }
 
     /// <summary>
-    /// 
+    /// テンプレートファイルの読込
     /// </summary>
-    /// <param name="templatePath"></param>
-    /// <returns></returns>
+    /// <param name="templatePath">テンプレートファイルのパス</param>
+    /// <returns>読込結果の文字列</returns>
     private string ReadTemplate(string templatePath)
     {
         return File.ReadAllText(templatePath);
     }
 
     /// <summary>
-    /// 
+    /// ファイル書き出し
     /// </summary>
-    /// <param name="path"></param>
-    /// <param name="fileName"></param>
-    /// <param name="contents"></param>
+    /// <param name="path">書き出しパス</param>
+    /// <param name="fileName">書き出しファイル名</param>
+    /// <param name="contents">書き出し内容(ソースコード)</param>
     private void CreateFile(string path, string fileName, string contents)
     {
         // ディレクトリ作成

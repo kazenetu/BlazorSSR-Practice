@@ -1,7 +1,18 @@
 @namespace WebApp.Components.Parts
 @using WebApp.Models.Parts
+@inject IJSRuntime JS
 
-<InputFile OnChange="ChangeFile" class="form-control" />
+<InputFile OnChange="ChangeFile" @ref="filePicker" style="display:none;" />
+<div class="input-group mb-3">
+    <span class="input-group-text" id="inputGroup-sizing-default">
+        <button type="button" @onclick="() => OnFileInit()" class="btn btn-success btn-sm">ファイル選択</button>
+    </span>
+    <span class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">@FileName</span>
+</div>
+
+<script>
+    window.triggerClick = (elt) => elt.click();
+</script>
 
 @code {
     /// <summary>
@@ -33,14 +44,36 @@
     public EventCallback<(string alertMsg, string logMsg)> OnError { get; set; }
 
     /// <summary>
+    /// 選択済みファイル名
+    /// </summary>
+    private string? FileName;
+
+    /// <summary>
+    /// ファイル指定コントロール
+    /// </summary>
+    private InputFile? filePicker;
+
+    /// <summary>
+    /// ファイル選択ボタンクリックイベント
+    /// </summary>
+    private async Task OnFileInit()
+    {
+        // 初期化メソッド呼び出し
+        await OnInit.InvokeAsync();
+
+        // ファイル名初期化
+        FileName = string.Empty;
+
+        // ファイル選択を開く
+        await JS.InvokeAsync<object>("triggerClick", filePicker!.Element);
+    }
+
+    /// <summary>
     /// 受信ファイル変更イベント
     /// </summary>
     /// <param name="e">受信ファイル情報</param>
     private async Task ChangeFile(InputFileChangeEventArgs e)
     {
-        // 初期化メソッド呼び出し
-        await OnInit.InvokeAsync();
-
         // Model作成
         var fileModel = new UpLoadeModel(e.File);
 
@@ -60,6 +93,9 @@
                                        $"{exiextension}ファイル以外 ファイル名={errorFileName}"));
             return;
         }
+
+        //ファイル名格納
+        FileName = fileModel.FileName;
 
         // メソッド呼び出し
         await OnLoad.InvokeAsync(fileModel);

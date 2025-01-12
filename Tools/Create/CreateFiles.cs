@@ -113,6 +113,14 @@ public class CreateFils
     }
 
     /// <summary>
+    /// その他生成
+    /// </summary>
+    private void Other()
+    {
+
+    }
+
+    /// <summary>
     /// テンプレートファイルをベースにスケルトンコードを自動生成
     /// </summary>
     /// <param name="rootPath">テンプレートファイルの起点パス</param>
@@ -144,14 +152,6 @@ public class CreateFils
         
         // インスタンスフィールド「RootPath」起点でファイル書き出し
         CreateFile($"{RootPath}/{contentsPath}", outputFileName, contents);
-    }
-
-    /// <summary>
-    /// その他生成
-    /// </summary>
-    private void Other()
-    {
-
     }
 
     /// <summary>

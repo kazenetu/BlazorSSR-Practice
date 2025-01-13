@@ -18,41 +18,51 @@
 
 <h1>ファイルアップロードサンプル</h1>
 
-<div class="row-margin">
-    <InputRadioGroup @bind-Value="IsShiftJisMode">
-        <label>
-            <InputRadio Value="true" />ShiftJIS読み込み
-        </label>
-        <label>
-            <InputRadio Value="false" />UTF8S読み込み
-        </label>
-    </InputRadioGroup>
-</div>
-
-<div class="row page-header">
-    <div class="col">
-        <FileUpLoad OnInit="OnUploadInit" OnError="OnUploadError" OnLoad="OnLoadFile" />
+<EditForm method="post" Model="Model" OnValidSubmit="Save" id="edit">
+    <div class="row-margin">
+        <InputRadioGroup @bind-Value="Model.IsShiftJisMode">
+            <label>
+                <InputRadio Value="true" />ShiftJIS読み込み
+            </label>
+            <label>
+                <InputRadio Value="false" />UTF8読み込み
+            </label>
+        </InputRadioGroup>
     </div>
-</div>
 
-@if (Outputs.Any())
-{
-    @foreach (var output in Outputs)
-    {
-        <div>
-            @output
+    <div class="row page-header">
+        <div class="col">
+            <FileUpLoad OnInit="OnUploadInit" OnError="OnUploadError" OnLoad="OnLoadFile" />
         </div>
-    }
+    </div>
+
+    <div class="col text-center">
+        <button type="submit" form="edit" class="btn btn-success btn-lg">読込み</button>
+    </div>
+</EditForm>
+
+@if (ErrorMessages.Any())
+{
+    <div class="row-margin">
+        @foreach (var errorMessage in ErrorMessages)
+        {
+            <div>
+                @errorMessage
+            </div>
+        }
+    </div>
 }
 
 
 @code {
     /// <summary>
-    /// ShiftJIS読み込みか否か
+    /// エラーメッセージ
     /// </summary>
-    private bool IsShiftJisMode = false;
+    private List<string> ErrorMessages { set; get; } = new();
 
-    private List<string> Outputs { set; get; } = new();
+    private FileUploadSampleModel Model = new();
+
+    private UpLoadeModel? FileModel;
 
     /// <summary>
     /// 初期処理
@@ -98,8 +108,9 @@
     private void OnUploadInit()
     {
         // ファイル内容のクリア
-        Outputs.Clear();
+        ErrorMessages.Clear();
         StateHasChanged();
+        FileModel = null;
     }
 
     /// <summary>
@@ -118,7 +129,7 @@
         await ShowAlert(alertMsg);
 
         // ログ書き出しエラー表示に追加
-        Outputs.Add(alertMsg);
+        ErrorMessages.Add(alertMsg);
         StateHasChanged();
     }
 
@@ -132,6 +143,59 @@
         {
             Logger.LogInformation(await GetLogMessage("ファイル読み込み開始"));
 
+            FileModel = fileModel;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, await GetLogError(ex));
+            GotoErrorPage();
+        }
+        finally
+        {
+            Logger.LogInformation(await GetLogMessage("ファイル読み込み終了"));
+        }
+    }
+
+    /// <summary>
+    /// 保存
+    /// </summary>
+    /// <param name="editContext"></param>
+    private async Task Save(EditContext editContext)
+    {
+        try
+        {
+            Logger.LogInformation(await GetLogMessage("保存開始"));
+
+            // ファイル内容のクリア
+            ErrorMessages.Clear();
+
+            // TODO 入力チェック
+            if (Model.IsShiftJisMode is null)
+            {
+                ErrorMessages.Add("読込みモードが選択されていません");
+            }
+            if (FileModel is null)
+            {
+                ErrorMessages.Add("ファイルが選択されていません");
+            }
+
+            // 入力エラーがある場合はそのまま終了
+            if (await IsExistErrorMessage()) return;
+
+            // アップロードファイル読み込み
+            Func<IAsyncEnumerable<string>> targetReadLineAsync;
+            if (Model!.IsShiftJisMode!.Value)
+                targetReadLineAsync = FileModel!.ReadShiftJisLineAsync;
+            else
+                targetReadLineAsync = FileModel!.ReadLineAsync;
+
+            var csvLines = new List<string>();
+            await foreach (string line in targetReadLineAsync())
+            {
+                csvLines.Add(line);
+            }
+
+
             // キーリスト取得
             var oderKeys = repository.GetOderKeyList();
 
@@ -141,23 +205,19 @@
             // ファイル内容確認
             List<OrderModel> saveItems = new();
             var lineIndex = 0;
-            Func<IAsyncEnumerable<string>> targetReadLineAsync;
-            if (IsShiftJisMode)
-                targetReadLineAsync = fileModel.ReadShiftJisLineAsync;
-            else
-                targetReadLineAsync = fileModel.ReadLineAsync;
-
-            await foreach (string line in targetReadLineAsync())
+            foreach (string line in csvLines)
             {
                 lineIndex++;
-                if (string.IsNullOrEmpty(line)) continue;
+
+                // ヘッダー行 または 空行の場合は取込を行わない
+                if (lineIndex == 1 || string.IsNullOrEmpty(line)) continue;
 
                 var items = line.Split(",");
 
                 // エラー：項目がlineColmunCountではない
                 if (items.Length != lineColmunCount)
                 {
-                    Outputs.Add(GetErrorMessage(lineIndex, $"項目数が{lineColmunCount}ではありません"));
+                    ErrorMessages.Add(GetErrorMessage(lineIndex, $"項目数が{lineColmunCount}ではありません"));
                     continue;
                 }
 
@@ -178,7 +238,7 @@
                     if (existRecord.TotalPrice != total)
                     {
                         var msg = $"金額が一致しません。 商品名:{productName} 単価:{unitPrice}✕数量:{qty}＝合計金額:{total}　データの合計金額:{existRecord.TotalPrice}";
-                        Outputs.Add(GetErrorMessage(lineIndex, msg));
+                        ErrorMessages.Add(GetErrorMessage(lineIndex, msg));
                     }
                     continue;
                 }
@@ -186,23 +246,11 @@
                 saveItems.Add(new OrderModel(0, productName, unitPrice, qty, total, 1));
             }
 
-            // 登録対象なしの場合はエラー
-            if (!Outputs.Any() && saveItems.Count == 0)
-            {
-                Outputs.Add("登録件数がゼロ件です。");
-            }
-
             // 画面反映
             StateHasChanged();
 
-            //　エラーがある場合はその旨のメッセージ表示
-            if (Outputs.Any())
-            {
-                await ShowAlert("エラーがあります。ご確認ください。");
-
-                // そのまま終了
-                return;
-            }
+            //　エラーがある場合はそのまま終了
+            if (await IsExistErrorMessage()) return;
 
             // 一括登録
             var userModel = await GetUserAsync();
@@ -224,7 +272,7 @@
         }
         finally
         {
-            Logger.LogInformation(await GetLogMessage("ファイル読み込み終了"));
+            Logger.LogInformation(await GetLogMessage("保存終了"));
         }
 
         // エラメッセージを返す
@@ -232,5 +280,33 @@
         {
             return $"{lineNumber}行目　{message}";
         }
+    }
+
+    /// <summary>
+    /// エラーメッセージ存在確認と存在時にメッセージ表示
+    /// </summary>
+    /// <returns>エラー有り無し</returns>
+    private async Task<bool> IsExistErrorMessage()
+    {
+        var result = false;
+
+        if (ErrorMessages.Any())
+        {
+            result = true;
+        }
+        if(result)
+        {
+            await ShowAlert("エラーがあります。ご確認ください。");
+        }
+
+        return result;
+    }
+
+    public class FileUploadSampleModel
+    {
+        /// <summary>
+        /// ShiftJIS読み込みか否か
+        /// </summary>
+        public bool? IsShiftJisMode{ get; set; }
     }
 }

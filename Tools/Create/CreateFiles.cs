@@ -11,6 +11,7 @@ public class CreateFils
         None,
         List,
         Edit,
+        Upload,
         Other,
     }
 
@@ -36,6 +37,7 @@ public class CreateFils
         {
             "list" => ModeEnum.List,
             "edit" => ModeEnum.Edit,
+            "upload" => ModeEnum.Upload,
             "other" => ModeEnum.Other,
             _ => ModeEnum.None
         };
@@ -61,6 +63,9 @@ public class CreateFils
                 break;
             case ModeEnum.Edit:
                 Edit();
+                break;
+            case ModeEnum.Upload:
+                Upload();
                 break;
             case ModeEnum.Other:
                 Other();
@@ -103,6 +108,28 @@ public class CreateFils
 
         // モデル
         CreateFile(rootPath, "Models", "Model.txt", $"{ClassName}Model.cs");
+
+        // リポジトリ
+        CreateFile(rootPath, "Repositories", "Repository.txt", $"{ClassName}Repository.cs");
+        CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{ClassName}Repository.cs");
+
+        // DI
+        CreateFile(rootPath, "DI", "DI.txt", $"DI{ClassName}.cs");
+    }
+
+    /// <summary>
+    /// アップロード生成
+    /// </summary>
+    private void Upload()
+    {
+        var rootPath = $"{System.AppDomain.CurrentDomain.BaseDirectory}Templates/upload";
+
+        // ページ
+        CreateFile(rootPath, "Components/Pages", "Page.txt", $"{ClassName}.razor");
+
+        // モデル
+        CreateFile(rootPath, "Models", "Model.txt", $"{ClassName}Model.cs");
+        CreateFile(rootPath, "Models", "InputModel.txt", $"Input{ClassName}Model.cs");
 
         // リポジトリ
         CreateFile(rootPath, "Repositories", "Repository.txt", $"{ClassName}Repository.cs");

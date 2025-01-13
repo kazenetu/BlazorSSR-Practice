@@ -1,0 +1,21 @@
+using WebApp.Models;
+
+namespace WebApp.Repositories.Interfaces;
+
+public interface I$ClassName$Repository : IRepositoryBase
+{
+    /// <summary>
+    /// キーリストを取得
+    /// </summary>
+    /// <returns>キーリスト</returns>
+    List<$ClassName$Model> GetKeyList();
+
+    /// <summary>
+    /// 編集項目の登録(バルクインサート)
+    /// </summary>
+    /// <param name="targets">登録対象リスト</param>
+    /// <param name="userId">ユーザーID</param>
+    /// <param name="programId">プログラムID</param>
+    /// <returns>成功/失敗</returns>
+    bool Save(IReadOnlyList<$ClassName$Model> targets, string userId, string programId);
+}

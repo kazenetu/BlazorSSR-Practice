@@ -1,0 +1,343 @@
+﻿@page "/$uri$"
+@namespace WebApp.Components.Pages
+@using WebApp.Components.Parts
+@using WebApp.Models
+@using WebApp.Models.Parts
+@using WebApp.Repositories.Interfaces
+@inherits Base.PageBase
+@inject I$ClassName$Repository repository
+@inject ILogger<$ClassName$> Logger
+
+@if (IsBeforeLoginCheck)
+{
+    // ログイン確認前は表示なし
+    return;
+}
+
+<PageTitle>$ClassName$</PageTitle>
+
+<h1>$ClassName$</h1>
+
+<EditForm method="post" Model="Model" OnValidSubmit="Save" id="edit">
+    
+    @* 追加入力 *@
+    @*
+    <div class="row-margin">
+        <InputRadioGroup @bind-Value="Model.IsShiftJisMode">
+            <label>
+                <InputRadio Value="true" />ShiftJIS読み込み
+            </label>
+            <label>
+                <InputRadio Value="false" />UTF8読み込み
+            </label>
+        </InputRadioGroup>
+    </div>
+    *@
+
+    @* ファイルアップロード *@
+    <div class="row page-header">
+        <div class="col">
+            <FileUpLoad OnInit="OnUploadInit" OnError="OnUploadError" OnLoad="OnLoadFile" />
+        </div>
+    </div>
+
+    @* 実行ボタン *@
+    <div class="col text-center">
+        <button type="submit" form="edit" class="btn btn-success btn-lg">読込み</button>
+    </div>
+</EditForm>
+
+@if (ErrorMessages.Any())
+{
+    <div class="row-margin">
+        @foreach (var errorMessage in ErrorMessages)
+        {
+            <div>
+                @errorMessage
+            </div>
+        }
+    </div>
+}
+
+
+@code {
+    /// <summary>
+    /// ShiftJIS読み込みか否か
+    /// </summary>
+    /// <remarks>読み込み対象の文字コードで設定</remarks>
+    private bool IsShiftJisMode = false;
+
+    /// <summary>
+    /// エラーメッセージ
+    /// </summary>
+    private List<string> ErrorMessages { set; get; } = new();
+
+    /// <summary>
+    /// 追加入力情報
+    /// </summary>
+    private Input$ClassName$Model Model = new();
+
+    /// <summary>
+    /// アップロードファイル情報
+    /// </summary>
+    private UpLoadeModel? FileModel;
+
+    /// <summary>
+    /// 初期処理
+    /// </summary>
+    /// <param name="firstRender">初回表示か否か</param>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                Logger.LogInformation(await GetLogMessage("開始"));
+
+                // 未ログインの場合は即時終了
+                if (!await LoginCheck())
+                {
+                    Logger.LogInformation(await GetLogMessage("ログインチェック失敗"));
+                    return;
+                }
+
+                // ログイン確認完了
+                IsBeforeLoginCheck = false;
+
+                Logger.LogInformation(await GetLogMessage("ログインチェック成功"));
+
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, await GetLogError(ex));
+                GotoErrorPage();
+            }
+            finally
+            {
+                Logger.LogInformation(await GetLogMessage("終了"));
+            }
+        }
+    }
+
+    /// <summary>
+    /// アップロード読み込み初期化イベント
+    /// </summary>
+    private void OnUploadInit()
+    {
+        // エラーメッセージクリア
+        ErrorMessages.Clear();
+        StateHasChanged();
+
+        // ファイル内容のクリア
+        FileModel = null;
+    }
+
+    /// <summary>
+    /// アップロード入力エラーイベント
+    /// </summary>
+    /// <param name="(string alertMsg, string logMsg)">表示エラーとログメッセージ</param>
+    private async Task OnUploadError((string alertMsg, string logMsg) messages)
+    {
+        //タプルを分解
+        var (alertMsg, logMsg) = messages;
+
+        // ログ書き出し
+        Logger.LogInformation(await GetLogMessage(logMsg));
+
+        // 警告メッセージ表示
+        await ShowAlert(alertMsg);
+
+        // ログ書き出しエラー表示に追加
+        ErrorMessages.Add(alertMsg);
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// ファイル読込イベント
+    /// </summary>
+    /// <param name="fileModel">ファイルアップロードモデル</param>
+    private async Task OnLoadFile(UpLoadeModel fileModel)
+    {
+        try
+        {
+            Logger.LogInformation(await GetLogMessage("ファイル読み込み開始"));
+
+            // アップロードファイル情報を設定
+            FileModel = fileModel;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, await GetLogError(ex));
+            GotoErrorPage();
+        }
+        finally
+        {
+            Logger.LogInformation(await GetLogMessage("ファイル読み込み終了"));
+        }
+    }
+
+    /// <summary>
+    /// 保存
+    /// </summary>
+    /// <param name="editContext"></param>
+    private async Task Save(EditContext editContext)
+    {
+        try
+        {
+            Logger.LogInformation(await GetLogMessage("保存開始"));
+
+            // ファイル内容のクリア
+            ErrorMessages.Clear();
+
+            // ファイル選択チェック
+            if (FileModel is null)
+            {
+                ErrorMessages.Add("ファイルが選択されていません");
+            }
+
+            // TODO 追加入力情報入力チェック
+            @*
+            if (Model.IsShiftJisMode is null)
+            {
+                ErrorMessages.Add("読込みモードが選択されていません");
+            }
+            else
+            {
+                IsShiftJisMode = Model.IsShiftJisMode.Value;
+            }
+            *@
+
+            // 入力エラーがある場合はそのまま終了
+            if (await IsExistErrorMessage()) return;
+
+            // アップロードファイル読み込み
+            Func<IAsyncEnumerable<string>> targetReadLineAsync;
+            if (IsShiftJisMode)
+                targetReadLineAsync = FileModel!.ReadShiftJisLineAsync;
+            else
+                targetReadLineAsync = FileModel!.ReadLineAsync;
+
+            var csvLines = new List<string>();
+            await foreach (string line in targetReadLineAsync())
+            {
+                csvLines.Add(line);
+            }
+
+            // キーリスト取得
+            var dbKeys = repository.GetKeyList();
+
+            // HACK 読み取りカラム数
+            var lineColmunCount = 3;
+
+            // ファイル内容確認
+            List<$ClassName$Model> saveItems = new();
+            var lineIndex = 0;
+            foreach (string line in csvLines)
+            {
+                lineIndex++;
+
+                // ヘッダー行 または 空行の場合は取込を行わない
+                if (lineIndex == 1 || string.IsNullOrEmpty(line)) continue;
+
+                var items = line.Split(",");
+
+                // エラー：項目がlineColmunCountではない
+                if (items.Length != lineColmunCount)
+                {
+                    ErrorMessages.Add(GetErrorMessage(lineIndex, $"項目数が{lineColmunCount}ではありません"));
+                    continue;
+                }
+
+                // HACK キー情報の取得
+                var key = items[0].Replace("\"", string.Empty);
+                
+                // TODO 各カラムの取得
+                @*
+                var unitPrice = decimal.Parse(items[1].Replace("\"", string.Empty));
+                var qty = decimal.Parse(items[2].Replace("\"", string.Empty));
+                var total = unitPrice * qty;
+                *@
+
+                // 主キーで既存レコードのインデックスを取得
+                var existRecordIndex = dbKeys.FindIndex(dbKey => dbKey.Key == key);
+
+                // 既存レコードがある場合は登録なし
+                if (existRecordIndex >= 0)
+                {
+                    var existRecord = dbKeys[existRecordIndex];
+
+                    // HACK 項目不一致の場合エラーメッセージ(不要な場合は削除)
+                    @*
+                    if (existRecord.TotalPrice != total)
+                    {
+                        var msg = $"金額が一致しません。 商品名:{key} 単価:{unitPrice}✕数量:{qty}＝合計金額:{total}　データの合計金額:{existRecord.TotalPrice}";
+                        ErrorMessages.Add(GetErrorMessage(lineIndex, msg));
+                    }
+                    *@
+
+                    continue;
+                }
+
+                // TODO 登録対象追加
+                @*
+                saveItems.Add(new $ClassName$Model(key, unitPrice, qty, total, 1));
+                *@
+            }
+
+            // 画面反映
+            StateHasChanged();
+
+            //　エラーがある場合はそのまま終了
+            if (await IsExistErrorMessage()) return;
+
+            // 一括登録
+            var userModel = await GetUserAsync();
+            if (repository.Save(saveItems, userModel!.ID, GetType().Name))
+            {
+                Logger.LogInformation(await GetLogMessage($"取り込み成功"));
+                await ShowAlert("取り込みが成功しました。");
+            }
+            else
+            {
+                Logger.LogInformation(await GetLogMessage($"取り込み失敗"));
+                await ShowAlert("取り込みが失敗しました。");
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, await GetLogError(ex));
+            GotoErrorPage();
+        }
+        finally
+        {
+            Logger.LogInformation(await GetLogMessage("保存終了"));
+        }
+
+        // エラメッセージを返す
+        string GetErrorMessage(int lineNumber,string message)
+        {
+            return $"{lineNumber}行目　{message}";
+        }
+    }
+
+    /// <summary>
+    /// エラーメッセージ存在確認と存在時にメッセージ表示
+    /// </summary>
+    /// <returns>エラー有り無し</returns>
+    private async Task<bool> IsExistErrorMessage()
+    {
+        var result = false;
+
+        if (ErrorMessages.Any())
+        {
+            result = true;
+        }
+        if(result)
+        {
+            await ShowAlert("エラーがあります。ご確認ください。");
+        }
+
+        return result;
+    }
+}

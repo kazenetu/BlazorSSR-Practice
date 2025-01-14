@@ -27,11 +27,11 @@ class Program
             Console.WriteLine();
             Console.WriteLine("how to use: Create <Mode> <Uri> [options]");
             Console.WriteLine("");
-            Console.WriteLine("<Mode> list or edit or other");
+            Console.WriteLine("<Mode> list or edit or upload or other");
             Console.WriteLine("<Uri> @page uri ex)order-list");
             Console.WriteLine("");
             Console.WriteLine("options:");
-            Console.WriteLine("-ekt --edit_key_type <KeyType> EditMode KeyType int or string or other...");
+            Console.WriteLine("-ekt --edit_key_type <KeyType> KeyType (ex int or string or other...) required edit/upload ");
             Console.WriteLine("-h, --help  view this page");
             Console.WriteLine();
             return;

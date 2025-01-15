@@ -125,6 +125,7 @@ private async void SubmitLogin(EditContext editContext)
 * 一覧
 * 編集
 * アップロード
+* テンプレート(必要最低限のスケルトンコード)
 
 ### 生成ファイル
 カレントパスにOutputディレクトリに下記を生成する
@@ -132,7 +133,7 @@ private async void SubmitLogin(EditContext editContext)
 * DI/DI{クラス名}.cs
 * Models/{クラス名}Model.cs
 * Models/Input{クラス名}Model.cs  
-  → Editモード/Uploadモードのみ生成
+  → モード edit/upload/template 時に生成
 * Repositories/{ClassName}Repository.cs
 * Repositories/IRepository/I{ClassName}Repository.cs
 
@@ -146,7 +147,7 @@ dotnet run --project Tools/Create/Create.csproj <RunMode>　<uri> [options]
 
 |パラメータ名|設定値|概要|
 |---|---|---|
-|RunMode|list:一覧モード<br>edit:詳細<br>upload:アップロード|スケルトン生成モード|
+|RunMode|list:一覧モード<br>edit:詳細<br>upload:アップロード<br>template:必要最低限のスケルトンコード|スケルトン生成モード|
 |uri|例）order-list|ページのURI<br>uriからクラス名を自動作成する<br>例）OderList|
 
 
@@ -166,4 +167,8 @@ dotnet run --project Tools/Create/Create.csproj edit order-edit --edit_key_type 
 
 #アップロードページ生成　ページuri:order-upload (クラス名:OrderUpload)　キー型:string
 dotnet run --project Tools/Create/Create.csproj upload order-upload --edit_key_type string
+
+#テンプレートページ※生成　ページuri:ex-template (クラス名:ExTemplate)　キー型:string
+#※必要最低限のスケルトンコード
+dotnet run --project Tools/Create/Create.csproj template ex-template --edit_key_type string
 ```

@@ -12,7 +12,7 @@ public class CreateFils
         List,
         Edit,
         Upload,
-        Other,
+        Template,
     }
 
     private string RootPath;
@@ -38,7 +38,7 @@ public class CreateFils
             "list" => ModeEnum.List,
             "edit" => ModeEnum.Edit,
             "upload" => ModeEnum.Upload,
-            "other" => ModeEnum.Other,
+            "template" => ModeEnum.Template,
             _ => ModeEnum.None
         };
 
@@ -67,8 +67,8 @@ public class CreateFils
             case ModeEnum.Upload:
                 Upload();
                 break;
-            case ModeEnum.Other:
-                Other();
+            case ModeEnum.Template:
+                Template();
                 break;
 
         }
@@ -140,11 +140,25 @@ public class CreateFils
     }
 
     /// <summary>
-    /// その他生成
+    /// ページなしテンプレート生成
     /// </summary>
-    private void Other()
+    private void Template()
     {
+        var rootPath = $"{System.AppDomain.CurrentDomain.BaseDirectory}Templates/template";
 
+        // ページ
+        CreateFile(rootPath, "Components/Pages", "Page.txt", $"{ClassName}.razor");
+
+        // モデル
+        CreateFile(rootPath, "Models", "Model.txt", $"{ClassName}Model.cs");
+        CreateFile(rootPath, "Models", "InputModel.txt", $"Input{ClassName}Model.cs");
+
+        // リポジトリ
+        CreateFile(rootPath, "Repositories", "Repository.txt", $"{ClassName}Repository.cs");
+        CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{ClassName}Repository.cs");
+
+        // DI
+        CreateFile(rootPath, "DI", "DI.txt", $"DI{ClassName}.cs");
     }
 
     /// <summary>

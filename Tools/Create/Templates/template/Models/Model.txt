@@ -1,0 +1,20 @@
+namespace WebApp.Models;
+
+/// <summary>
+/// $ClassName$Model 結果
+/// </summary>
+public class $ClassName$Model
+{
+    public $ClassName$Model($EditKeyType$ key)
+    {
+        Key = key;
+
+        // TODO パラメータ設定とプロパティ格納
+    }
+    /// <summary>
+    /// 主キー
+    /// </summary>
+    public $EditKeyType$ Key { set; get; }
+
+    // TODO プロパティ追加
+}

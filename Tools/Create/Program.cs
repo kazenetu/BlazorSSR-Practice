@@ -27,7 +27,7 @@ class Program
             Console.WriteLine();
             Console.WriteLine("how to use: Create <Mode> <Uri> [options]");
             Console.WriteLine("");
-            Console.WriteLine("<Mode> list or edit or upload or other");
+            Console.WriteLine("<Mode> list/edit/upload/template");
             Console.WriteLine("<Uri> @page uri ex)order-list");
             Console.WriteLine("");
             Console.WriteLine("options:");

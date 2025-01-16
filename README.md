@@ -148,7 +148,7 @@ dotnet run --project Tools/Create/Create.csproj <RunMode>　<uri> [options]
 
 |パラメータ名|設定値|概要|
 |---|---|---|
-|RunMode|list:一覧モード<br>edit:詳細<br>upload:アップロード<br>template:必要最低限のスケルトンコード<br>tips_pdf:スニペット[PDF]|スケルトン生成モード|
+|RunMode|list:一覧モード<br>edit:詳細<br>upload:アップロード<br>template:必要最低限のスケルトンコード<br>tips_pdf:スニペット「PDF」|スケルトン生成モード|
 |uri|例）order-list|ページのURI<br>uriからクラス名を自動作成する<br>例）OderList|
 
 
@@ -156,7 +156,7 @@ dotnet run --project Tools/Create/Create.csproj <RunMode>　<uri> [options]
 
 |パラメータ名|設定値|概要|
 |---|---|---|
-|--edit_key_type<br>-ekt|例）string|型情報(省略時:int)<br>下記で使用<br>・詳細<br>・アップロード|
+|--edit_key_type<br>-ekt|例）string|型情報(省略時:int)<br>一覧以外で使用|
 
 ### 実行例
 ```sh

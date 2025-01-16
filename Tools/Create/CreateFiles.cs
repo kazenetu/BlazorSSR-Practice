@@ -13,6 +13,7 @@ public class CreateFils
         Edit,
         Upload,
         Template,
+        TipsPdf,
     }
 
     private string RootPath;
@@ -39,6 +40,7 @@ public class CreateFils
             "edit" => ModeEnum.Edit,
             "upload" => ModeEnum.Upload,
             "template" => ModeEnum.Template,
+            "tips_pdf" => ModeEnum.TipsPdf,
             _ => ModeEnum.None
         };
 
@@ -69,6 +71,9 @@ public class CreateFils
                 break;
             case ModeEnum.Template:
                 Template();
+                break;
+            case ModeEnum.TipsPdf:
+                TipsPdf();
                 break;
 
         }
@@ -145,6 +150,28 @@ public class CreateFils
     private void Template()
     {
         var rootPath = $"{System.AppDomain.CurrentDomain.BaseDirectory}Templates/template";
+
+        // ページ
+        CreateFile(rootPath, "Components/Pages", "Page.txt", $"{ClassName}.razor");
+
+        // モデル
+        CreateFile(rootPath, "Models", "Model.txt", $"{ClassName}Model.cs");
+        CreateFile(rootPath, "Models", "InputModel.txt", $"Input{ClassName}Model.cs");
+
+        // リポジトリ
+        CreateFile(rootPath, "Repositories", "Repository.txt", $"{ClassName}Repository.cs");
+        CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{ClassName}Repository.cs");
+
+        // DI
+        CreateFile(rootPath, "DI", "DI.txt", $"DI{ClassName}.cs");
+    }
+
+    /// <summary>
+    /// TipsPDF生成
+    /// </summary>
+    private void TipsPdf()
+    {
+        var rootPath = $"{System.AppDomain.CurrentDomain.BaseDirectory}Templates/tips_pdf";
 
         // ページ
         CreateFile(rootPath, "Components/Pages", "Page.txt", $"{ClassName}.razor");

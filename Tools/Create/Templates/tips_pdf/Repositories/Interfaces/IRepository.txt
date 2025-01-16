@@ -1,0 +1,13 @@
+using WebApp.Models;
+
+namespace WebApp.Repositories.Interfaces;
+
+public interface I$ClassName$Repository : IRepositoryBase
+{
+    /// <summary>
+    /// PDF用データを取得
+    /// </summary>
+    /// <param name="inputModel">絞込み情報</param>
+    /// <returns>PDFデータリスト</returns>
+    List<$ClassName$Model> GetPdfList(Input$ClassName$Model inputModel);
+}

@@ -1,0 +1,21 @@
+using System.Data;
+using System.Runtime.CompilerServices;
+using System.Text;
+using Microsoft.Extensions.Options;
+using WebApp.DBAccess;
+using WebApp.Models;
+using WebApp.Repositories.Interfaces;
+
+namespace WebApp.Repositories;
+
+public class $ClassName$Repository : RepositoryBase, I$ClassName$Repository
+{
+    /// <summary>
+    /// コンストラクタ
+    /// </summary>
+    public $ClassName$Repository(IOptions<DatabaseConfigModel> config) : base(config)
+    {
+    }
+
+    // TODO メソッド定義
+}

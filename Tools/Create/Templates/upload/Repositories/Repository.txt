@@ -1,0 +1,113 @@
+using System.Data;
+using System.Runtime.CompilerServices;
+using System.Text;
+using Microsoft.Extensions.Options;
+using WebApp.DBAccess;
+using WebApp.Models;
+using WebApp.Repositories.Interfaces;
+
+namespace WebApp.Repositories;
+
+public class $ClassName$Repository : RepositoryBase, I$ClassName$Repository
+{
+    /// <summary>
+    /// コンストラクタ
+    /// </summary>
+    public $ClassName$Repository(IOptions<DatabaseConfigModel> config) : base(config)
+    {
+    }
+
+    /// <summary>
+    /// キーリストを取得
+    /// </summary>
+    /// <returns>キーリスト</returns>
+    public List<$ClassName$Model> GetKeyList()
+    {
+        var result = new List<$ClassName$Model>();
+
+        // パラメータ初期化
+        db!.ClearParam();
+
+        // TODO SQL作成
+        var sql = new StringBuilder();
+        // sql.AppendLine("SELECT  productName, unitPrice*qty AS Total FROM t_order");
+        // sql.AppendLine("ORDER BY productName");
+
+        var sqlResult = db.Fill(sql.ToString());
+        foreach (DataRow row in sqlResult.Rows)
+        {
+            // TODO キー取得
+            // var key = Parse<$EditKeyType$>(row["productName"]);
+            // var totalPrice = Parse<decimal>(row["Total"]);
+
+            // TODO キーリスト追加
+            // result.Add(new $ClassName$Model(key, 0, 0, totalPrice, 0));
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// 編集項目の登録(バルクインサート)
+    /// </summary>
+    /// <param name="targets">登録対象リスト</param>
+    /// <param name="userId">ユーザーID</param>
+    /// <param name="programId">プログラムID</param>
+    /// <returns>成功/失敗</returns>
+    public bool Save(IReadOnlyList<$ClassName$Model> targets, string userId, string programId)
+    {
+        var result = false;
+        try
+        {
+            // トランザクション開始
+            BeginTransaction();
+
+            // SQL作成
+            var sql = new StringBuilder();
+            // sql.AppendLine("INSERT INTO t_order(productName, unitPrice, qty, createDate,createUserId, createProgramId, updateDate, updateUserId, updateProgramId, version) VALUES ");
+            // sql.AppendLine("(@productName, @unitPrice, @qty, @date, @user, @program, @date, @user, @program, 1) ");
+            var sqlString = sql.ToString();
+
+            //　登録日時取得
+            var date = DateTime.Now;
+
+            // 登録処理
+            var insertCount = 0;
+            foreach (var target in targets)
+            {
+                // TODO Param設定
+                db!.ClearParam();
+                // db.AddParam("@productName", target.Key);
+                // db.AddParam("@unitPrice", target.UnitPrice);
+                // db.AddParam("@qty", target.Qty);
+                // db.AddParam("@date", date.ToString());
+                // db.AddParam("@user", userId);
+                // db.AddParam("@program", programId);
+
+                if (db.ExecuteNonQuery(sql.ToString()) != 1)
+                {
+                    break;
+                }
+                insertCount++;
+            }
+
+            // 登録結果でコミット・ロールバック
+            if (targets.Count == insertCount)
+            {
+                Commit();
+                result = true;
+            }
+            else
+            {
+                Rollback();
+            }
+
+        }
+        catch (Exception)
+        {
+            Rollback();
+            throw;
+        }
+        return result;
+    }
+}

@@ -1,12 +1,12 @@
-@page "/file-upload-sample"
+﻿@page "/$uri$"
 @namespace WebApp.Components.Pages
 @using WebApp.Components.Parts
 @using WebApp.Models
 @using WebApp.Models.Parts
 @using WebApp.Repositories.Interfaces
 @inherits Base.PageBase
-@inject IOrderRepository repository
-@inject ILogger<FileUploadSample> Logger
+@inject I$ClassName$Repository repository
+@inject ILogger<$ClassName$> Logger
 
 @if (IsBeforeLoginCheck)
 {
@@ -14,11 +14,14 @@
     return;
 }
 
-<PageTitle>ファイルアップロードサンプル</PageTitle>
+<PageTitle>$ClassName$</PageTitle>
 
-<h1>ファイルアップロードサンプル</h1>
+<h1>$ClassName$</h1>
 
 <EditForm method="post" Model="Model" OnValidSubmit="Save" id="edit">
+    
+    @* 追加入力 *@
+    @*
     <div class="row-margin">
         <InputRadioGroup @bind-Value="Model.IsShiftJisMode">
             <label>
@@ -29,13 +32,16 @@
             </label>
         </InputRadioGroup>
     </div>
+    *@
 
+    @* ファイルアップロード *@
     <div class="row page-header">
         <div class="col">
             <FileUpLoad OnInit="OnUploadInit" OnError="OnUploadError" OnLoad="OnLoadFile" />
         </div>
     </div>
 
+    @* 実行ボタン *@
     <div class="col text-center">
         <button type="submit" form="edit" class="btn btn-success btn-lg">読込み</button>
     </div>
@@ -56,12 +62,24 @@
 
 @code {
     /// <summary>
+    /// ShiftJIS読み込みか否か
+    /// </summary>
+    /// <remarks>読み込み対象の文字コードで設定</remarks>
+    private bool IsShiftJisMode = false;
+
+    /// <summary>
     /// エラーメッセージ
     /// </summary>
     private List<string> ErrorMessages { set; get; } = new();
 
-    private FileUploadSampleModel Model = new();
+    /// <summary>
+    /// 追加入力情報
+    /// </summary>
+    private Input$ClassName$Model Model = new();
 
+    /// <summary>
+    /// アップロードファイル情報
+    /// </summary>
     private UpLoadeModel? FileModel;
 
     /// <summary>
@@ -107,9 +125,11 @@
     /// </summary>
     private void OnUploadInit()
     {
-        // ファイル内容のクリア
+        // エラーメッセージクリア
         ErrorMessages.Clear();
         StateHasChanged();
+
+        // ファイル内容のクリア
         FileModel = null;
     }
 
@@ -143,6 +163,7 @@
         {
             Logger.LogInformation(await GetLogMessage("ファイル読み込み開始"));
 
+            // アップロードファイル情報を設定
             FileModel = fileModel;
         }
         catch (Exception ex)
@@ -169,22 +190,30 @@
             // ファイル内容のクリア
             ErrorMessages.Clear();
 
-            // TODO 入力チェック
-            if (Model.IsShiftJisMode is null)
-            {
-                ErrorMessages.Add("読込みモードが選択されていません");
-            }
+            // ファイル選択チェック
             if (FileModel is null)
             {
                 ErrorMessages.Add("ファイルが選択されていません");
             }
+
+            // TODO 追加入力情報入力チェック
+            @*
+            if (Model.IsShiftJisMode is null)
+            {
+                ErrorMessages.Add("読込みモードが選択されていません");
+            }
+            else
+            {
+                IsShiftJisMode = Model.IsShiftJisMode.Value;
+            }
+            *@
 
             // 入力エラーがある場合はそのまま終了
             if (await IsExistErrorMessage()) return;
 
             // アップロードファイル読み込み
             Func<IAsyncEnumerable<string>> targetReadLineAsync;
-            if (Model!.IsShiftJisMode!.Value)
+            if (IsShiftJisMode)
                 targetReadLineAsync = FileModel!.ReadShiftJisLineAsync;
             else
                 targetReadLineAsync = FileModel!.ReadLineAsync;
@@ -195,15 +224,14 @@
                 csvLines.Add(line);
             }
 
-
             // キーリスト取得
-            var oderKeys = repository.GetOderKeyList();
+            var dbKeys = repository.GetKeyList();
 
-            // 読み取りカラム数
+            // HACK 読み取りカラム数
             var lineColmunCount = 3;
 
             // ファイル内容確認
-            List<OrderModel> saveItems = new();
+            List<$ClassName$Model> saveItems = new();
             var lineIndex = 0;
             foreach (string line in csvLines)
             {
@@ -221,29 +249,40 @@
                     continue;
                 }
 
-                // 各カラムの取得
-                var productName = items[0].Replace("\"", string.Empty);
+                // HACK キー情報の取得
+                var key = items[0].Replace("\"", string.Empty);
+                
+                // TODO 各カラムの取得
+                @*
                 var unitPrice = decimal.Parse(items[1].Replace("\"", string.Empty));
                 var qty = decimal.Parse(items[2].Replace("\"", string.Empty));
                 var total = unitPrice * qty;
+                *@
 
-                // 主キーの商品名で既存レコードのインデックスを取得
-                var existRecordIndex = oderKeys.FindIndex(key => key.ProductName == productName);
+                // 主キーで既存レコードのインデックスを取得
+                var existRecordIndex = dbKeys.FindIndex(dbKey => dbKey.Key == key);
 
                 // 既存レコードがある場合は登録なし
                 if (existRecordIndex >= 0)
                 {
-                    var existRecord = oderKeys[existRecordIndex];
-                    // さらに金額が一致しないとエラー
+                    var existRecord = dbKeys[existRecordIndex];
+
+                    // HACK 項目不一致の場合エラーメッセージ(不要な場合は削除)
+                    @*
                     if (existRecord.TotalPrice != total)
                     {
-                        var msg = $"金額が一致しません。 商品名:{productName} 単価:{unitPrice}✕数量:{qty}＝合計金額:{total}　データの合計金額:{existRecord.TotalPrice}";
+                        var msg = $"金額が一致しません。 商品名:{key} 単価:{unitPrice}✕数量:{qty}＝合計金額:{total}　データの合計金額:{existRecord.TotalPrice}";
                         ErrorMessages.Add(GetErrorMessage(lineIndex, msg));
                     }
+                    *@
+
                     continue;
                 }
 
-                saveItems.Add(new OrderModel(0, productName, unitPrice, qty, total, 1));
+                // TODO 登録対象追加
+                @*
+                saveItems.Add(new $ClassName$Model(key, unitPrice, qty, total, 1));
+                *@
             }
 
             // 画面反映
@@ -300,13 +339,5 @@
         }
 
         return result;
-    }
-
-    public class FileUploadSampleModel
-    {
-        /// <summary>
-        /// ShiftJIS読み込みか否か
-        /// </summary>
-        public bool? IsShiftJisMode{ get; set; }
     }
 }

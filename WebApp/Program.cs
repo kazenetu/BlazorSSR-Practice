@@ -3,8 +3,7 @@ using NLog.Extensions.Logging;
 using NLog.Web;
 using WebApp.Components;
 using WebApp.DBAccess;
-using WebApp.Repositories;
-using WebApp.Repositories.Interfaces;
+using WebApp.DI;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace WebApp;
@@ -33,10 +32,8 @@ public class Program
             .AddInteractiveServerComponents();
 
         // DI設定
-        builder.Services.AddTransient<IOrderRepository, OrderRepository>();
-        builder.Services.AddTransient<IUserRepository, UserRepository>();
-        builder.Services.AddTransient<IWeatherForecastRepository, WeatherForecastRepository>();
-
+        DIClass.SetDI(builder.Services);
+        
         // Configを専用Modelに設定
         var dbRoot = builder.Configuration.GetSection("DB");
         var dbSetting = builder.Configuration.GetSection("Setting");

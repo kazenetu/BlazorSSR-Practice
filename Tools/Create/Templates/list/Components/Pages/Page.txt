@@ -1,12 +1,12 @@
-﻿@page "/weather"
-@page "/weather/{page:int}"
+﻿@page "/$uri$"
+@page "/$uri$/{page:int}"
 @namespace WebApp.Components.Pages
 @using WebApp.Components.Parts
 @using WebApp.Models
 @using WebApp.Repositories.Interfaces
 @inherits Base.PageBase
-@inject ILogger<Weather> Logger
-@inject IWeatherForecastRepository repository
+@inject ILogger<$ClassName$> Logger
+@inject I$ClassName$Repository repository
 
 @if (IsBeforeLoginCheck)
 {
@@ -14,22 +14,23 @@
     return;
 }
 
-<PageTitle>Weather</PageTitle>
+<PageTitle>$ClassName$</PageTitle>
 
-<h1>Weather</h1>
+<h1>$ClassName$</h1>
 
-<p>This component demonstrates showing data.</p>
-
-@if (pageForecasts == null)
+@if (PageRecords == null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
+    @* 検索条件 *@
     <EditForm method="post" Model="Model" OnSubmit="Search" id="seach">
         <div class="card col-md-8 offset-md-2 mb-5">
             <div class="card-body">
 
+                @* 検索条件 実装例 *@
+                @*
                 <div class="row row-margin">
                     <div class="col">
                         <label class="col-md-4" for="StartDate">日付</label>
@@ -40,25 +41,18 @@ else
                         <InputDate class="col-md-6" id="EndDate" @bind-Value="Model!.EndDate" />
                     </div>
                 </div>
-
-                <div class="row row-margin">
-                    <div class="col">
-                        <label class="col-md-4" for="StartDate">温度</label>
-                        <InputNumber class="col-md-4 text-end" id="StartDate" @bind-Value="Model!.StartTemperatureC" />
-                    </div>
-                    <div class="col">
-                        <label class="col-md-4" for="EndDate">〜</label>
-                        <InputNumber class="col-md-4 text-end" id="EndDate" @bind-Value="Model!.EndTemperatureC" />
-                    </div>
-                </div>
+                *@
 
             </div>
             <button type="submit" form="seach" class="btn btn-outline-success">検索</button>
         </div>
     </EditForm>
 
-    <Pagination PageName="/weather" CurrentPageNumber="@Page" TotalRecords="@TotalRecords" RecordsPerPage="@Common.PageRecordCount" />
+    <Pagination PageName="/$uri$" CurrentPageNumber="@Page" TotalRecords="@TotalRecords" RecordsPerPage="@PageCount" />
+
+    @* 一覧 *@
     <table class="table">
+        @*
         <thead>
             <tr>
                 <th>Date</th>
@@ -68,7 +62,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var forecast in pageForecasts)
+            @foreach (var forecast in PageRecords)
             {
                 <tr>
                     <td>@forecast.TargetDate.ToShortDateString()</td>
@@ -78,11 +72,12 @@ else
                 </tr>
             }
         </tbody>
+        *@
     </table>
 }
 
 @code {
-    private InputWeatherForecastModel Model { get; set; } = new();
+    private Input$ClassName$Model Model { get; set; } = new();
 
     /// <summary>
     /// ページング用：現在のページ数
@@ -96,9 +91,14 @@ else
     public int TotalRecords { get; set; }
 
     /// <summary>
+    /// 定数：ページング用：1ページのレコード数
+    /// </summary>
+    private const int PageCount = 10;
+
+    /// <summary>
     /// 1ページの表示レコード
     /// </summary>
-    private WeatherForecastModel[]? pageForecasts;
+    private $ClassName$Model[]? PageRecords;
 
     /// </summary>
     /// <param name="firstRender">初回表示か否か</param>
@@ -186,15 +186,7 @@ else
         var zeroBasePageIndex = pageIndex - 1;
 
         // DBから1ページ分のレコード取得
-        pageForecasts = repository.GetList(Model, zeroBasePageIndex * Common.PageRecordCount,  Common.PageRecordCount);
+        PageRecords = repository.GetList(Model, zeroBasePageIndex * PageCount,  PageCount);
         StateHasChanged();
-    }
-
-    private class WeatherForecast
-    {
-        public DateOnly Date { get; set; }
-        public int TemperatureC { get; set; }
-        public string? Summary { get; set; }
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
     }
 }

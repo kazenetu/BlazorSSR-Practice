@@ -1,0 +1,48 @@
+namespace WebApp.Models;
+
+/// <summary>
+/// $ClassName$Model 入力情報
+/// </summary>
+public class $ClassName$Model
+{
+    /// <summary>
+    /// コンストラクタ
+    /// </summary>
+    public $ClassName$Model($EditKeyType$ key/*, string productName, decimal unitPrice, decimal qty, decimal totalPrice, int version = 0*/)
+    {
+        Key = key;
+
+        // TODO パラメータ設定とプロパティ格納
+        // ProductName = productName;
+        // UnitPrice = unitPrice;
+        // Qty = qty;
+        // TotalPrice = totalPrice;
+        // Version = version;
+    }
+
+    /// <summary>
+    /// 主キー
+    /// </summary>
+    public $EditKeyType$ Key { set; get; }
+
+    // TODO プロパティ追加
+    // /// <summary>
+    // /// 単価
+    // /// </summary>
+    // public decimal UnitPrice { set; get; }
+
+    // /// <summary>
+    // /// 数量
+    // /// </summary>
+    // public decimal Qty { set; get; }
+
+    // /// <summary>
+    // /// 合計金額
+    // /// </summary>
+    // public decimal TotalPrice { set; get; }
+
+    /// <summary>
+    /// バージョン番号(楽観ロック用)
+    /// </summary>
+    public int Version { set; get; }
+}

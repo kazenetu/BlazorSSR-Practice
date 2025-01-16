@@ -23,6 +23,9 @@ Root
 │ ├─Interfaces     // PDF用インターフェイス
 │ ├─Layouts        // PDF出力用レイアウト(C#ソースコードでのPDF定義)
 │ └─assets         // フォントファイルを格納する
+├─Tools
+│ └─Create         // スケルトンコード生成ツール
+│    └─Templates   // モード別のソースコード自動生成用テンプレート
 ├─WebApp
 └─WebApp.sln
 　 ├─Components    // ページやパーツ、ナビゲーションを格納
@@ -30,6 +33,8 @@ Root
 　 │ ├─Pages
 　 │ ├─Parts        // ページングなどのパーツを格納
 　 │ └─Providers    // SessionStorageなどを管理するクラスを格納
+　 ├─Components    // ページやパーツ、ナビゲーションを格納
+　 ├─DI             // DI設定
 　 ├─DBAccess       // DBアクセスクラス
 　 ├─Extentions     // 拡張関数を格納
 　 ├─Models         // Repositoryとページで利用するModelクラス
@@ -112,4 +117,58 @@ private async void SubmitLogin(EditContext editContext)
 2024-10-30 19:24:59.1636||INFO|WebApp.Components.Pages.Login|ログインチェック前 ログインID:aa url=http://localhost:5034/login method=SubmitLogin 
 2024-10-30 19:24:59.1994||INFO|WebApp.Components.Pages.Login|aa Aさん ログイン成功 url=http://localhost:5034/login method=SubmitLogin 
 2024-10-30 19:24:59.2046||INFO|WebApp.Components.Pages.Login|aa Aさん 終了 url=http://localhost:5034/ method=SubmitLogin 
+```
+
+## ソースコード生成ツール
+モード別にスケルトンコード生成するツール。
+### モード
+* 一覧
+* 編集
+* アップロード
+* テンプレート(必要最低限のスケルトンコード)
+
+### 生成ファイル
+カレントパスにOutputディレクトリに下記を生成する
+* Components/Pages/{クラス名}.razor
+* DI/DI{クラス名}.cs
+* Models/{クラス名}Model.cs
+* Models/Input{クラス名}Model.cs  
+  → モード edit/upload/template 時に生成
+* Repositories/{ClassName}Repository.cs
+* Repositories/IRepository/I{ClassName}Repository.cs
+
+### コマンド
+```sh
+#ルートパス上で実行
+dotnet run --project Tools/Create/Create.csproj <RunMode>　<uri> [options]
+```
+
+<h4>○必須パラメータ</h4>  
+
+|パラメータ名|設定値|概要|
+|---|---|---|
+|RunMode|list:一覧モード<br>edit:詳細<br>upload:アップロード<br>template:必要最低限のスケルトンコード|スケルトン生成モード|
+|uri|例）order-list|ページのURI<br>uriからクラス名を自動作成する<br>例）OderList|
+
+
+<h4>○オプションパラメータ</h4>  
+
+|パラメータ名|設定値|概要|
+|---|---|---|
+|--edit_key_type<br>-ekt|例）string|型情報(省略時:int)<br>下記で使用<br>・詳細<br>・アップロード|
+
+### 実行例
+```sh
+#一覧ページ生成　ページuri:order-list (クラス名:OrderList)
+dotnet run --project Tools/Create/Create.csproj list order-list 
+
+#詳細ページ生成　ページuri:order-edit (クラス名:OrderEdit)　キー型:string
+dotnet run --project Tools/Create/Create.csproj edit order-edit --edit_key_type string
+
+#アップロードページ生成　ページuri:order-upload (クラス名:OrderUpload)　キー型:string
+dotnet run --project Tools/Create/Create.csproj upload order-upload --edit_key_type string
+
+#テンプレートページ※生成　ページuri:ex-template (クラス名:ExTemplate)　キー型:string
+#※必要最低限のスケルトンコード
+dotnet run --project Tools/Create/Create.csproj template ex-template --edit_key_type string
 ```

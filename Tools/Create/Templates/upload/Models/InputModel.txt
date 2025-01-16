@@ -1,0 +1,10 @@
+namespace WebApp.Models;
+
+/// <summary>
+/// Input$ClassName$Model 追加入力
+/// </summary>
+public class Input$ClassName$Model
+{
+    // TODO 追加入力追加
+    // public bool? IsShiftJisMode{ get; set; }
+}

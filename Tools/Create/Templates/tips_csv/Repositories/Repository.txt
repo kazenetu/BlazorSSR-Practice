@@ -1,0 +1,120 @@
+using System.Data;
+using System.Runtime.CompilerServices;
+using System.Text;
+using Microsoft.Extensions.Options;
+using WebApp.DBAccess;
+using WebApp.Models;
+using WebApp.Repositories.Interfaces;
+
+namespace WebApp.Repositories;
+
+public class $ClassName$Repository : RepositoryBase, I$ClassName$Repository
+{
+    /// <summary>
+    /// コンストラクタ
+    /// </summary>
+    public $ClassName$Repository(IOptions<DatabaseConfigModel> config) : base(config)
+    {
+    }
+
+    /// <summary>
+    /// CSVダウンロード用データを取得
+    /// </summary>
+    /// <param name="inputModel">絞込み情報</param>
+    /// <returns>PDFデータリスト</returns>
+    public List<$ClassName$Model> GetCsvList(Input$ClassName$Model inputModel)
+    {
+        var result = new List<$ClassName$Model>();
+
+        // パラメータ初期化
+        db!.ClearParam();
+
+        var sql = new StringBuilder();
+
+        // TODO SQL作成
+        // sql.AppendLine("SELECT productName, unitPrice, qty,unitPrice*qty AS totalPrice FROM t_order");
+        // sql.Append(GetPDFWhere(inputModel));
+        // sql.AppendLine("ORDER BY productName");
+
+        // SQL発行
+        var sqlResult = db.Fill(sql.ToString());
+
+        // TODO 結果を$ClassName$Modelリストに格納
+        // var noIndex = 1;
+        // foreach (DataRow row in sqlResult.Rows)
+        // {
+        //     // 注文
+        //     var no = noIndex;
+        //     var key = Parse<string>(row["productName"]);
+        //     var unitPrice = Parse<decimal>(row["unitPrice"]);
+        //     var qty = Parse<decimal>(row["qty"]);
+        //     var totalPrice = unitPrice * qty;
+        //     result.Add(new $ClassName$Model(key/*, no, unitPrice, qty, totalPrice*/));
+
+        //     noIndex++;
+
+        // }
+        return [.. result];
+    }
+
+    /// <summary>
+    /// 検索条件を取得
+    /// </summary>
+    /// <param name="inputModel">検索条件</param>
+    /// <returns>検索条件文字列</returns>
+    private string GetPDFWhere(Input$ClassName$Model inputModel)
+    {
+        if(db is null) return string.Empty;
+
+        // 条件文字列
+        var where = new StringBuilder();
+
+        // TODO 検索条件
+        // if(!string.IsNullOrEmpty(inputModel.ProductName))
+        // {
+        //     if (where.Length > 0) where.Append(" AND ");
+        //     where.AppendLine(" productName like @ProductName");
+
+        //     // Param設定
+        //     db.AddParam("@ProductName", $"%{inputModel.ProductName}%");
+        // }
+        // if(inputModel.StartUnitPrice is not null)
+        // {
+        //     if (where.Length > 0) where.Append(" AND ");
+        //     where.AppendLine(" unitPrice >= @StartUnitPrice");
+
+        //     // Param設定
+        //     db.AddParam("@StartUnitPrice", inputModel.StartUnitPrice);
+        // }
+        // if(inputModel.EndUnitPrice is not null)
+        // {
+        //     if (where.Length > 0) where.Append(" AND ");
+        //     where.AppendLine(" unitPrice <= @EndUnitPrice");
+
+        //     // Param設定
+        //     db.AddParam("@EndUnitPrice", inputModel.EndUnitPrice);
+        // }
+        // if(inputModel.StartTotalPrice is not null)
+        // {
+        //     if (where.Length > 0) where.Append(" AND ");
+        //     where.AppendLine(" cast(unitPrice*qty AS numeric) >= @StartTotalPrice");
+
+        //     // Param設定
+        //     db.AddParam("@StartTotalPrice", inputModel.StartTotalPrice);
+        // }
+        // if(inputModel.EndTotalPrice is not null)
+        // {
+        //     if (where.Length > 0) where.Append(" AND ");
+        //     where.AppendLine(" cast(unitPrice*qty AS numeric) <= @EndTotalPrice");
+
+        //     // Param設定
+        //     db.AddParam("@EndTotalPrice", inputModel.EndTotalPrice);
+        // }
+
+        // 検索条件が設定されている場合はWHEREを追加
+        if (where.Length > 0) return " WHERE " + where.ToString();
+
+        return string.Empty;
+    }
+
+}

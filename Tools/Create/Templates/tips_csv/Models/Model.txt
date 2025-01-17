@@ -1,0 +1,44 @@
+namespace WebApp.Models;
+
+/// <summary>
+/// $ClassName$Model 結果
+/// </summary>
+public class $ClassName$Model
+{
+    public $ClassName$Model($EditKeyType$ key/*, int no, decimal unitPrice, decimal qty, decimal totalPrice*/)
+    {
+        Key = key;
+
+        // TODO パラメータ設定とプロパティ格納
+        // No = no;
+        // UnitPrice = unitPrice;
+        // Qty = qty;
+        // TotalPrice = totalPrice;
+    }
+
+    /// <summary>
+    /// 主キー
+    /// </summary>
+    public $EditKeyType$ Key { set; get; }
+
+    // // TODO プロパティ追加
+    // /// <summary>
+    // /// 番号(1〜)
+    // /// </summary>
+    // public int No { set; get; }
+
+    // /// <summary>
+    // /// 単価
+    // /// </summary>
+    // public decimal UnitPrice { set; get; }
+
+    // /// <summary>
+    // /// 数量
+    // /// </summary>
+    // public decimal Qty { set; get; }
+
+    // /// <summary>
+    // /// 合計金額
+    // /// </summary>
+    // public decimal TotalPrice { set; get; }
+}

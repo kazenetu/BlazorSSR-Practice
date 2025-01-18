@@ -287,27 +287,42 @@ else
     /// </summary>
     /// <returns>ダウンロード用モデル</returns>
     /// <remarks>Dataにはbyte[]配列を設定</remarks>
-    private DownLoadModel DownLoadPDF()
+    private async Task<DownLoadModel> DownLoadPDF()
     {
-        var orders = repository.GetOderList();
-        if (!orders.Any())
+        try
         {
-            return new DownLoadModel(string.Empty, null, "出力対象がありません。");
+            Logger.LogInformation(await GetLogMessage("開始"));
+
+            var orders = repository.GetOderList();
+
+            if (!orders.Any())
+            {
+                return new DownLoadModel(string.Empty, null, "出力対象がありません。");
+            }
+
+            var pdfOrders = new List<IData>();
+            foreach (var oder in orders)
+            {
+                pdfOrders.Add(new PdfReport.DataLists.Order(oder.No, oder.ProductName, oder.UnitPrice, oder.Qty));
+            }
+            var pdfMain = new PdfMain(LayoutKinds.Order, pdfOrders);
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                // PDF作成
+                pdfMain.Create(ms);
+
+                return new DownLoadModel("test.pdf", ms.GetBuffer());
+            }
         }
-
-        var pdfOrders = new List<IData>();
-        foreach (var oder in orders)
+        catch (Exception ex)
         {
-            pdfOrders.Add(new PdfReport.DataLists.Order(oder.No, oder.ProductName, oder.UnitPrice, oder.Qty));
+            Logger.LogError(ex, await GetLogError(ex));
+            return new DownLoadModel(string.Empty, null, "PDF作成に失敗しました。");
         }
-        var pdfMain = new PdfMain(LayoutKinds.Order, pdfOrders);
-
-        using (MemoryStream ms = new MemoryStream())
+        finally
         {
-            // PDF作成
-            pdfMain.Create(ms);
-
-            return new DownLoadModel("test.pdf", ms.GetBuffer());
+            Logger.LogInformation(await GetLogMessage("終了"));
         }
     }
 }

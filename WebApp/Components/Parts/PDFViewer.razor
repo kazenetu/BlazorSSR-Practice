@@ -75,7 +75,7 @@
     /// ダウンロードファイル設定
     /// </summary>
     [Parameter]
-    public Func<DownLoadModel>? GetDataFunction { get; set; }
+    public Func<Task<DownLoadModel>>? GetDataFunction { get; set; }
 
     /// <summary>
     /// PDFプレビュー
@@ -88,7 +88,7 @@
                 return;
 
             // ダウンロードファイル情報取得
-            var model = GetDataFunction();
+            var model = await GetDataFunction();
 
             // エラーメッセージが設定されている場合はエラーメッセージ表示
             if (!string.IsNullOrEmpty(model.ErrorMessage))

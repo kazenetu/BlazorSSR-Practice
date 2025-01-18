@@ -126,6 +126,8 @@ private async void SubmitLogin(EditContext editContext)
 * 編集
 * アップロード
 * テンプレート(必要最低限のスケルトンコード)
+* スニペット「PDF」(実装例)
+* スニペット「CSV」(実装例)
 
 ### 生成ファイル
 カレントパスにOutputディレクトリに下記を生成する
@@ -147,7 +149,7 @@ dotnet run --project Tools/Create/Create.csproj <RunMode>　<uri> [options]
 
 |パラメータ名|設定値|概要|
 |---|---|---|
-|RunMode|list:一覧モード<br>edit:詳細<br>upload:アップロード<br>template:必要最低限のスケルトンコード|スケルトン生成モード|
+|RunMode|list:一覧モード<br>edit:詳細<br>upload:アップロード<br>template:必要最低限のスケルトンコード<br>tips_pdf:スニペット「PDF」<br>tips_csv:スニペット「CSV」|スケルトン生成モード|
 |uri|例）order-list|ページのURI<br>uriからクラス名を自動作成する<br>例）OderList|
 
 
@@ -155,7 +157,7 @@ dotnet run --project Tools/Create/Create.csproj <RunMode>　<uri> [options]
 
 |パラメータ名|設定値|概要|
 |---|---|---|
-|--edit_key_type<br>-ekt|例）string|型情報(省略時:int)<br>下記で使用<br>・詳細<br>・アップロード|
+|--edit_key_type<br>-ekt|例）string|型情報(省略時:int)<br>一覧以外で使用|
 
 ### 実行例
 ```sh
@@ -171,4 +173,10 @@ dotnet run --project Tools/Create/Create.csproj upload order-upload --edit_key_t
 #テンプレートページ※生成　ページuri:ex-template (クラス名:ExTemplate)　キー型:string
 #※必要最低限のスケルトンコード
 dotnet run --project Tools/Create/Create.csproj template ex-template --edit_key_type string
+
+#スニペット「PDF」ページ生成　ページuri:ex-pdf (クラス名:ExPdf)　キー型:string
+dotnet run --project Tools/Create/Create.csproj tips_pdf ex-pdf --edit_key_type string
+
+#スニペット「CSV」ページ生成　ページuri:ex-csv (クラス名:ExCsv)　キー型:string
+dotnet run --project Tools/Create/Create.csproj tips_csv ex-csv --edit_key_type string
 ```

@@ -75,24 +75,38 @@
     /// <remarks>Dataにはbyte[]配列を設定</remarks>
     private DownLoadModel DownLoadCSV()
     {
-        var dbRecords = repository.GetCsvList(Model);
-        if (!dbRecords.Any())
+        try
         {
-            return new DownLoadModel(string.Empty, null, "出力対象がありません。");
+            Logger.LogInformation(await GetLogMessage("開始"));
+
+            var dbRecords = repository.GetCsvList(Model);
+            if (!dbRecords.Any())
+            {
+                return new DownLoadModel(string.Empty, null, "出力対象がありません。");
+            }
+
+            var data = new StringBuilder();
+
+            // TODO CSVヘッダ
+            //data.AppendLine("No,ProductName,UnitPrice,Qty,TotalPrice");
+
+            // TODO CSV情報
+            // foreach (var dbRecord in dbRecords)
+            // {
+            //     data.AppendLine($"{dbRecord.No},{dbRecord.Key},{dbRecord.UnitPrice},{dbRecord.Qty},{dbRecord.TotalPrice}");
+            // }
+
+            // TODO ファイル名設定
+            return new DownLoadModel("test.csv", data);
         }
-
-        var data = new StringBuilder();
-
-        // TODO CSVヘッダ
-        //data.AppendLine("No,ProductName,UnitPrice,Qty,TotalPrice");
-
-        // TODO CSV情報
-        // foreach (var dbRecord in dbRecords)
-        // {
-        //     data.AppendLine($"{dbRecord.No},{dbRecord.Key},{dbRecord.UnitPrice},{dbRecord.Qty},{dbRecord.TotalPrice}");
-        // }
-
-        // TODO ファイル名設定
-        return new DownLoadModel("test.csv", data);
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, await GetLogError(ex));
+            return new DownLoadModel(string.Empty, null, "CSV作成に失敗しました。");
+        }
+        finally
+        {
+            Logger.LogInformation(await GetLogMessage("終了"));
+        }
     }
 }

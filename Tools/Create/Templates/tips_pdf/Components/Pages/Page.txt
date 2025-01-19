@@ -75,33 +75,47 @@
     /// <remarks>Dataにはbyte[]配列を設定</remarks>
     private DownLoadModel DownLoadPDF()
     {
-        var dbRecords = repository.GetPdfList(Model);
-        if (!dbRecords.Any())
+        try
         {
-            return new DownLoadModel(string.Empty, null, "出力対象がありません。");
+            Logger.LogInformation(await GetLogMessage("開始"));
+
+            var dbRecords = repository.GetPdfList(Model);
+            if (!dbRecords.Any())
+            {
+                return new DownLoadModel(string.Empty, null, "出力対象がありません。");
+            }
+
+            var pdfDataList = new List<IData>();
+            foreach (var dbRecord in dbRecords)
+            {
+                // TODO 実装
+                // pdfDataList.Add(new PdfReport.DataLists.Order(dbRecord.No, dbRecord.Key, dbRecord.UnitPrice, dbRecord.Qty));
+            }
+            if (!pdfDataList.Any())
+            {
+                return new DownLoadModel(string.Empty, null, "出力対象がありません。");
+            }
+
+            // TODO PDFレイアウトと出力データの設定
+            var pdfMain = new PdfMain(LayoutKinds.Order, pdfDataList);
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                // PDF作成
+                pdfMain.Create(ms);
+
+                // TODO ファイル名設定
+                return new DownLoadModel("test.pdf", ms.GetBuffer());
+            }
         }
-
-        var pdfDataList = new List<IData>();
-        foreach (var dbRecord in dbRecords)
+        catch (Exception ex)
         {
-            // TODO 実装
-            // pdfDataList.Add(new PdfReport.DataLists.Order(dbRecord.No, dbRecord.Key, dbRecord.UnitPrice, dbRecord.Qty));
+            Logger.LogError(ex, await GetLogError(ex));
+            return new DownLoadModel(string.Empty, null, "PDF作成に失敗しました。");
         }
-        if (!pdfDataList.Any())
+        finally
         {
-            return new DownLoadModel(string.Empty, null, "出力対象がありません。");
-        }
-
-        // TODO PDFレイアウトと出力データの設定
-        var pdfMain = new PdfMain(LayoutKinds.Order, pdfDataList);
-
-        using (MemoryStream ms = new MemoryStream())
-        {
-            // PDF作成
-            pdfMain.Create(ms);
-
-            // TODO ファイル名設定
-            return new DownLoadModel("test.pdf", ms.GetBuffer());
+            Logger.LogInformation(await GetLogMessage("終了"));
         }
     }
 }

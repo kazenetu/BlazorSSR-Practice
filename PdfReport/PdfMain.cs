@@ -15,6 +15,7 @@ namespace PdfReport
     {
         None,
         Order,
+        Envelope
     }
 
     /// <summary>
@@ -48,6 +49,10 @@ namespace PdfReport
             {
                 case LayoutKinds.Order:
                     SetParams(new OrderLayout(), dataList);
+                    break;
+
+                case LayoutKinds.Envelope:
+                    SetParams(new EnvelopeLayout(), dataList);
                     break;
 
                 default:

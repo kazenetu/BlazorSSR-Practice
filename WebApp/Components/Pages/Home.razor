@@ -1,5 +1,10 @@
 ﻿@page "/"
 @inherits Base.PageBase
+@using PdfReport;
+@using PdfReport.Interfaces;
+@using PdfReport.DataLists;
+@using WebApp.Components.Parts
+@using WebApp.Models.Parts
 @inject ILogger<Home> Logger
 
 @if (IsBeforeLoginCheck)
@@ -13,6 +18,10 @@
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+
+<div class="page-header">
+    <PDFViewer ButtonName="封筒印刷PDF表示" GetDataFunction="DownLoadPDF" IsPortrait="true" />
+</div>
 
 <div>
     <button class="btn btn-primary" @onclick="ShowAlertTest">アラートメッセージ表示</button>
@@ -195,6 +204,44 @@ Welcome to your new app.
                 Logger.LogInformation(await GetLogMessage("終了"));
             }
 
+        }
+    }
+
+    /// <summary>
+    /// PDFダウンロード
+    /// </summary>
+    /// <returns>ダウンロード用モデル</returns>
+    /// <remarks>Dataにはbyte[]配列を設定</remarks>
+    private async Task<DownLoadModel> DownLoadPDF()
+    {
+        try
+        {
+            Logger.LogInformation(await GetLogMessage("開始"));
+
+            var pdfDataList = new List<IData>();
+
+            // TODO DBから取得したデータを格納
+            pdfDataList.Add(new PdfReport.DataLists.Envelope("123-456","Ａ県Ｂ市123-4","サンプル太郎"));
+
+
+            var pdfMain = new PdfMain(LayoutKinds.Envelope, pdfDataList);
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                // PDF作成
+                pdfMain.Create(ms);
+
+                return new DownLoadModel("test.pdf", ms.GetBuffer());
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, await GetLogError(ex));
+            return new DownLoadModel(string.Empty, null, "PDF作成に失敗しました。");
+        }
+        finally
+        {
+            Logger.LogInformation(await GetLogMessage("終了"));
         }
     }
 }

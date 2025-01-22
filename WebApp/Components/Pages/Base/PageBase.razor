@@ -173,6 +173,10 @@
         // セッション削除
         await DeleteAsync(SessionBeforeNavigateTo);
 
+        // URLがnullの場合、Homeページに設定
+        if(url is null)
+            url = Navigation.BaseUri;
+
         // 画面遷移
         Navigation.NavigateTo(url!);
     }

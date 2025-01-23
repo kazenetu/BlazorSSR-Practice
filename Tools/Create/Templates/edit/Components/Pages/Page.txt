@@ -5,7 +5,6 @@
 @inherits Base.PageBase
 @inject ILogger<$ClassName$> Logger
 @inject I$ClassName$Repository repository
-@inject NavigationManager Navigation
 
 @if (IsBeforeLoginCheck)
 {

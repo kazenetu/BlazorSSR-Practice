@@ -62,13 +62,12 @@ public class $ClassName$Repository : RepositoryBase, I$ClassName$Repository
         foreach (DataRow row in sqlResult.Rows)
         {
             // TODO 1件だけ返す
-            // var no = Parse<int>(row["NoId"]);
-            // var product = Parse<string>(row["productName"]);
+            // var keyItem = Parse<$EditKeyType$>(row["productName"]);
             // var unitPrice = Parse<decimal>(row["unitPrice"]);
             // var qty = Parse<decimal>(row["qty"]);
             // var totalPrice = unitPrice * qty;
             // var version = Parse<int>(row["version"]);
-            // return new $ClassName$Model(no, product, unitPrice, qty, totalPrice, version);
+            // return new $ClassName$Model(keyItem, unitPrice, qty, totalPrice, version);
         }
         return null;
     }
@@ -137,7 +136,7 @@ public class $ClassName$Repository : RepositoryBase, I$ClassName$Repository
         // TODO Param設定
         // var date = DateTime.Now;
         // db!.ClearParam();
-        // db.AddParam("@productName", target.ProductName);
+        // db.AddParam("@productName", target.Key);
         // db.AddParam("@unitPrice", target.UnitPrice);
         // db.AddParam("@qty", target.Qty);
         // db.AddParam("@date", date.ToString());
@@ -180,7 +179,7 @@ public class $ClassName$Repository : RepositoryBase, I$ClassName$Repository
         // TODO Param設定
         // var date = DateTime.Now;
         // db!.ClearParam();
-        // db.AddParam("@productName", target.ProductName);
+        // db.AddParam("@productName", target.Key);
         // db.AddParam("@unitPrice", target.UnitPrice);
         // db.AddParam("@qty", target.Qty);
         // db.AddParam("@date", date.ToString());

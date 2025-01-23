@@ -69,9 +69,9 @@ public class $ClassName$Repository : RepositoryBase, I$ClassName$Repository
         // sql.AppendLine("ORDER BY productName");
         sql.AppendLine(db!.GetLimitSQL(recordCount, startIndex));
 
-        // HACK SQL発行
+        // SQL発行
         //var sqlResult = db.Fill(sql.ToString());
-        var sqlResult = new DataTable();
+        var sqlResult = new DataTable(); // HACK SQL完成時に削除。上の行のコメントアウトを解除すること
         var noIndex = 1;
         foreach (DataRow row in sqlResult.Rows)
         {

@@ -35,8 +35,9 @@ public class $ClassName$Repository : RepositoryBase, I$ClassName$Repository
         // sql.AppendLine("SELECT count(target_date) AS cnt FROM t_teather_forecast");
         sql.Append(GetWhere(inputModel));
 
-
-        var sqlResult = db.Fill(sql.ToString());
+        // SQL発行
+        //var sqlResult = db.Fill(sql.ToString());
+        var sqlResult = new DataTable(); // HACK SQL完成時に削除。上の行のコメントアウトを解除すること
         foreach (DataRow row in sqlResult.Rows)
         {
             result = Parse<int>(row["cnt"]);
@@ -68,7 +69,9 @@ public class $ClassName$Repository : RepositoryBase, I$ClassName$Repository
         // sql.AppendLine("ORDER BY target_date");
         sql.AppendLine(db!.GetLimitSQL(recordCount, startIndex));
 
-        var sqlResult = db.Fill(sql.ToString());
+        // HACK SQL発行
+        //var sqlResult = db.Fill(sql.ToString());
+        var sqlResult = new DataTable();
         foreach (DataRow row in sqlResult.Rows)
         {
             // TODO モデルに変換、追加

@@ -7,6 +7,7 @@
 @inherits Base.PageBase
 @inject ILogger<$ClassName$> Logger
 @inject I$ClassName$Repository repository
+@inject NavigationManager Navigation
 
 @if (IsBeforeLoginCheck)
 {
@@ -24,6 +25,12 @@
 }
 else
 {
+    <div class="row page-header">
+        <div class="col">
+            <button @onclick="@(() => ToEdit(null))" class="btn btn-outline-success">新規作成</button>
+        </div>
+    </div>
+
     @* 検索条件 *@
     <EditForm method="post" Model="Model" OnSubmit="Search" id="seach">
         <div class="card col-md-8 offset-md-2 mb-5">
@@ -33,12 +40,30 @@ else
                 @*
                 <div class="row row-margin">
                     <div class="col">
-                        <label class="col-md-4" for="StartDate">日付</label>
-                        <InputDate class="col-md-6" id="StartDate" @bind-Value="Model!.StartDate" />
+                        <label class="" for="SerchProductName">製品名(あいまい検索)</label>
+                        <InputText class="col-md-6" id="SerchProductName" @bind-Value="Model!.ProductName" />
+                    </div>
+                </div>
+
+                <div class="row row-margin">
+                    <div class="col">
+                        <label class="col-md-4" for="StartUnitPrice">単価</label>
+                        <InputNumber class="col-md-4 text-end" id="StartUnitPrice" @bind-Value="Model!.StartUnitPrice" />
                     </div>
                     <div class="col">
-                        <label class="col-md-4" for="EndDate">〜</label>
-                        <InputDate class="col-md-6" id="EndDate" @bind-Value="Model!.EndDate" />
+                        <label class="col-md-4" for="EndUnitPrice">〜</label>
+                        <InputNumber class="col-md-4 text-end" id="EndUnitPrice" @bind-Value="Model!.EndUnitPrice" />
+                    </div>
+                </div>
+
+                <div class="row row-margin">
+                    <div class="col">
+                        <label class="col-md-4" for="StartTotalPrice">合計金額</label>
+                        <InputNumber class="col-md-4 text-end" id="StartTotalPrice" @bind-Value="Model!.StartTotalPrice" />
+                    </div>
+                    <div class="col">
+                        <label class="col-md-4" for="EndTotalPrice">〜</label>
+                        <InputNumber class="col-md-4 text-end" id="EndTotalPrice" @bind-Value="Model!.EndTotalPrice" />
                     </div>
                 </div>
                 *@
@@ -52,24 +77,31 @@ else
 
     @* 一覧 *@
     <table class="table">
+        @* 検索条件 実装例 *@
         @*
         <thead>
             <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
+                <th style="width:2rem">No</th>
+                <th style="min-width:15rem">ProductName</th>
+                <th style="width:5rem">UnitPrice</th>
+                <th style="width:3rem">Qty</th>
+                <th style="width:9rem">TotalPrice</th>
+                <th>編集</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var forecast in PageRecords)
-            {
-                <tr>
-                    <td>@forecast.TargetDate.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
-                </tr>
+            @if(TotalRecords > 0) {
+                @foreach (var pageRecord in PageRecords)
+                {
+                    <tr>
+                        <td class="text-end">@pageRecord.No</td>
+                        <td>@pageRecord.Key</td>
+                        <td class="text-end">@(pageRecord.UnitPrice.ToString("#,#"))</td>
+                        <td class="text-end">@(pageRecord.Qty.ToString("#,#"))</td>
+                        <td class="text-end">@(pageRecord.TotalPrice.ToString("#,#"))</td>
+                        <td><button @onclick="@(() => ToEdit(pageRecord.Key))" class="btn btn-outline-success">編集</button></td>
+                    </tr>
+                }
             }
         </tbody>
         *@
@@ -77,8 +109,14 @@ else
 }
 
 @code {
+    /// <summary>
+    /// セッション定数：検索条件
+    /// </summary>
+    public const string SessionSearch = "Session$ClassName$Search"; 
+
     private Input$ClassName$Model Model { get; set; } = new();
 
+    #region ページング用
     /// <summary>
     /// ページング用：現在のページ数
     /// </summary>
@@ -100,10 +138,48 @@ else
     /// </summary>
     private $ClassName$Model[]? PageRecords;
 
+    /// <summary>
+    /// ページ変更イベント
+    /// </summary>
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        // 検索結果を取得
+        ShowPage(Page);
+    }
+
+    /// <summary>
+    /// 指定ページのレコード表示
+    /// </summary>
+    /// <param name="pageIndex">指定ページ(1ベース)</param>
+    /// <param name="isRefreshTotalRecords">総レコード数を更新するか否か</param>
+    private void ShowPage(int pageIndex, bool isRefreshTotalRecords = false)
+    {
+        // ページ数がマイナスの場合は終了
+        if (pageIndex <= 0)
+            return;
+
+        if (isRefreshTotalRecords)
+        {
+            // 総レコード数更新
+            TotalRecords = repository.GetTotalRecord(Model);
+        }
+
+        // ゼロベースのページ数を設定
+        var zeroBasePageIndex = pageIndex - 1;
+
+        // DBから1ページ分のレコード取得
+        PageRecords = repository.GetList(Model, zeroBasePageIndex * PageCount,  PageCount);
+        StateHasChanged();
+    }
+    #endregion
+
     /// </summary>
     /// <param name="firstRender">初回表示か否か</param>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        var oldPage = Page;
         if (firstRender)
         {
             try
@@ -129,6 +205,11 @@ else
                     Page = 1;
                 }
 
+                // 検索条件の復元
+                var tempModel = await GetAsync<Input$ClassName$Model>(SessionSearch);
+                if (tempModel is not null) 
+                    Model = tempModel;
+
                 // 検索結果を取得(総レコード数更新)
                 ShowPage(Page, true);
 
@@ -143,50 +224,49 @@ else
             {
                 Logger.LogInformation(await GetLogMessage("終了"));
             }
+
+            // メニューから遷移した場合
+            if (oldPage <= 0)
+            {
+                // 遷移情報削除
+                await DeleteAsync(SessionSearch);
+                Model = new();
+                TotalRecords = repository.GetTotalRecord(Model);
+                Navigation.NavigateTo("/$uri$/1");
+            }
         }
-    }
-
-    /// <summary>
-    /// ページ変更イベント
-    /// </summary>
-    protected override async Task OnParametersSetAsync()
-    {
-        await base.OnParametersSetAsync();
-
-        // 検索結果を取得
-        ShowPage(Page);
     }
 
     /// <summary>
     /// 検索イベント
     /// </summary>
-    private void Search()
+    private async Task Search()
     {
         // 1ページ
         Page = 1;
 
+        // 検索条件の保存
+        await SetAsync(SessionSearch, Model);
+
         // 検索結果を取得(総レコード数更新)
         ShowPage(Page, true);
+        Navigation.NavigateTo("/$uri$/1");
     }
 
     /// <summary>
-    /// 指定ページのレコード表示
+    /// 新規・編集
     /// </summary>
-    /// <param name="pageIndex">指定ページ(1ベース)</param>
-    /// <param name="isRefreshTotalRecords">総レコード数を更新するか否か</param>
-    private void ShowPage(int pageIndex, bool isRefreshTotalRecords = false)
+    /// <param name="key">主キー</param>
+    private async Task ToEdit($EditKeyType$? key)
     {
-        if (isRefreshTotalRecords)
-        {
-            // 総レコード数更新
-            TotalRecords = repository.GetTotalRecord(Model);
-        }
+        // HACK 編集ページURL
+        var editPageUrl = "order-edit";
 
-        // ゼロベースのページ数を設定
-        var zeroBasePageIndex = pageIndex - 1;
-
-        // DBから1ページ分のレコード取得
-        PageRecords = repository.GetList(Model, zeroBasePageIndex * PageCount,  PageCount);
-        StateHasChanged();
+        // 画面遷移
+        if (key is null)
+            await GotoPageAsync($"/{editPageUrl}/{key}");
+        else        
+            await GotoPageAsync($"/{editPageUrl}/{key}");
     }
+
 }

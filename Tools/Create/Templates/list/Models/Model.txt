@@ -5,32 +5,46 @@ namespace WebApp.Models;
 /// </summary>
 public class $ClassName$Model
 {
-    public $ClassName$Model(/*DateOnly targetDate, int temperatureC, string? summary*/)
+    public $ClassName$Model($EditKeyType$ key/*,int no, decimal unitPrice, decimal qty, decimal totalPrice, int version = 0*/)
     {
+        Key = key;
+
         // TODO パラメータ設定とプロパティ格納
-        // TargetDate = targetDate;
-        // TemperatureC = temperatureC;
-        // Summary = summary;
+        // No = no;
+        // UnitPrice = unitPrice;
+        // Qty = qty;
+        // TotalPrice = totalPrice;
+        // Version = version;
     }
+
+    /// <summary>
+    /// 主キー
+    /// </summary>
+    public $EditKeyType$ Key { set; get; }
 
     // TODO プロパティ追加
     // /// <summary>
-    // /// 対象日付
+    // /// 番号(1〜)
     // /// </summary>
-    // public DateOnly TargetDate { get; set; }
+    // public int No { set; get; }
 
     // /// <summary>
-    // /// 温度(摂氏)
+    // /// 単価
     // /// </summary>
-    // public int TemperatureC { get; set; }
+    // public decimal UnitPrice { set; get; }
 
     // /// <summary>
-    // /// 天気概要
+    // /// 数量
     // /// </summary>
-    // public string? Summary { get; set; }
+    // public decimal Qty { set; get; }
 
     // /// <summary>
-    // /// 温度(華氏)
+    // /// 合計金額
     // /// </summary>
-    // public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    // public decimal TotalPrice { set; get; }
+
+    /// <summary>
+    /// バージョン番号(楽観ロック用)
+    /// </summary>
+    public int Version { set; get; }
 }

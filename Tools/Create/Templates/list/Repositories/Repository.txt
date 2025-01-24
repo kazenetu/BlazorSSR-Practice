@@ -32,11 +32,12 @@ public class $ClassName$Repository : RepositoryBase, I$ClassName$Repository
         var sql = new StringBuilder();
 
         // TODO 発行SQL作成
-        // sql.AppendLine("SELECT count(target_date) AS cnt FROM t_teather_forecast");
+        // sql.AppendLine("SELECT count(productName) AS cnt FROM t_order");
         sql.Append(GetWhere(inputModel));
 
-
-        var sqlResult = db.Fill(sql.ToString());
+        // SQL発行
+        //var sqlResult = db.Fill(sql.ToString());
+        var sqlResult = new DataTable(); // HACK SQL完成時に削除。上の行のコメントアウトを解除すること
         foreach (DataRow row in sqlResult.Rows)
         {
             result = Parse<int>(row["cnt"]);
@@ -63,19 +64,24 @@ public class $ClassName$Repository : RepositoryBase, I$ClassName$Repository
         var sql = new StringBuilder();
 
         // TODO 発行SQL作成
-        // sql.AppendLine("SELECT target_date, temperature_c, summary FROM t_teather_forecast");
+        // sql.AppendLine("SELECT productName, unitPrice, qty,unitPrice*qty AS totalPrice FROM t_order");
         // sql.Append(GetWhere(inputModel));
-        // sql.AppendLine("ORDER BY target_date");
+        // sql.AppendLine("ORDER BY productName");
         sql.AppendLine(db!.GetLimitSQL(recordCount, startIndex));
 
-        var sqlResult = db.Fill(sql.ToString());
+        // SQL発行
+        //var sqlResult = db.Fill(sql.ToString());
+        var sqlResult = new DataTable(); // HACK SQL完成時に削除。上の行のコメントアウトを解除すること
+        var noIndex = 1;
         foreach (DataRow row in sqlResult.Rows)
         {
             // TODO モデルに変換、追加
-            // var targetDate = Parse<string>(row["target_date"]);
-            // var temperatureC = Parse<int>(row["temperature_c"]);
-            // var summary = Parse<string>(row["summary"]);
-            // result.Add(new $ClassName$Model(DateOnly.Parse(targetDate), temperatureC, summary));
+            // var no = startIndex + noIndex;
+            // var key = Parse<$EditKeyType$>(row["productName"]);
+            // var unitPrice = Parse<decimal>(row["unitPrice"]);
+            // var qty = Parse<decimal>(row["qty"]);
+            // var totalPrice = unitPrice * qty;
+            // result.Add(new $ClassName$Model(key, no, unitPrice, qty, totalPrice, 1));
         }
         return [.. result];
     }
@@ -92,37 +98,45 @@ public class $ClassName$Repository : RepositoryBase, I$ClassName$Repository
         var where = new StringBuilder();
 
         // TODO 条件の確認と追加
-        // if(inputModel.StartDate is not null)
+        // if(!string.IsNullOrEmpty(inputModel.ProductName))
         // {
         //     if (where.Length > 0) where.Append(" AND ");
-        //     where.AppendLine(" target_date >= @startDate");
+        //     where.AppendLine(" productName like @ProductName");
 
         //     // Param設定
-        //     db.AddParam("@startDate", inputModel.StartDate);
+        //     db.AddParam("@ProductName", $"%{inputModel.ProductName}%");
         // }
-        // if(inputModel.EndDate is not null)
+        // if(inputModel.StartUnitPrice is not null)
         // {
         //     if (where.Length > 0) where.Append(" AND ");
-        //     where.AppendLine(" target_date <= @endDate");
+        //     where.AppendLine(" unitPrice >= @StartUnitPrice");
 
         //     // Param設定
-        //     db.AddParam("@endDate", inputModel.EndDate);
+        //     db.AddParam("@StartUnitPrice", inputModel.StartUnitPrice);
         // }
-        // if(inputModel.StartTemperatureC is not null)
+        // if(inputModel.EndUnitPrice is not null)
         // {
         //     if (where.Length > 0) where.Append(" AND ");
-        //     where.AppendLine(" temperature_c >= @startTemperatureC");
+        //     where.AppendLine(" unitPrice <= @EndUnitPrice");
 
         //     // Param設定
-        //     db.AddParam("@startTemperatureC", inputModel.StartTemperatureC);
+        //     db.AddParam("@EndUnitPrice", inputModel.EndUnitPrice);
         // }
-        // if(inputModel.EndTemperatureC is not null)
+        // if(inputModel.StartTotalPrice is not null)
         // {
         //     if (where.Length > 0) where.Append(" AND ");
-        //     where.AppendLine(" temperature_c <= @endTemperatureC");
+        //     where.AppendLine(" cast(unitPrice*qty AS numeric) >= @StartTotalPrice");
 
         //     // Param設定
-        //     db.AddParam("@endTemperatureC", inputModel.EndTemperatureC);
+        //     db.AddParam("@StartTotalPrice", inputModel.StartTotalPrice);
+        // }
+        // if(inputModel.EndTotalPrice is not null)
+        // {
+        //     if (where.Length > 0) where.Append(" AND ");
+        //     where.AppendLine(" cast(unitPrice*qty AS numeric) <= @EndTotalPrice");
+
+        //     // Param設定
+        //     db.AddParam("@EndTotalPrice", inputModel.EndTotalPrice);
         // }
 
         // 条件が存在する場合は条件句を返す

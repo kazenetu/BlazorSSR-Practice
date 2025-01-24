@@ -6,8 +6,9 @@ namespace WebApp.Models;
 public class Input$ClassName$Model
 {
     // TODO 検索条件追加
-    // public DateOnly? StartDate { set; get; }
-    // public DateOnly? EndDate { set; get; }
-    // public int? StartTemperatureC { set; get; }
-    // public int? EndTemperatureC { set; get; }
+    // public string? ProductName { set; get; }
+    // public decimal? StartUnitPrice { set; get; }
+    // public decimal? EndUnitPrice { set; get; }
+    // public decimal? StartTotalPrice { set; get; }
+    // public decimal? EndTotalPrice { set; get; }
 }

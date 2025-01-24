@@ -102,7 +102,7 @@ namespace PdfReport.Layouts
             // 文字描画：宛名
             rect = new XRect(160-15, 100, 160+100, page.Height.Point);
             tf
-                .DrawString(GetVerticalWriting(item.GetColumn(2).value.ToString()),
+                .DrawString(GetVerticalWriting(item.GetColumn(2).value.ToString() + "様"),
                 fontAddressName,
                 XBrushes.Black,
                 rect,

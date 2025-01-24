@@ -157,12 +157,15 @@ dotnet run --project Tools/Create/Create.csproj <RunMode>　<uri> [options]
 
 |パラメータ名|設定値|概要|
 |---|---|---|
-|--edit_key_type<br>-ekt|例）string|型情報(省略時:int)<br>一覧以外で使用|
+|--edit_key_type<br>-ekt|例）string|型情報(省略時:int)|
 
 ### 実行例
 ```sh
-#一覧ページ生成　ページuri:order-list (クラス名:OrderList)
+#一覧ページ生成　ページuri:order-list (クラス名:OrderList) キー型:int
 dotnet run --project Tools/Create/Create.csproj list order-list 
+
+#一覧ページ生成　ページuri:order-list (クラス名:OrderList) キー型:string
+dotnet run --project Tools/Create/Create.csproj list order-list --edit_key_type string 
 
 #詳細ページ生成　ページuri:order-edit (クラス名:OrderEdit)　キー型:string
 dotnet run --project Tools/Create/Create.csproj edit order-edit --edit_key_type string

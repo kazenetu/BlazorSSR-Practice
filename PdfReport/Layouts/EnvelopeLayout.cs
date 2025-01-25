@@ -71,18 +71,11 @@ namespace PdfReport.Layouts
                     new XPdfFontOptions(PdfFontEmbedding
                             .EmbedCompleteFontFile));
 
-            // 枠線設定
-            var pen = new XPen(XColors.Black, 3);
-
-            // 矩形設定
-            var rect = new XRect(1, 1, page.Width.Point - 1, page.Height.Point - 1);
-            gfx.DrawRectangle(pen, rect);
-
             // 縦書き用インスタンス取得
             var tf = new XTextFormatter(gfx);
 
             // 文字描画：郵便番号
-            rect = new XRect(230, 20, 300+100, page.Height.Point);
+            var rect = new XRect(230, 20, 300+100, page.Height.Point);
             tf
                 .DrawString(item.GetColumn(0).value.ToString(),
                 fontPostNo,

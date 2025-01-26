@@ -26,13 +26,16 @@ namespace PdfReport.Layouts
         /// <returns>成功/失敗</returns>
         public bool Create(PdfDocument document, List<IData> items)
         {
+            var result = false;
+
             // ページ単位に描画
             foreach (var item in items)
             {
-                CreatePage(document, item);
+                result = CreatePage(document, item);
+                if(!result) break;
             }
 
-            return true;
+            return result;
         }
 
         /// <summary>

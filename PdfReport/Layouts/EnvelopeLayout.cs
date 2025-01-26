@@ -30,7 +30,6 @@ namespace PdfReport.Layouts
             foreach (var item in items)
             {
                 CreatePage(document, item);
-                break;
             }
 
             return true;

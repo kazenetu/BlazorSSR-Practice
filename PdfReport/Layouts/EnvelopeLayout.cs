@@ -14,6 +14,21 @@ namespace PdfReport.Layouts
     public class EnvelopeLayout : ILayout
     {
         /// <summary>
+        /// 郵便の文字数
+        /// </summary>
+        private const int PostNoCount = 7;
+
+        /// <summary>
+        /// 住所の最大文字数(24*改行コード)
+        /// </summary>
+        private const int AddressMaxCount = 48;
+
+        /// <summary>
+        /// 宛先の最大文字数(10*改行コード)
+        /// </summary>
+        private const int AddressNameMaxCount = 20;
+
+        /// <summary>
         /// 漢数字リスト
         /// </summary>
         private static string[] KanSujiList = { "〇", "一", "二", "三", "四", "五", "六", "七", "八", "九" };
@@ -46,6 +61,18 @@ namespace PdfReport.Layouts
         /// <returns>成功/失敗</returns>
         private bool CreatePage(PdfDocument document, IData item)
         {
+            //　チェック：郵便番号の文字数が規定数以外はエラー
+            var postNo = item.GetColumn(0).value.ToString().Replace("-", string.Empty);
+            if (postNo.Length != PostNoCount) return false;
+
+            //　チェック：住所の文字数が最大数より大きい場合ははエラー
+            var address = GetVerticalWriting(item.GetColumn(1).value.ToString());
+            if (address.Length > AddressMaxCount) return false;
+
+            //　チェック：宛名の文字数が最大数より大きい場合ははエラー
+            var addressName = GetVerticalWriting(item.GetColumn(2).value.ToString());
+            if (addressName.Length > AddressNameMaxCount) return false;
+
             // Create an empty page in this document.
             var page = document.AddPage();
 
@@ -82,12 +109,12 @@ namespace PdfReport.Layouts
 
             // 文字描画：郵便番号
             var rect = new XRect(180, 27, 300 + 100, page.Height.Point);
-            DrawYubinNo(gfx, fontPostNo, rect, item.GetColumn(0).value.ToString().Replace("-", string.Empty));
+            DrawYubinNo(gfx, fontPostNo, rect, postNo);
 
             // 文字描画：住所
             rect = new XRect(page.Width.Point - 40, 100, page.Width.Point, page.Height.Point);
             tf
-                .DrawString(GetVerticalWriting(item.GetColumn(1).value.ToString()),
+                .DrawString(address,
                 fontAddress,
                 XBrushes.Black,
                 rect,
@@ -96,12 +123,11 @@ namespace PdfReport.Layouts
             // 文字描画：宛名
             rect = new XRect(160 - 15, 100, 160 + 100, page.Height.Point);
             tf
-                .DrawString(GetVerticalWriting(item.GetColumn(2).value.ToString() + "様"),
+                .DrawString(addressName + "様",
                 fontAddressName,
                 XBrushes.Black,
                 rect,
                 XStringFormats.TopLeft);
-
 
             return true;
         }

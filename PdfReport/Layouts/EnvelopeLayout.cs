@@ -74,11 +74,11 @@ namespace PdfReport.Layouts
             var tf = new XTextFormatter(gfx);
 
             // 文字描画：郵便番号
-            var rect = new XRect(180, 27, 300+100, page.Height.Point);
+            var rect = new XRect(180, 27, 300 + 100, page.Height.Point);
             DrawYubinNo(gfx, fontPostNo, rect, item.GetColumn(0).value.ToString().Replace("-", string.Empty));
 
             // 文字描画：住所
-            rect = new XRect(page.Width.Point-80, 100, page.Width.Point, page.Height.Point);
+            rect = new XRect(page.Width.Point - 80, 100, page.Width.Point, page.Height.Point);
             tf
                 .DrawString(GetVerticalWriting(item.GetColumn(1).value.ToString()),
                 fontAddress,
@@ -87,7 +87,7 @@ namespace PdfReport.Layouts
                 XStringFormats.TopLeft);
 
             // 文字描画：宛名
-            rect = new XRect(160-15, 100, 160+100, page.Height.Point);
+            rect = new XRect(160 - 15, 100, 160 + 100, page.Height.Point);
             tf
                 .DrawString(GetVerticalWriting(item.GetColumn(2).value.ToString() + "様"),
                 fontAddressName,
@@ -109,13 +109,13 @@ namespace PdfReport.Layouts
         private void DrawYubinNo(XGraphics gfx, XFont fontPostNo, XRect rect, string yubinNo)
         {
             var numberIndex = 0;
-            foreach(var number in yubinNo)
+            foreach (var number in yubinNo)
             {
                 // 左位置の設定
                 var left = rect.Left + 20 * numberIndex;
 
                 // ４桁目以降は3桁と4桁の間を開ける
-                if (numberIndex>2)
+                if (numberIndex > 2)
                     left += 3;
 
                 // 郵便番号の1文字を描画
@@ -147,7 +147,7 @@ namespace PdfReport.Layouts
                 var space = " ";
                 if (Regex.IsMatch(text, @"^[0-9]+$"))
                 {
-                    if (wordIndex < src.Length-1 && Regex.IsMatch(src[wordIndex+1].ToString(), @"^[0-9]+$"))
+                    if (wordIndex < src.Length - 1 && Regex.IsMatch(src[wordIndex + 1].ToString(), @"^[0-9]+$"))
                     {
                         newLine = string.Empty;
                     }

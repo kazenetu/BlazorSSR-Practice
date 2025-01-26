@@ -75,13 +75,8 @@ namespace PdfReport.Layouts
             var tf = new XTextFormatter(gfx);
 
             // 文字描画：郵便番号
-            var rect = new XRect(230, 20, 300+100, page.Height.Point);
-            tf
-                .DrawString(item.GetColumn(0).value.ToString(),
-                fontPostNo,
-                XBrushes.Black,
-                rect,
-                XStringFormats.TopLeft);
+            var rect = new XRect(180, 27, 300+100, page.Height.Point);
+            DrawYubinNo(gfx, fontPostNo, rect, item.GetColumn(0).value.ToString().Replace("-", string.Empty));
 
             // 文字描画：住所
             rect = new XRect(page.Width.Point-80, 100, page.Width.Point, page.Height.Point);
@@ -103,6 +98,37 @@ namespace PdfReport.Layouts
 
 
             return true;
+        }
+
+        /// <summary>
+        /// 郵便番号の描画
+        /// </summary>
+        /// <param name="gfx">描画用インスタンス</param>
+        /// <param name="fontPostNo">郵便番号用フォント</param>
+        /// <param name="rect">対象範囲</param>
+        /// <param name="yubinNo">郵便番号文字列</param>
+        private void DrawYubinNo(XGraphics gfx, XFont fontPostNo, XRect rect, string yubinNo)
+        {
+            var numberIndex = 0;
+            foreach(var number in yubinNo)
+            {
+                // 左位置の設定
+                var left = rect.Left + 20 * numberIndex;
+
+                // ４桁目以降は3桁と4桁の間を開ける
+                if (numberIndex>2)
+                    left += 3;
+
+                // 郵便番号の1文字を描画
+                gfx.DrawString(number.ToString(),
+                fontPostNo,
+                XBrushes.Black,
+                new XRect(left, rect.Top, left + 50, rect.Height),
+                XStringFormats.TopLeft);
+
+                // 郵便番号の桁数を進める
+                numberIndex++;
+            }
         }
 
         /// <summary>

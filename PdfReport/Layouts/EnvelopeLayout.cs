@@ -83,7 +83,7 @@ namespace PdfReport.Layouts
             DrawYubinNo(gfx, fontPostNo, rect, item.GetColumn(0).value.ToString().Replace("-", string.Empty));
 
             // 文字描画：住所
-            rect = new XRect(page.Width.Point - 80, 100, page.Width.Point, page.Height.Point);
+            rect = new XRect(page.Width.Point - 40, 100, page.Width.Point, page.Height.Point);
             tf
                 .DrawString(GetVerticalWriting(item.GetColumn(1).value.ToString()),
                 fontAddress,

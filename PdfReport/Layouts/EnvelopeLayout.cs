@@ -14,6 +14,11 @@ namespace PdfReport.Layouts
     public class EnvelopeLayout : ILayout
     {
         /// <summary>
+        /// 漢数字リスト
+        /// </summary>
+        private static string[] KanSujiList = { "〇", "一", "二", "三", "四", "五", "六", "七", "八", "九" };
+
+        /// <summary>
         /// 帳票作成
         /// </summary>
         /// <param name="document">PdfDocumentインスタンス</param>
@@ -143,24 +148,20 @@ namespace PdfReport.Layouts
             foreach (var word in src)
             {
                 var text = word.ToString();
-                var newLine = Environment.NewLine;
-                var space = " ";
                 if (Regex.IsMatch(text, @"^[0-9]+$"))
                 {
-                    if (wordIndex < src.Length - 1 && Regex.IsMatch(src[wordIndex + 1].ToString(), @"^[0-9]+$"))
-                    {
-                        newLine = string.Empty;
-                    }
+                    // 数字は漢数字に変換
+                    text = KanSujiList[int.Parse(text)];
                 }
                 if (text == "-")
                 {
-                    text = "|";
+                    text = "｜";
                 }
                 if (text == "ー")
                 {
-                    text = "|";
+                    text = "｜";
                 }
-                result += $"{space}{text}{newLine}";
+                result += $"{text}{Environment.NewLine}";
 
                 wordIndex++;
             }

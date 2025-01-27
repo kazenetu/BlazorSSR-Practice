@@ -130,7 +130,7 @@ namespace PdfReport.Layouts
 
             // 文字描画：郵便番号
             var rect = new XRect(180, 27, 300 + 100, page.Height.Point);
-            DrawYubinNo(gfx, FontPostNo!, rect, postNo);
+            DrawPostNo(gfx, FontPostNo!, rect, postNo);
 
             // 文字描画：住所
             rect = new XRect(page.Width.Point - 40, 100, page.Width.Point, page.Height.Point);
@@ -160,7 +160,7 @@ namespace PdfReport.Layouts
         /// <param name="fontPostNo">郵便番号用フォント</param>
         /// <param name="rect">対象範囲</param>
         /// <param name="yubinNo">郵便番号文字列</param>
-        private void DrawYubinNo(XGraphics gfx, XFont fontPostNo, XRect rect, string yubinNo)
+        private void DrawPostNo(XGraphics gfx, XFont fontPostNo, XRect rect, string yubinNo)
         {
             var numberIndex = 0;
             foreach (var number in yubinNo)

@@ -49,6 +49,32 @@ namespace PdfReport.Layouts
         private XFont? FontAddressName;
 
         /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        public EnvelopeLayout()
+        {
+            // 日本語フォント設定
+            FontPostNo =
+                new XFont("Gen Shin Gothic",
+                    25,
+                    XFontStyleEx.BoldItalic,
+                    new XPdfFontOptions(PdfFontEmbedding
+                            .EmbedCompleteFontFile));
+            FontAddress =
+                new XFont("Gen Shin Gothic",
+                    15,
+                    XFontStyleEx.BoldItalic,
+                    new XPdfFontOptions(PdfFontEmbedding
+                            .EmbedCompleteFontFile));
+            FontAddressName =
+                new XFont("Gen Shin Gothic",
+                    30,
+                    XFontStyleEx.BoldItalic,
+                    new XPdfFontOptions(PdfFontEmbedding
+                            .EmbedCompleteFontFile));
+        }
+
+        /// <summary>
         /// 帳票作成
         /// </summary>
         /// <param name="document">PdfDocumentインスタンス</param>
@@ -99,38 +125,18 @@ namespace PdfReport.Layouts
             // Get an XGraphics object for drawing on this page.
             var gfx = XGraphics.FromPdfPage(page);
 
-            // 日本語フォント設定
-            FontPostNo =
-                new XFont("Gen Shin Gothic",
-                    25,
-                    XFontStyleEx.BoldItalic,
-                    new XPdfFontOptions(PdfFontEmbedding
-                            .EmbedCompleteFontFile));
-            FontAddress =
-                new XFont("Gen Shin Gothic",
-                    15,
-                    XFontStyleEx.BoldItalic,
-                    new XPdfFontOptions(PdfFontEmbedding
-                            .EmbedCompleteFontFile));
-            FontAddressName =
-                new XFont("Gen Shin Gothic",
-                    30,
-                    XFontStyleEx.BoldItalic,
-                    new XPdfFontOptions(PdfFontEmbedding
-                            .EmbedCompleteFontFile));
-
             // 縦書き用インスタンス取得
             var tf = new XTextFormatter(gfx);
 
             // 文字描画：郵便番号
             var rect = new XRect(180, 27, 300 + 100, page.Height.Point);
-            DrawYubinNo(gfx, FontPostNo, rect, postNo);
+            DrawYubinNo(gfx, FontPostNo!, rect, postNo);
 
             // 文字描画：住所
             rect = new XRect(page.Width.Point - 40, 100, page.Width.Point, page.Height.Point);
             tf
                 .DrawString(address,
-                FontAddress,
+                FontAddress!,
                 XBrushes.Black,
                 rect,
                 XStringFormats.TopLeft);
@@ -139,7 +145,7 @@ namespace PdfReport.Layouts
             rect = new XRect(160 - 15, 100, 160 + 100, page.Height.Point);
             tf
                 .DrawString(addressName + "様",
-                FontAddressName,
+                FontAddressName!,
                 XBrushes.Black,
                 rect,
                 XStringFormats.TopLeft);

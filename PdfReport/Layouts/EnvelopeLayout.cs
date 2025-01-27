@@ -34,6 +34,21 @@ namespace PdfReport.Layouts
         private static string[] KanSujiList = { "〇", "一", "二", "三", "四", "五", "六", "七", "八", "九" };
 
         /// <summary>
+        /// フォント：郵便番号
+        /// </summary> <summary>
+        private XFont? FontPostNo;
+
+        /// <summary>
+        /// フォント：住所
+        /// </summary> <summary>
+        private XFont? FontAddress;
+
+        /// <summary>
+        /// フォント：宛先
+        /// </summary> <summary>
+        private XFont? FontAddressName;
+
+        /// <summary>
         /// 帳票作成
         /// </summary>
         /// <param name="document">PdfDocumentインスタンス</param>
@@ -85,19 +100,19 @@ namespace PdfReport.Layouts
             var gfx = XGraphics.FromPdfPage(page);
 
             // 日本語フォント設定
-            var fontPostNo =
+            FontPostNo =
                 new XFont("Gen Shin Gothic",
                     25,
                     XFontStyleEx.BoldItalic,
                     new XPdfFontOptions(PdfFontEmbedding
                             .EmbedCompleteFontFile));
-            var fontAddress =
+            FontAddress =
                 new XFont("Gen Shin Gothic",
                     15,
                     XFontStyleEx.BoldItalic,
                     new XPdfFontOptions(PdfFontEmbedding
                             .EmbedCompleteFontFile));
-            var fontAddressName =
+            FontAddressName =
                 new XFont("Gen Shin Gothic",
                     30,
                     XFontStyleEx.BoldItalic,
@@ -109,13 +124,13 @@ namespace PdfReport.Layouts
 
             // 文字描画：郵便番号
             var rect = new XRect(180, 27, 300 + 100, page.Height.Point);
-            DrawYubinNo(gfx, fontPostNo, rect, postNo);
+            DrawYubinNo(gfx, FontPostNo, rect, postNo);
 
             // 文字描画：住所
             rect = new XRect(page.Width.Point - 40, 100, page.Width.Point, page.Height.Point);
             tf
                 .DrawString(address,
-                fontAddress,
+                FontAddress,
                 XBrushes.Black,
                 rect,
                 XStringFormats.TopLeft);
@@ -124,7 +139,7 @@ namespace PdfReport.Layouts
             rect = new XRect(160 - 15, 100, 160 + 100, page.Height.Point);
             tf
                 .DrawString(addressName + "様",
-                fontAddressName,
+                FontAddressName,
                 XBrushes.Black,
                 rect,
                 XStringFormats.TopLeft);

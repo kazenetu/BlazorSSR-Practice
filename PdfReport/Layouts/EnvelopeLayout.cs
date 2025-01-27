@@ -19,14 +19,14 @@ namespace PdfReport.Layouts
         private const int PostNoCount = 7;
 
         /// <summary>
-        /// 住所の最大文字数(24*改行コード)
+        /// 住所の最大文字数
         /// </summary>
-        private const int AddressMaxCount = 48;
+        private const int AddressMaxCount = 24;
 
         /// <summary>
-        /// 宛先の最大文字数(10*改行コード)
+        /// 宛先の最大文字数
         /// </summary>
-        private const int AddressNameMaxCount = 20;
+        private const int AddressNameMaxCount = 10;
 
         /// <summary>
         /// 漢数字リスト
@@ -106,13 +106,13 @@ namespace PdfReport.Layouts
             var postNo = item.GetColumn(0).value.ToString().Replace("-", string.Empty);
             if (postNo.Length != PostNoCount) return false;
 
-            //　チェック：住所の文字数が最大数より大きい場合ははエラー
+            //　チェック：住所の文字数が最大数より大きい場合はエラー
             var address = GetVerticalWriting(item.GetColumn(1).value.ToString());
-            if (address.Length > AddressMaxCount) return false;
+            if (address.Replace(Environment.NewLine, string.Empty).Length > AddressMaxCount) return false;
 
-            //　チェック：宛名の文字数が最大数より大きい場合ははエラー
+            //　チェック：宛名の文字数が最大数より大きい場合はエラー
             var addressName = GetVerticalWriting(item.GetColumn(2).value.ToString());
-            if (addressName.Length > AddressNameMaxCount) return false;
+            if (addressName.Replace(Environment.NewLine, string.Empty).Length > AddressNameMaxCount) return false;
 
             // Create an empty page in this document.
             var page = document.AddPage();

@@ -49,6 +49,21 @@ namespace PdfReport.Layouts
         private XFont? FontAddressName;
 
         /// <summary>
+        /// 矩形：郵便番号
+        /// </summary> <summary>
+        private XRect RectPostNo;
+
+        /// <summary>
+        /// 矩形：住所
+        /// </summary> <summary>
+        private XRect RectAddress;
+
+        /// <summary>
+        /// 矩形：宛先
+        /// </summary> <summary>
+        private XRect RectAddressName;
+
+        /// <summary>
         /// コンストラクタ
         /// </summary>
         public EnvelopeLayout()
@@ -129,25 +144,25 @@ namespace PdfReport.Layouts
             var tf = new XTextFormatter(gfx);
 
             // 文字描画：郵便番号
-            var rectPostNo = new XRect(180, 27, 300 + 100, page.Height.Point);
-            DrawPostNo(gfx, FontPostNo!, rectPostNo, postNo);
+            RectPostNo = new XRect(180, 27, 300 + 100, page.Height.Point);
+            DrawPostNo(gfx, FontPostNo!, RectPostNo, postNo);
 
             // 文字描画：住所
-            var rectAddress = new XRect(page.Width.Point - 40, 100, page.Width.Point, page.Height.Point);
+            RectAddress = new XRect(page.Width.Point - 40, 100, page.Width.Point, page.Height.Point);
             tf
                 .DrawString(address,
                 FontAddress!,
                 XBrushes.Black,
-                rectAddress,
+                RectAddress,
                 XStringFormats.TopLeft);
 
             // 文字描画：宛名
-            var rectAddressName = new XRect(160 - 15, 100, 160 + 100, page.Height.Point);
+            RectAddressName = new XRect(160 - 15, 100, 160 + 100, page.Height.Point);
             tf
                 .DrawString(addressName + "様",
                 FontAddressName!,
                 XBrushes.Black,
-                rectAddressName,
+                RectAddressName,
                 XStringFormats.TopLeft);
 
             return true;

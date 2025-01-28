@@ -129,25 +129,25 @@ namespace PdfReport.Layouts
             var tf = new XTextFormatter(gfx);
 
             // 文字描画：郵便番号
-            var rect = new XRect(180, 27, 300 + 100, page.Height.Point);
-            DrawPostNo(gfx, FontPostNo!, rect, postNo);
+            var rectPostNo = new XRect(180, 27, 300 + 100, page.Height.Point);
+            DrawPostNo(gfx, FontPostNo!, rectPostNo, postNo);
 
             // 文字描画：住所
-            rect = new XRect(page.Width.Point - 40, 100, page.Width.Point, page.Height.Point);
+            var rectAddress = new XRect(page.Width.Point - 40, 100, page.Width.Point, page.Height.Point);
             tf
                 .DrawString(address,
                 FontAddress!,
                 XBrushes.Black,
-                rect,
+                rectAddress,
                 XStringFormats.TopLeft);
 
             // 文字描画：宛名
-            rect = new XRect(160 - 15, 100, 160 + 100, page.Height.Point);
+            var rectAddressName = new XRect(160 - 15, 100, 160 + 100, page.Height.Point);
             tf
                 .DrawString(addressName + "様",
                 FontAddressName!,
                 XBrushes.Black,
-                rect,
+                rectAddressName,
                 XStringFormats.TopLeft);
 
             return true;

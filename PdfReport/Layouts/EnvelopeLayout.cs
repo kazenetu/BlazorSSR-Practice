@@ -14,6 +14,16 @@ namespace PdfReport.Layouts
     public class EnvelopeLayout : ILayout
     {
         /// <summary>
+        /// ページサイズ：長型3号：幅
+        /// </summary>
+        private const double PageWidth = 666.14184;
+
+        /// <summary>
+        /// ページサイズ：長型3号：高さ
+        /// </summary>
+        private const double PageHeight = 340.15752;
+
+        /// <summary>
         /// 郵便の文字数
         /// </summary>
         private const int PostNoCount = 7;
@@ -133,9 +143,9 @@ namespace PdfReport.Layouts
             var page = document.AddPage();
 
             // 長型3号
-            //page.Orientation = PdfSharp.PageOrientation.Landscape;
-            page.Height = XUnit.FromPoint(666.14184);
-            page.Width = XUnit.FromPoint(340.15752);
+            page.Width = XUnit.FromPoint(PageWidth);
+            page.Height = XUnit.FromPoint(PageHeight);
+            page.Orientation = PdfSharp.PageOrientation.Landscape; //90度回転して縦長にする
 
             // Get an XGraphics object for drawing on this page.
             var gfx = XGraphics.FromPdfPage(page);
@@ -144,11 +154,11 @@ namespace PdfReport.Layouts
             var tf = new XTextFormatter(gfx);
 
             // 文字描画：郵便番号
-            RectPostNo = new XRect(180, 27, 300 + 100, page.Height.Point);
+            RectPostNo = new XRect(180, 27, 300 + 100, PageHeight);
             DrawPostNo(gfx, FontPostNo!, RectPostNo, postNo);
 
             // 文字描画：住所
-            RectAddress = new XRect(page.Width.Point - 40, 100, page.Width.Point, page.Height.Point);
+            RectAddress = new XRect(PageWidth - 40, 100, PageWidth, PageHeight);
             tf
                 .DrawString(address,
                 FontAddress!,
@@ -157,7 +167,7 @@ namespace PdfReport.Layouts
                 XStringFormats.TopLeft);
 
             // 文字描画：宛名
-            RectAddressName = new XRect(160 - 15, 100, 160 + 100, page.Height.Point);
+            RectAddressName = new XRect(160 - 15, 100, 160 + 100, PageHeight);
             tf
                 .DrawString(addressName + "様",
                 FontAddressName!,

@@ -97,6 +97,11 @@ namespace PdfReport.Layouts
                     XFontStyleEx.BoldItalic,
                     new XPdfFontOptions(PdfFontEmbedding
                             .EmbedCompleteFontFile));
+
+            // 矩形設定
+            RectPostNo = new XRect(180, 27, 300 + 100, PageHeight);
+            RectAddress = new XRect(PageWidth - 40, 100, PageWidth, PageHeight);
+            RectAddressName = new XRect(160 - 15, 100, 160 + 100, PageHeight);
         }
 
         /// <summary>
@@ -154,11 +159,9 @@ namespace PdfReport.Layouts
             var tf = new XTextFormatter(gfx);
 
             // 文字描画：郵便番号
-            RectPostNo = new XRect(180, 27, 300 + 100, PageHeight);
             DrawPostNo(gfx, FontPostNo!, RectPostNo, postNo);
 
             // 文字描画：住所
-            RectAddress = new XRect(PageWidth - 40, 100, PageWidth, PageHeight);
             tf
                 .DrawString(address,
                 FontAddress!,
@@ -167,7 +170,6 @@ namespace PdfReport.Layouts
                 XStringFormats.TopLeft);
 
             // 文字描画：宛名
-            RectAddressName = new XRect(160 - 15, 100, 160 + 100, PageHeight);
             tf
                 .DrawString(addressName + "様",
                 FontAddressName!,

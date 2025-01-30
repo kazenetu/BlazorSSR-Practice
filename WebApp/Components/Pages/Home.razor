@@ -29,6 +29,10 @@ Welcome to your new app.
 <div>
     <button class="btn btn-primary" @onclick="ShowConfirmTest">確認メッセージ表示</button>
 </div>
+<div>
+    <button class="btn btn-primary" @onclick="ShowConfirmShortTest">確認メッセージ表示(最小)</button>
+</div>
+
 
 <div class="card" style="margin-top:3rem;width:35rem;">
     <div class="card-body">
@@ -157,6 +161,7 @@ Welcome to your new app.
     {
         await ShowAlert("アラートメッセージ");
     }
+
     private async Task ShowConfirmTest()
     {
         await ShowConfirm("確認メッセージ", ShowConfirmYes);
@@ -164,6 +169,10 @@ Welcome to your new app.
     private async Task ShowConfirmYes()
     {
         await ShowAlert("「はい」が押されました。");
+    }
+    private async Task ShowConfirmShortTest()
+    {
+        await ShowConfirm("a", ShowConfirmYes);
     }
 
     /// <summary>

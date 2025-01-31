@@ -17,21 +17,45 @@ public class CreateFils
         TipsCsv,
     }
 
+    /// <summary>
+    /// ファイル生成のルートパス
+    /// </summary>
     private string RootPath;
+
+    /// <summary>
+    /// 実行モード
+    /// </summary>
     private ModeEnum Mode;
+
+    /// <summary>
+    /// ページのuri
+    /// </summary>
     private string Uri;
+
+    /// <summary>
+    /// オプション：主キー型
+    /// </summary>
     private string? EditKeyType;
+
+    /// <summary>
+    /// オプション：タイトル名
+    /// </summary>
     private string? EditTitle;
+
+    /// <summary>
+    /// クラス名
+    /// </summary>
+    /// <remarks>ページのuriから自動生成</remarks> 
     private string ClassName;
 
     /// <summary>
     /// コンストラクタ
     /// </summary>
     /// <param name="rootPath">ファイル生成のルートパス</param>
-    /// <param name="mode">モード</param>
+    /// <param name="mode">実行モード</param>
     /// <param name="uri">ページのuri</param>
-    /// <param name="editKeyType">編集ページの主キー型</param>
-    /// <param name="editTitle">タイトル(省略時はクラス名)</param>
+    /// <param name="editKeyType">オプション：主キー型</param>
+    /// <param name="editTitle">オプション：タイトル名</param>
     public CreateFils(string rootPath, string mode, string uri, string? editKeyType, string? editTitle)
     {
         RootPath = rootPath;
@@ -237,6 +261,7 @@ public class CreateFils
         contents = contents.Replace("$ClassName$", ClassName);
         contents = contents.Replace("$uri$", Uri);
 
+        // オプション：主キー型(省略時はint)
         var defaultEditKeyType = "default";
         if (EditKeyType is not null)
         {

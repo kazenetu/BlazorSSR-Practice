@@ -17,9 +17,9 @@
     return;
 }
 
-<PageTitle>$ClassName$</PageTitle>
+<PageTitle>$Title$</PageTitle>
 
-<h1>$ClassName$</h1>
+<h1>$Title$</h1>
 
 @* PDFパーツ実装例 *@
 <PDFViewer ButtonName="PDF表示" GetDataFunction="DownLoadPDF" IsPortrait="true" />

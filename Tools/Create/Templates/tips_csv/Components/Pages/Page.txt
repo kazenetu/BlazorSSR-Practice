@@ -18,9 +18,9 @@
     return;
 }
 
-<PageTitle>$ClassName$</PageTitle>
+<PageTitle>$Title$</PageTitle>
 
-<h1>$ClassName$</h1>
+<h1>$Title$</h1>
 
 @* CSVパーツ実装例(IsShiftJis:true SJISで出力、IsShiftJis:false UTF8で出力) *@
 <FileDownload ButtonName="CSVダウンロード" GetDataFunction="DownLoadCSV" IsShiftJis="true" />

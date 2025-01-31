@@ -31,7 +31,7 @@ class Program
             Console.WriteLine("<Uri> @page uri ex)order-list");
             Console.WriteLine("");
             Console.WriteLine("options:");
-            Console.WriteLine("-ekt --edit_key_type <KeyType> KeyType (ex int or string or other...) required edit/upload/tips_pdf/tips_csv ");
+            Console.WriteLine("-ekt --edit_key_type <KeyType> KeyType (NotSet:int) ex int or string or other... ");
             Console.WriteLine("--title <PageTitle> (default ClassName) ");
             Console.WriteLine("-h, --help  view this page");
             Console.WriteLine();

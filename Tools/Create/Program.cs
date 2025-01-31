@@ -32,7 +32,7 @@ class Program
             Console.WriteLine("");
             Console.WriteLine("options:");
             Console.WriteLine("-ekt --edit_key_type <KeyType> KeyType (NotSet:int) ex int or string or other... ");
-            Console.WriteLine("--title <PageTitle> (default ClassName) ");
+            Console.WriteLine("--title <PageTitle> Display Title (NotSet:ClassName)");
             Console.WriteLine("-h, --help  view this page");
             Console.WriteLine();
             return;

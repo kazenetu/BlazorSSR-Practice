@@ -21,6 +21,7 @@ public class CreateFils
     private ModeEnum Mode;
     private string Uri;
     private string? EditKeyType;
+    private string? EditTitle;
     private string ClassName;
 
     /// <summary>
@@ -30,11 +31,13 @@ public class CreateFils
     /// <param name="mode">モード</param>
     /// <param name="uri">ページのuri</param>
     /// <param name="editKeyType">編集ページの主キー型</param>
-    public CreateFils(string rootPath, string mode, string uri, string? editKeyType)
+    /// <param name="editTitle">タイトル(省略時はクラス名)</param>
+    public CreateFils(string rootPath, string mode, string uri, string? editKeyType, string? editTitle)
     {
         RootPath = rootPath;
         Uri = uri;
         EditKeyType = editKeyType;
+        EditTitle = editTitle;
         Mode = mode switch
         {
             "list" => ModeEnum.List,
@@ -244,6 +247,13 @@ public class CreateFils
         else
             contents = contents.Replace("$EditKeyType$", "int");
         contents = contents.Replace("$DefaultEditKeyType$", defaultEditKeyType);
+
+        // オプション：タイトル(省略時はクラス名)
+        var editTitle = ClassName;
+        if (EditTitle is not null)
+        {
+            contents = contents.Replace("$Title$", EditTitle);
+        }
         
         // インスタンスフィールド「RootPath」起点でファイル書き出し
         CreateFile($"{RootPath}/{contentsPath}", outputFileName, contents);

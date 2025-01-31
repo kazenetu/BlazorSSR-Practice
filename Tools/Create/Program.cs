@@ -32,6 +32,7 @@ class Program
             Console.WriteLine("");
             Console.WriteLine("options:");
             Console.WriteLine("-ekt --edit_key_type <KeyType> KeyType (ex int or string or other...) required edit/upload/tips_pdf/tips_csv ");
+            Console.WriteLine("--title <PageTitle> (default ClassName) ");
             Console.WriteLine("-h, --help  view this page");
             Console.WriteLine();
             return;
@@ -42,7 +43,8 @@ class Program
         var mode = argManager.GetRequiredArg(0);
         var uri = argManager.GetRequiredArg(1);
         var editKeyType = argManager.GetOptionArg(new List<string>() { "--edit_key_type", "-ekt" });
-        var createFiles = new CreateFils(outputPath, mode!, uri!, editKeyType);
+        var editTitle = argManager.GetOptionArg(new List<string>() { "--title" });
+        var createFiles = new CreateFils(outputPath, mode!, uri!, editKeyType, editTitle);
         createFiles.Create();
     }
 }

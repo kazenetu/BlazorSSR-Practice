@@ -158,28 +158,48 @@ dotnet run --project Tools/Create/Create.csproj <RunMode>　<uri> [options]
 |パラメータ名|設定値|概要|
 |---|---|---|
 |--edit_key_type<br>-ekt|例）string|型情報(省略時:int)|
+|--title|例）一覧|タイトル名(省略時:クラス名)|
 
 ### 実行例
 ```sh
-#一覧ページ生成　ページuri:order-list (クラス名:OrderList) キー型:int
+#一覧ページ生成　ページuri:order-list (クラス名:OrderList) キー型:int タイトル名:クラス名(OrderList)
 dotnet run --project Tools/Create/Create.csproj list order-list 
 
-#一覧ページ生成　ページuri:order-list (クラス名:OrderList) キー型:string
+#一覧ページ生成　ページuri:order-list (クラス名:OrderList) キー型:string タイトル名:クラス名(OrderList)
 dotnet run --project Tools/Create/Create.csproj list order-list --edit_key_type string 
 
-#詳細ページ生成　ページuri:order-edit (クラス名:OrderEdit)　キー型:string
+#一覧ページ生成　ページuri:order-list (クラス名:OrderList) キー型:string タイトル名:一覧
+dotnet run --project Tools/Create/Create.csproj list order-list --edit_key_type string --title "一覧"
+
+#詳細ページ生成　ページuri:order-edit (クラス名:OrderEdit)　キー型:string タイトル名:クラス名(OrderEdit)
 dotnet run --project Tools/Create/Create.csproj edit order-edit --edit_key_type string
 
-#アップロードページ生成　ページuri:order-upload (クラス名:OrderUpload)　キー型:string
+#詳細ページ生成　ページuri:order-edit (クラス名:OrderEdit)　キー型:string タイトル名:編集
+dotnet run --project Tools/Create/Create.csproj edit order-edit --edit_key_type string --title "編集"
+
+#アップロードページ生成　ページuri:order-upload (クラス名:OrderUpload)　キー型:string タイトル名:クラス名(OrderUpload)
 dotnet run --project Tools/Create/Create.csproj upload order-upload --edit_key_type string
 
-#テンプレートページ※生成　ページuri:ex-template (クラス名:ExTemplate)　キー型:string
+#アップロードページ生成　ページuri:order-upload (クラス名:OrderUpload)　キー型:string タイトル名:アップロード
+dotnet run --project Tools/Create/Create.csproj upload order-upload --edit_key_type string --title "アップロード"
+
+#テンプレートページ※生成　ページuri:ex-template (クラス名:ExTemplate)　キー型:string タイトル名:クラス名(ExTemplate)
 #※必要最低限のスケルトンコード
 dotnet run --project Tools/Create/Create.csproj template ex-template --edit_key_type string
 
-#スニペット「PDF」ページ生成　ページuri:ex-pdf (クラス名:ExPdf)　キー型:string
+#テンプレートページ※生成　ページuri:ex-template (クラス名:ExTemplate)　キー型:string タイトル名:テンプレート
+#※必要最低限のスケルトンコード
+dotnet run --project Tools/Create/Create.csproj template ex-template --edit_key_type string --title "テンプレート"
+
+#スニペット「PDF」ページ生成　ページuri:ex-pdf (クラス名:ExPdf)　キー型:string タイトル名:クラス名(ExPdf)
 dotnet run --project Tools/Create/Create.csproj tips_pdf ex-pdf --edit_key_type string
 
-#スニペット「CSV」ページ生成　ページuri:ex-csv (クラス名:ExCsv)　キー型:string
+#スニペット「PDF」ページ生成　ページuri:ex-pdf (クラス名:ExPdf)　キー型:string タイトル名:スニペット「PDF」
+dotnet run --project Tools/Create/Create.csproj tips_pdf ex-pdf --edit_key_type string --title "スニペット「PDF」"
+
+#スニペット「CSV」ページ生成　ページuri:ex-csv (クラス名:ExCsv)　キー型:string タイトル名:クラス名(ExCsv)
 dotnet run --project Tools/Create/Create.csproj tips_csv ex-csv --edit_key_type string
+
+#スニペット「CSV」ページ生成　ページuri:ex-csv (クラス名:ExCsv)　キー型:string タイトル名:スニペット「CSV」
+dotnet run --project Tools/Create/Create.csproj tips_csv ex-csv --edit_key_type string --title "スニペット「CSV」"
 ```

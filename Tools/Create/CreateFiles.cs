@@ -43,6 +43,11 @@ public class CreateFils
     private string? EditTitle;
 
     /// <summary>
+    /// オプション：リポジトリ名
+    /// </summary>
+    private string? EditReposiotry;
+
+    /// <summary>
     /// クラス名
     /// </summary>
     /// <remarks>ページのuriから自動生成</remarks> 
@@ -56,12 +61,14 @@ public class CreateFils
     /// <param name="uri">ページのuri</param>
     /// <param name="editKeyType">オプション：主キー型</param>
     /// <param name="editTitle">オプション：タイトル名</param>
-    public CreateFils(string rootPath, string mode, string uri, string? editKeyType, string? editTitle)
+    /// <param name="editReposiotry">オプション：リポジトリ名</param>
+    public CreateFils(string rootPath, string mode, string uri, string? editKeyType, string? editTitle, string? editReposiotry)
     {
         RootPath = rootPath;
         Uri = uri;
         EditKeyType = editKeyType;
         EditTitle = editTitle;
+        EditReposiotry = editReposiotry;
         Mode = mode switch
         {
             "list" => ModeEnum.List,
@@ -79,6 +86,12 @@ public class CreateFils
         {
             ClassName += word.Substring(0, 1).ToUpper();
             ClassName += word.Substring(1).ToLower();
+        }
+
+        // リポジトリ名未設定の場合、クラス名を設定
+        if (EditReposiotry is null)
+        {
+            EditReposiotry = ClassName;
         }
     }
 
@@ -126,12 +139,14 @@ public class CreateFils
         CreateFile(rootPath, "Models", "InputModel.txt", $"Input{ClassName}Model.cs");
 
         // リポジトリ
-        CreateFile(rootPath, "Repositories", "Repository.txt", $"{ClassName}Repository.cs");
-        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{ClassName}ConstructorRepository.cs");
-        CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{ClassName}Repository.cs");
+        var repositoryName = EditReposiotry;
+        if (repositoryName != ClassName) repositoryName += $"_{ClassName}";
+        CreateFile(rootPath, "Repositories", "Repository.txt", $"{repositoryName}Repository.cs");
+        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{repositoryName}ConstructorRepository.cs");
+        CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{repositoryName}Repository.cs");
 
         // DI
-        CreateFile(rootPath, "DI", "DI.txt", $"DI{ClassName}.cs");
+        CreateFile(rootPath, "DI", "DI.txt", $"DI{EditReposiotry}.cs");
     }
 
     /// <summary>
@@ -148,12 +163,14 @@ public class CreateFils
         CreateFile(rootPath, "Models", "Model.txt", $"{ClassName}Model.cs");
 
         // リポジトリ
-        CreateFile(rootPath, "Repositories", "Repository.txt", $"{ClassName}Repository.cs");
-        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{ClassName}ConstructorRepository.cs");
-        CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{ClassName}Repository.cs");
+        var repositoryName = EditReposiotry;
+        if (repositoryName != ClassName) repositoryName += $"_{ClassName}";
+        CreateFile(rootPath, "Repositories", "Repository.txt", $"{repositoryName}Repository.cs");
+        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{repositoryName}ConstructorRepository.cs");
+        CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{repositoryName}Repository.cs");
 
         // DI
-        CreateFile(rootPath, "DI", "DI.txt", $"DI{ClassName}.cs");
+        CreateFile(rootPath, "DI", "DI.txt", $"DI{EditReposiotry}.cs");
     }
 
     /// <summary>
@@ -171,12 +188,14 @@ public class CreateFils
         CreateFile(rootPath, "Models", "InputModel.txt", $"Input{ClassName}Model.cs");
 
         // リポジトリ
-        CreateFile(rootPath, "Repositories", "Repository.txt", $"{ClassName}Repository.cs");
-        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{ClassName}ConstructorRepository.cs");
-        CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{ClassName}Repository.cs");
+        var repositoryName = EditReposiotry;
+        if (repositoryName != ClassName) repositoryName += $"_{ClassName}";
+        CreateFile(rootPath, "Repositories", "Repository.txt", $"{repositoryName}Repository.cs");
+        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{repositoryName}ConstructorRepository.cs");
+        CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{repositoryName}Repository.cs");
 
         // DI
-        CreateFile(rootPath, "DI", "DI.txt", $"DI{ClassName}.cs");
+        CreateFile(rootPath, "DI", "DI.txt", $"DI{EditReposiotry}.cs");
     }
 
     /// <summary>
@@ -194,12 +213,14 @@ public class CreateFils
         CreateFile(rootPath, "Models", "InputModel.txt", $"Input{ClassName}Model.cs");
 
         // リポジトリ
-        CreateFile(rootPath, "Repositories", "Repository.txt", $"{ClassName}Repository.cs");
-        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{ClassName}ConstructorRepository.cs");
-        CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{ClassName}Repository.cs");
+        var repositoryName = EditReposiotry;
+        if (repositoryName != ClassName) repositoryName += $"_{ClassName}";
+        CreateFile(rootPath, "Repositories", "Repository.txt", $"{repositoryName}Repository.cs");
+        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{repositoryName}ConstructorRepository.cs");
+        CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{repositoryName}Repository.cs");
 
         // DI
-        CreateFile(rootPath, "DI", "DI.txt", $"DI{ClassName}.cs");
+        CreateFile(rootPath, "DI", "DI.txt", $"DI{EditReposiotry}.cs");
     }
 
     /// <summary>
@@ -217,12 +238,14 @@ public class CreateFils
         CreateFile(rootPath, "Models", "InputModel.txt", $"Input{ClassName}Model.cs");
 
         // リポジトリ
-        CreateFile(rootPath, "Repositories", "Repository.txt", $"{ClassName}Repository.cs");
-        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{ClassName}ConstructorRepository.cs");
-        CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{ClassName}Repository.cs");
+        var repositoryName = EditReposiotry;
+        if (repositoryName != ClassName) repositoryName += $"_{ClassName}";
+        CreateFile(rootPath, "Repositories", "Repository.txt", $"{repositoryName}Repository.cs");
+        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{repositoryName}ConstructorRepository.cs");
+        CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{repositoryName}Repository.cs");
 
         // DI
-        CreateFile(rootPath, "DI", "DI.txt", $"DI{ClassName}.cs");
+        CreateFile(rootPath, "DI", "DI.txt", $"DI{EditReposiotry}.cs");
     }
 
     /// <summary>
@@ -240,12 +263,14 @@ public class CreateFils
         CreateFile(rootPath, "Models", "InputModel.txt", $"Input{ClassName}Model.cs");
 
         // リポジトリ
-        CreateFile(rootPath, "Repositories", "Repository.txt", $"{ClassName}Repository.cs");
-        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{ClassName}ConstructorRepository.cs");
-        CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{ClassName}Repository.cs");
+        var repositoryName = EditReposiotry;
+        if (repositoryName != ClassName) repositoryName += $"_{ClassName}";
+        CreateFile(rootPath, "Repositories", "Repository.txt", $"{repositoryName}Repository.cs");
+        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{repositoryName}ConstructorRepository.cs");
+        CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{repositoryName}Repository.cs");
 
         // DI
-        CreateFile(rootPath, "DI", "DI.txt", $"DI{ClassName}.cs");
+        CreateFile(rootPath, "DI", "DI.txt", $"DI{EditReposiotry}.cs");
     }
 
     /// <summary>
@@ -266,6 +291,7 @@ public class CreateFils
         // 実際のクラス名など置き換え
         contents = contents.Replace("$ClassName$", ClassName);
         contents = contents.Replace("$uri$", Uri);
+        contents = contents.Replace("$ReposiotryName$", EditReposiotry);
 
         // オプション：主キー型(省略時はint)
         var defaultEditKeyType = "default";

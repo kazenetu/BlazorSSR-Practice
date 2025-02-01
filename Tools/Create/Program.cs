@@ -33,6 +33,7 @@ class Program
             Console.WriteLine("options:");
             Console.WriteLine("-ekt --edit_key_type <KeyType> KeyType (NotSet:int) ex int or string or other... ");
             Console.WriteLine("--title <PageTitle> Display Title (NotSet:ClassName)");
+            Console.WriteLine("-rep --repository <RepositoryPrefix> RepositoryPrefix\"Repository\" (NotSet:\"ClassName\"Repository)");
             Console.WriteLine("-h, --help  view this page");
             Console.WriteLine();
             return;
@@ -44,7 +45,8 @@ class Program
         var uri = argManager.GetRequiredArg(1);
         var editKeyType = argManager.GetOptionArg(new List<string>() { "--edit_key_type", "-ekt" });
         var editTitle = argManager.GetOptionArg(new List<string>() { "--title" });
-        var createFiles = new CreateFils(outputPath, mode!, uri!, editKeyType, editTitle);
+        var editReposiotry = argManager.GetOptionArg(new List<string>() { "-rep", "--repository" });
+        var createFiles = new CreateFils(outputPath, mode!, uri!, editKeyType, editTitle, editReposiotry);
         createFiles.Create();
     }
 }

@@ -127,6 +127,7 @@ public class CreateFils
 
         // リポジトリ
         CreateFile(rootPath, "Repositories", "Repository.txt", $"{ClassName}Repository.cs");
+        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{ClassName}ConstructorRepository.cs");
         CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{ClassName}Repository.cs");
 
         // DI
@@ -148,6 +149,7 @@ public class CreateFils
 
         // リポジトリ
         CreateFile(rootPath, "Repositories", "Repository.txt", $"{ClassName}Repository.cs");
+        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{ClassName}ConstructorRepository.cs");
         CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{ClassName}Repository.cs");
 
         // DI
@@ -170,6 +172,7 @@ public class CreateFils
 
         // リポジトリ
         CreateFile(rootPath, "Repositories", "Repository.txt", $"{ClassName}Repository.cs");
+        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{ClassName}ConstructorRepository.cs");
         CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{ClassName}Repository.cs");
 
         // DI
@@ -192,6 +195,7 @@ public class CreateFils
 
         // リポジトリ
         CreateFile(rootPath, "Repositories", "Repository.txt", $"{ClassName}Repository.cs");
+        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{ClassName}ConstructorRepository.cs");
         CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{ClassName}Repository.cs");
 
         // DI
@@ -214,6 +218,7 @@ public class CreateFils
 
         // リポジトリ
         CreateFile(rootPath, "Repositories", "Repository.txt", $"{ClassName}Repository.cs");
+        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{ClassName}ConstructorRepository.cs");
         CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{ClassName}Repository.cs");
 
         // DI
@@ -236,6 +241,7 @@ public class CreateFils
 
         // リポジトリ
         CreateFile(rootPath, "Repositories", "Repository.txt", $"{ClassName}Repository.cs");
+        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{ClassName}ConstructorRepository.cs");
         CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{ClassName}Repository.cs");
 
         // DI

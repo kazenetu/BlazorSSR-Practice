@@ -140,9 +140,9 @@ public class CreateFils
 
         // リポジトリ
         var repositoryName = EditReposiotry;
-        if (repositoryName != ClassName) repositoryName += $"_{ClassName}";
+        if (repositoryName != ClassName) repositoryName += $"{ClassName}";
         CreateFile(rootPath, "Repositories", "Repository.txt", $"{repositoryName}Repository.cs");
-        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{repositoryName}ConstructorRepository.cs");
+        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{EditReposiotry}ConstructorRepository.cs");
         CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{repositoryName}Repository.cs");
 
         // DI
@@ -164,9 +164,9 @@ public class CreateFils
 
         // リポジトリ
         var repositoryName = EditReposiotry;
-        if (repositoryName != ClassName) repositoryName += $"_{ClassName}";
+        if (repositoryName != ClassName) repositoryName += $"{ClassName}";
         CreateFile(rootPath, "Repositories", "Repository.txt", $"{repositoryName}Repository.cs");
-        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{repositoryName}ConstructorRepository.cs");
+        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{EditReposiotry}ConstructorRepository.cs");
         CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{repositoryName}Repository.cs");
 
         // DI
@@ -189,9 +189,9 @@ public class CreateFils
 
         // リポジトリ
         var repositoryName = EditReposiotry;
-        if (repositoryName != ClassName) repositoryName += $"_{ClassName}";
+        if (repositoryName != ClassName) repositoryName += $"{ClassName}";
         CreateFile(rootPath, "Repositories", "Repository.txt", $"{repositoryName}Repository.cs");
-        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{repositoryName}ConstructorRepository.cs");
+        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{EditReposiotry}ConstructorRepository.cs");
         CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{repositoryName}Repository.cs");
 
         // DI
@@ -214,9 +214,9 @@ public class CreateFils
 
         // リポジトリ
         var repositoryName = EditReposiotry;
-        if (repositoryName != ClassName) repositoryName += $"_{ClassName}";
+        if (repositoryName != ClassName) repositoryName += $"{ClassName}";
         CreateFile(rootPath, "Repositories", "Repository.txt", $"{repositoryName}Repository.cs");
-        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{repositoryName}ConstructorRepository.cs");
+        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{EditReposiotry}ConstructorRepository.cs");
         CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{repositoryName}Repository.cs");
 
         // DI
@@ -239,9 +239,9 @@ public class CreateFils
 
         // リポジトリ
         var repositoryName = EditReposiotry;
-        if (repositoryName != ClassName) repositoryName += $"_{ClassName}";
+        if (repositoryName != ClassName) repositoryName += $"{ClassName}";
         CreateFile(rootPath, "Repositories", "Repository.txt", $"{repositoryName}Repository.cs");
-        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{repositoryName}ConstructorRepository.cs");
+        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{EditReposiotry}ConstructorRepository.cs");
         CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{repositoryName}Repository.cs");
 
         // DI
@@ -264,9 +264,9 @@ public class CreateFils
 
         // リポジトリ
         var repositoryName = EditReposiotry;
-        if (repositoryName != ClassName) repositoryName += $"_{ClassName}";
+        if (repositoryName != ClassName) repositoryName += $"{ClassName}";
         CreateFile(rootPath, "Repositories", "Repository.txt", $"{repositoryName}Repository.cs");
-        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{repositoryName}ConstructorRepository.cs");
+        CreateFile(rootPath, "Repositories", "ConstructorRepository.txt", $"{EditReposiotry}ConstructorRepository.cs");
         CreateFile(rootPath, "Repositories/Interfaces", "IRepository.txt", $"I{repositoryName}Repository.cs");
 
         // DI

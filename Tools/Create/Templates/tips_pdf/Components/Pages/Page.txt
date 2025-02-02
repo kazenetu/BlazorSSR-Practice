@@ -73,7 +73,7 @@
     /// </summary>
     /// <returns>ダウンロード用モデル</returns>
     /// <remarks>Dataにはbyte[]配列を設定</remarks>
-    private DownLoadModel DownLoadPDF()
+    private async Task<DownLoadModel> DownLoadPDF()
     {
         try
         {

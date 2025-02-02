@@ -7,8 +7,8 @@ using WebApp.Repositories.Interfaces;
 /// </summary>
 public partial class DIClass
 {
-    public void Set$ClassName$Repository(IServiceCollection services)
+    public void Set$ReposiotryName$Repository(IServiceCollection services)
     {
-        services.AddTransient<I$ClassName$Repository, $ClassName$Repository>();
+        services.AddTransient<I$ReposiotryName$Repository, $ReposiotryName$Repository>();
     }
 }

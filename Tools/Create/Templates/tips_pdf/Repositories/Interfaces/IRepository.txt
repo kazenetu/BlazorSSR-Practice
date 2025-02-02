@@ -9,5 +9,5 @@ public partial interface I$ReposiotryName$Repository : IRepositoryBase
     /// </summary>
     /// <param name="inputModel">絞込み情報</param>
     /// <returns>PDFデータリスト</returns>
-    List<$ReposiotryName$Model> GetPdfList(Input$ReposiotryName$Model inputModel);
+    List<$ClassName$Model> GetPdfList(Input$ClassName$Model inputModel);
 }

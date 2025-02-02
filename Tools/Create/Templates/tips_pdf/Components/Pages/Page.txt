@@ -9,7 +9,7 @@
 @using WebApp.Models.Parts
 @using WebApp.Repositories.Interfaces
 @inject ILogger<$ClassName$> Logger
-@inject I$ClassName$Repository repository
+@inject I$ReposiotryName$Repository repository
 
 @if (IsBeforeLoginCheck)
 {

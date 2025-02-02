@@ -8,7 +8,7 @@ using WebApp.Repositories.Interfaces;
 
 namespace WebApp.Repositories;
 
-public partial class $ClassName$Repository : RepositoryBase, I$ClassName$Repository
+public partial class $ReposiotryName$Repository : RepositoryBase, I$ReposiotryName$Repository
 {
     /// <summary>
     /// レコード数を返す
@@ -25,7 +25,7 @@ public partial class $ClassName$Repository : RepositoryBase, I$ClassName$Reposit
         var sql = new StringBuilder();
 
         // TODO 発行SQL作成
-        //sql.AppendLine("SELECT count(productName) AS cnt FROM t_order");
+        // sql.AppendLine("SELECT count(productName) AS cnt FROM t_order");
         sql.Append(GetWhere(inputModel));
 
         // SQL発行
@@ -65,7 +65,7 @@ public partial class $ClassName$Repository : RepositoryBase, I$ClassName$Reposit
         // SQL発行
         //var sqlResult = db.Fill(sql.ToString());
         var sqlResult = new DataTable(); // HACK SQL完成時に削除。上の行のコメントアウトを解除すること
-        // var noIndex = 1;
+        var noIndex = 1;
         foreach (DataRow row in sqlResult.Rows)
         {
             // TODO モデルに変換、追加

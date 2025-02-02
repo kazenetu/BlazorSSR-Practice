@@ -6,7 +6,7 @@
 @using WebApp.Repositories.Interfaces
 @inherits Base.PageBase
 @inject ILogger<$ClassName$> Logger
-@inject I$ClassName$Repository repository
+@inject I$ReposiotryName$Repository repository
 @inject NavigationManager Navigation
 
 @if (IsBeforeLoginCheck)

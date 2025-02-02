@@ -8,7 +8,7 @@ using WebApp.Repositories.Interfaces;
 
 namespace WebApp.Repositories;
 
-public partial class $ClassName$Repository : RepositoryBase, I$ClassName$Repository
+public partial class $ReposiotryName$Repository : RepositoryBase, I$ReposiotryName$Repository
 {
     /// <summary>
     /// PDF用データを取得

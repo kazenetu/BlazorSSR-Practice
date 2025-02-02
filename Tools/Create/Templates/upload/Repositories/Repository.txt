@@ -47,7 +47,7 @@ public partial class $ReposiotryName$Repository : RepositoryBase, I$ReposiotryNa
     /// <param name="userId">ユーザーID</param>
     /// <param name="programId">プログラムID</param>
     /// <returns>成功/失敗</returns>
-    public bool Save(IReadOnlyList<$ClassName$Model> targets, string userId, string programId)
+    public bool SaveList(IReadOnlyList<$ClassName$Model> targets, string userId, string programId)
     {
         var result = false;
         try

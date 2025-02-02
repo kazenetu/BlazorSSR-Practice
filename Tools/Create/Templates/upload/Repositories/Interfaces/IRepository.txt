@@ -17,5 +17,5 @@ public partial interface I$ReposiotryName$Repository : IRepositoryBase
     /// <param name="userId">ユーザーID</param>
     /// <param name="programId">プログラムID</param>
     /// <returns>成功/失敗</returns>
-    bool Save(IReadOnlyList<$ClassName$Model> targets, string userId, string programId);
+    bool SaveList(IReadOnlyList<$ClassName$Model> targets, string userId, string programId);
 }

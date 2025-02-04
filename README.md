@@ -162,64 +162,89 @@ dotnet run --project Tools/Create/Create.csproj <RunMode>　<uri> [options]
 |--repository<be>-rep|例）Shred|共通リポジトリ名※プレフィックスのみ(省略時:クラス名)|
 
 ### 実行例
-```sh
-#一覧ページ生成　ページuri:order-list (クラス名:OrderList) キー型:int タイトル名:クラス名(OrderList)
-dotnet run --project Tools/Create/Create.csproj list order-list 
+  ```sh
+   #一覧ページ生成　ページuri:order-list (クラス名:OrderList) キー型:int(初期値) タイトル名:クラス名(OrderList) リポジトリ名:クラス名(OrderList)
+  dotnet run --project Tools/Create/Create.csproj list order-list 
 
-#一覧ページ生成　ページuri:order-list (クラス名:OrderList) キー型:string タイトル名:クラス名(OrderList)
-dotnet run --project Tools/Create/Create.csproj list order-list --edit_key_type string 
+  #詳細ページ生成　ページuri:order-edit (クラス名:OrderEdit) キー型:int(初期値) タイトル名:クラス名(OrderEdit) リポジトリ名:クラス名(OrderEdit)
+  dotnet run --project Tools/Create/Create.csproj edit order-edit
 
-#一覧ページ生成　ページuri:order-list (クラス名:OrderList) キー型:string タイトル名:一覧
-dotnet run --project Tools/Create/Create.csproj list order-list --edit_key_type string --title "一覧"
+  #アップロードページ生成　ページuri:order-upload (クラス名:OrderUpload) キー型:int(初期値) タイトル名:クラス名(OrderUpload) リポジトリ名:クラス名(OrderUpload)
+  dotnet run --project Tools/Create/Create.csproj upload order-upload
 
-#一覧ページ生成　ページuri:order-list (クラス名:OrderList) キー型:string タイトル名:一覧 リポジトリ名:Shared
-dotnet run --project Tools/Create/Create.csproj list order-list --edit_key_type string --title "一覧" -rep Shared
+  #テンプレートページ※生成　ページuri:ex-template (クラス名:ExTemplate) キー型:int(初期値) タイトル名:クラス名(ExTemplate) リポジトリ名:クラス名(ExTemplate)
+  #※必要最低限のスケルトンコード
+  dotnet run --project Tools/Create/Create.csproj template ex-template
 
-#詳細ページ生成　ページuri:order-edit (クラス名:OrderEdit)　キー型:string タイトル名:クラス名(OrderEdit)
-dotnet run --project Tools/Create/Create.csproj edit order-edit --edit_key_type string
+  #スニペット「PDF」ページ生成　ページuri:ex-pdf (クラス名:ExPdf) キー型:int(初期値)  タイトル名:クラス名(ExPdf) リポジトリ名:クラス名(ExPdf)
+  dotnet run --project Tools/Create/Create.csproj tips_pdf ex-pdf 
 
-#詳細ページ生成　ページuri:order-edit (クラス名:OrderEdit)　キー型:string タイトル名:編集
-dotnet run --project Tools/Create/Create.csproj edit order-edit --edit_key_type string --title "編集"
+  #スニペット「CSV」ページ生成　ページuri:ex-csv (クラス名:ExCsv) キー型:int(初期値) タイトル名:クラス名(ExCsv) リポジトリ名:クラス名(ExCsv)
+  dotnet run --project Tools/Create/Create.csproj tips_csv ex-csv
+ ```
 
-#詳細ページ生成　ページuri:order-edit (クラス名:OrderEdit)　キー型:string タイトル名:編集 リポジトリ名:Shared
-dotnet run --project Tools/Create/Create.csproj edit order-edit --edit_key_type string --title "編集" -rep Shared
+* オプション:型情報指定  
+ ```sh
+  #一覧ページ生成　ページuri:order-list (クラス名:OrderList) キー型:string タイトル名:クラス名(OrderList) リポジトリ名:クラス名(OrderList)
+   dotnet run --project Tools/Create/Create.csproj list order-list --edit_key_type string 
 
-#アップロードページ生成　ページuri:order-upload (クラス名:OrderUpload)　キー型:string タイトル名:クラス名(OrderUpload)
-dotnet run --project Tools/Create/Create.csproj upload order-upload --edit_key_type string
+  #詳細ページ生成　ページuri:order-edit (クラス名:OrderEdit) キー型:string タイトル名:クラス名(OrderEdit) リポジトリ名:クラス名(OrderEdit)
+  dotnet run --project Tools/Create/Create.csproj edit order-edit --edit_key_type string 
 
-#アップロードページ生成　ページuri:order-upload (クラス名:OrderUpload)　キー型:string タイトル名:アップロード
-dotnet run --project Tools/Create/Create.csproj upload order-upload --edit_key_type string --title "アップロード"
+  #アップロードページ生成　ページuri:order-upload (クラス名:OrderUpload) キー型:string タイトル名:クラス名(OrderUpload) リポジトリ名:クラス名(OrderUpload)
+  dotnet run --project Tools/Create/Create.csproj upload order-upload --edit_key_type string 
 
-#アップロードページ生成　ページuri:order-upload (クラス名:OrderUpload)　キー型:string タイトル名:アップロード リポジトリ名:Shared
-dotnet run --project Tools/Create/Create.csproj upload order-upload --edit_key_type string --title "アップロード" -rep Shared
+  #テンプレートページ※生成　ページuri:ex-template (クラス名:ExTemplate) キー型:string タイトル名:クラス名(ExTemplate) リポジトリ名:クラス名(ExTemplate)
+  #※必要最低限のスケルトンコード
+  dotnet run --project Tools/Create/Create.csproj template ex-template --edit_key_type string 
 
-#テンプレートページ※生成　ページuri:ex-template (クラス名:ExTemplate)　キー型:string タイトル名:クラス名(ExTemplate)
-#※必要最低限のスケルトンコード
-dotnet run --project Tools/Create/Create.csproj template ex-template --edit_key_type string
+  #スニペット「PDF」ページ生成　ページuri:ex-pdf (クラス名:ExPdf) キー型:string タイトル名:クラス名(ExPdf) リポジトリ名:クラス名(ExPdf)
+  dotnet run --project Tools/Create/Create.csproj tips_pdf ex-pdf --edit_key_type string 
 
-#テンプレートページ※生成　ページuri:ex-template (クラス名:ExTemplate)　キー型:string タイトル名:テンプレート
-#※必要最低限のスケルトンコード
-dotnet run --project Tools/Create/Create.csproj template ex-template --edit_key_type string --title "テンプレート"
+  #スニペット「CSV」ページ生成　ページuri:ex-csv (クラス名:ExCsv) キー型:string タイトル名:クラス名(ExCsv) リポジトリ名:クラス名(ExCsv)
+  dotnet run --project Tools/Create/Create.csproj tips_csv ex-csv --edit_key_type string 
+ ```
 
-#テンプレートページ※生成　ページuri:ex-template (クラス名:ExTemplate)　キー型:string タイトル名:テンプレート リポジトリ名:Shared
-#※必要最低限のスケルトンコード
-dotnet run --project Tools/Create/Create.csproj template ex-template --edit_key_type string --title "テンプレート" -rep Shared
+* オプション:型情報、タイトル指定  
+ ```sh
+  #一覧ページ生成　ページuri:order-list (クラス名:OrderList) キー型:string タイトル名:一覧 リポジトリ名:クラス名(OrderList)
+   dotnet run --project Tools/Create/Create.csproj list order-list --edit_key_type string --title "一覧"
 
-#スニペット「PDF」ページ生成　ページuri:ex-pdf (クラス名:ExPdf)　キー型:string タイトル名:クラス名(ExPdf)
-dotnet run --project Tools/Create/Create.csproj tips_pdf ex-pdf --edit_key_type string
+  #詳細ページ生成　ページuri:order-edit (クラス名:OrderEdit) キー型:string タイトル名:編集 リポジトリ名:クラス名(OrderEdit)
+  dotnet run --project Tools/Create/Create.csproj edit order-edit --edit_key_type string --title "編集"
 
-#スニペット「PDF」ページ生成　ページuri:ex-pdf (クラス名:ExPdf)　キー型:string タイトル名:スニペット「PDF」
-dotnet run --project Tools/Create/Create.csproj tips_pdf ex-pdf --edit_key_type string --title "スニペット「PDF」"
+  #アップロードページ生成　ページuri:order-upload (クラス名:OrderUpload) キー型:string タイトル名:アップロード リポジトリ名:クラス名(OrderUpload)
+  dotnet run --project Tools/Create/Create.csproj upload order-upload --edit_key_type string --title "アップロード"
 
-#スニペット「PDF」ページ生成　ページuri:ex-pdf (クラス名:ExPdf)　キー型:string タイトル名:スニペット「PDF」 リポジトリ名:Shared
-dotnet run --project Tools/Create/Create.csproj tips_pdf ex-pdf --edit_key_type string --title "スニペット「PDF」" -rep Shared
+  #テンプレートページ※生成　ページuri:ex-template (クラス名:ExTemplate) キー型:string タイトル名:テンプレート リポジトリ名:クラス名(ExTemplate)
+  #※必要最低限のスケルトンコード
+  dotnet run --project Tools/Create/Create.csproj template ex-template --edit_key_type string --title "テンプレート"
 
-#スニペット「CSV」ページ生成　ページuri:ex-csv (クラス名:ExCsv)　キー型:string タイトル名:クラス名(ExCsv)
-dotnet run --project Tools/Create/Create.csproj tips_csv ex-csv --edit_key_type string
+  #スニペット「PDF」ページ生成　ページuri:ex-pdf (クラス名:ExPdf) キー型:string タイトル名:スニペット「PDF」 リポジトリ名:クラス名(ExPdf)
+  dotnet run --project Tools/Create/Create.csproj tips_pdf ex-pdf --edit_key_type string --title "スニペット「PDF」"
 
-#スニペット「CSV」ページ生成　ページuri:ex-csv (クラス名:ExCsv)　キー型:string タイトル名:スニペット「CSV」
-dotnet run --project Tools/Create/Create.csproj tips_csv ex-csv --edit_key_type string --title "スニペット「CSV」"
+  #スニペット「CSV」ページ生成　ページuri:ex-csv (クラス名:ExCsv) キー型:string タイトル名:スニペット「CSV」 リポジトリ名:クラス名(ExCsv)
+  dotnet run --project Tools/Create/Create.csproj tips_csv ex-csv --edit_key_type string --title "スニペット「CSV」"
+ ```
 
-#スニペット「CSV」ページ生成　ページuri:ex-csv (クラス名:ExCsv)　キー型:string タイトル名:スニペット「CSV」 リポジトリ名:Shared
-dotnet run --project Tools/Create/Create.csproj tips_csv ex-csv --edit_key_type string --title "スニペット「CSV」" -rep Shared
-```
+* オプション:型情報、タイトル、リポジトリ指定  
+ ```sh
+  #一覧ページ生成　ページuri:order-list (クラス名:OrderList) キー型:string タイトル名:一覧 リポジトリ名:Shared
+  dotnet run --project Tools/Create/Create.csproj list order-list --edit_key_type string --title "一覧" -rep Shared
+
+  #詳細ページ生成　ページuri:order-edit (クラス名:OrderEdit) キー型:string タイトル名:編集 リポジトリ名:Shared
+  dotnet run --project Tools/Create/Create.csproj edit order-edit --edit_key_type string --title "編集" -rep Shared
+
+  #アップロードページ生成　ページuri:order-upload (クラス名:OrderUpload) キー型:string タイトル名:アップロード リポジトリ名:Shared
+  dotnet run --project Tools/Create/Create.csproj upload order-upload --edit_key_type string --title "アップロード" -rep Shared
+
+  #テンプレートページ※生成　ページuri:ex-template (クラス名:ExTemplate) キー型:string タイトル名:テンプレート リポジトリ名:Shared
+  #※必要最低限のスケルトンコード
+  dotnet run --project Tools/Create/Create.csproj template ex-template --edit_key_type string --title "テンプレート" -rep Shared
+
+  #スニペット「PDF」ページ生成　ページuri:ex-pdf (クラス名:ExPdf) キー型:string タイトル名:スニペット「PDF」 リポジトリ名:Shared
+  dotnet run --project Tools/Create/Create.csproj tips_pdf ex-pdf --edit_key_type string --title "スニペット「PDF」" -rep Shared
+
+  #スニペット「CSV」ページ生成　ページuri:ex-csv (クラス名:ExCsv) キー型:string タイトル名:スニペット「CSV」 リポジトリ名:Shared
+  dotnet run --project Tools/Create/Create.csproj tips_csv ex-csv --edit_key_type string --title "スニペット「CSV」" -rep Shared
+ ```

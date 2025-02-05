@@ -8,15 +8,8 @@ using WebApp.Repositories.Interfaces;
 
 namespace WebApp.Repositories;
 
-public class $ClassName$Repository : RepositoryBase, I$ClassName$Repository
+public partial class $ReposiotryName$Repository : RepositoryBase, I$ReposiotryName$Repository
 {
-    /// <summary>
-    /// コンストラクタ
-    /// </summary>
-    public $ClassName$Repository(IOptions<DatabaseConfigModel> config) : base(config)
-    {
-    }
-
     /// <summary>
     /// キーリストを取得
     /// </summary>
@@ -54,7 +47,7 @@ public class $ClassName$Repository : RepositoryBase, I$ClassName$Repository
     /// <param name="userId">ユーザーID</param>
     /// <param name="programId">プログラムID</param>
     /// <returns>成功/失敗</returns>
-    public bool Save(IReadOnlyList<$ClassName$Model> targets, string userId, string programId)
+    public bool SaveList(IReadOnlyList<$ClassName$Model> targets, string userId, string programId)
     {
         var result = false;
         try

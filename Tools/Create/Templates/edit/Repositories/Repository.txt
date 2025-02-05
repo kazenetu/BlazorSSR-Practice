@@ -8,15 +8,8 @@ using WebApp.Repositories.Interfaces;
 
 namespace WebApp.Repositories;
 
-public class $ClassName$Repository : RepositoryBase, I$ClassName$Repository
+public partial class $ReposiotryName$Repository : RepositoryBase, I$ReposiotryName$Repository
 {
-    /// <summary>
-    /// コンストラクタ
-    /// </summary>
-    public $ClassName$Repository(IOptions<DatabaseConfigModel> config) : base(config)
-    {
-    }
-
     /// <summary>
     /// 編集項目を取得
     /// </summary>
@@ -31,7 +24,7 @@ public class $ClassName$Repository : RepositoryBase, I$ClassName$Repository
             return dbResult;
         }
         // TODO 新規登録
-        // return new $ClassName$Model(0, string.Empty, 0, 0, 0);
+        // return new $ClassName$Model($DefaultEditKeyType$, 0, 0, 0);
         return new $ClassName$Model($DefaultEditKeyType$);
     }
 

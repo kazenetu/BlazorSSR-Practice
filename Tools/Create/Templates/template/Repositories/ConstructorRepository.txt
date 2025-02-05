@@ -10,5 +10,10 @@ namespace WebApp.Repositories;
 
 public partial class $ReposiotryName$Repository : RepositoryBase, I$ReposiotryName$Repository
 {
-    // TODO メソッド定義
+    /// <summary>
+    /// コンストラクタ
+    /// </summary>
+    public $ReposiotryName$Repository(IOptions<DatabaseConfigModel> config) : base(config)
+    {
+    }
 }

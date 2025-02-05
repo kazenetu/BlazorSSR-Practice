@@ -8,15 +8,8 @@ using WebApp.Repositories.Interfaces;
 
 namespace WebApp.Repositories;
 
-public class $ClassName$Repository : RepositoryBase, I$ClassName$Repository
+public partial class $ReposiotryName$Repository : RepositoryBase, I$ReposiotryName$Repository
 {
-    /// <summary>
-    /// コンストラクタ
-    /// </summary>
-    public $ClassName$Repository(IOptions<DatabaseConfigModel> config) : base(config)
-    {
-    }
-
     /// <summary>
     /// レコード数を返す
     /// </summary>

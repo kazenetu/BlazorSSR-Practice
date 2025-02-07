@@ -309,8 +309,9 @@ public class CreateFils
         var editTitle = ClassName;
         if (EditTitle is not null)
         {
-            contents = contents.Replace("$Title$", EditTitle);
+            editTitle = EditTitle;
         }
+        contents = contents.Replace("$Title$", editTitle);
         
         // インスタンスフィールド「RootPath」起点でファイル書き出し
         CreateFile($"{RootPath}/{contentsPath}", outputFileName, contents);

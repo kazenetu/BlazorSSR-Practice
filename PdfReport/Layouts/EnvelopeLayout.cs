@@ -14,14 +14,14 @@ namespace PdfReport.Layouts
     public class EnvelopeLayout : ILayout
     {
         /// <summary>
-        /// ページサイズ：長型3号：幅
+        /// ページサイズ：長型3号：長辺(235mm)
         /// </summary>
-        private const double PageWidth = 666.14184;
+        private const double PageLongSide = 666.14184;
 
         /// <summary>
-        /// ページサイズ：長型3号：高さ
+        /// ページサイズ：長型3号：短辺(120mm)
         /// </summary>
-        private const double PageHeight = 340.15752;
+        private const double PageShortSide = 340.15752;
 
         /// <summary>
         /// 郵便の文字数
@@ -99,9 +99,9 @@ namespace PdfReport.Layouts
                             .EmbedCompleteFontFile));
 
             // 矩形設定
-            RectPostNo = new XRect(180, 27, 300 + 100, PageHeight);
-            RectAddress = new XRect(PageWidth - 40, 100, PageWidth, PageHeight);
-            RectAddressName = new XRect(160 - 15, 100, 160 + 100, PageHeight);
+            RectPostNo = new XRect(180, 27, 300 + 100, PageShortSide);
+            RectAddress = new XRect(PageLongSide - 40, 100, PageLongSide, PageShortSide);
+            RectAddressName = new XRect(160 - 15, 100, 160 + 100, PageShortSide);
         }
 
         /// <summary>
@@ -148,8 +148,8 @@ namespace PdfReport.Layouts
             var page = document.AddPage();
 
             // 長型3号
-            page.Width = XUnit.FromPoint(PageWidth);
-            page.Height = XUnit.FromPoint(PageHeight);
+            page.Width = XUnit.FromPoint(PageLongSide);
+            page.Height = XUnit.FromPoint(PageShortSide);
             page.Orientation = PdfSharp.PageOrientation.Landscape; //90度回転して縦長にする
 
             // Get an XGraphics object for drawing on this page.

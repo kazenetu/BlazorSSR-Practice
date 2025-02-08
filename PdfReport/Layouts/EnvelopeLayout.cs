@@ -101,7 +101,7 @@ namespace PdfReport.Layouts
             // 矩形設定
             RectPostNo = new XRect(180, 27, 300 + 100, PageShortSide);
             RectAddress = new XRect(PageLongSide - 40, 100, PageLongSide, PageShortSide);
-            RectAddressName = new XRect(160 - 15, 100, 160 + 100, PageShortSide);
+            RectAddressName = new XRect(160 - 15, 100, PageShortSide, PageLongSide);
         }
 
         /// <summary>

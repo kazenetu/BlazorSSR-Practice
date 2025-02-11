@@ -4,6 +4,8 @@ using PdfSharp.Drawing.Layout;
 using PdfSharp.Pdf;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace PdfReport.Layouts
@@ -176,6 +178,13 @@ namespace PdfReport.Layouts
                 XBrushes.Black,
                 RectAddressName,
                 XStringFormats.TopLeft);
+
+            // イメージ描画：封筒下部のロゴ
+            var logoPath = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/assets/Logo.png";
+            var image = XImage.FromFile(logoPath);
+            var x = (PageShortSide - image.PointWidth) / 2;
+            var y = PageLongSide - image.PointHeight - 10;
+            gfx.DrawImage(image, x, y, image.PointWidth, image.PointHeight);
 
             return true;
         }

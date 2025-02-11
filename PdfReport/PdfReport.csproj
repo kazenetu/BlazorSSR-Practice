@@ -9,4 +9,9 @@
     <EmbeddedResource Include="assets/GenShinGothic-Monospace-Medium.ttf" />  
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="assets/Logo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

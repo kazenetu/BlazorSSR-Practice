@@ -33,12 +33,12 @@ namespace PdfReport.Layouts
         /// <summary>
         /// 住所の最大文字数
         /// </summary>
-        private const int AddressMaxCount = 24;
+        private const int AddressMaxCount = 18;
 
         /// <summary>
         /// 宛先の最大文字数
         /// </summary>
-        private const int AddressNameMaxCount = 10;
+        private const int AddressNameMaxCount = 8;
 
         /// <summary>
         /// 漢数字リスト

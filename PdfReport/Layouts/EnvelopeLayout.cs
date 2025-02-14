@@ -4,6 +4,8 @@ using PdfSharp.Drawing.Layout;
 using PdfSharp.Pdf;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace PdfReport.Layouts
@@ -31,12 +33,12 @@ namespace PdfReport.Layouts
         /// <summary>
         /// 住所の最大文字数
         /// </summary>
-        private const int AddressMaxCount = 24;
+        private const int AddressMaxCount = 18;
 
         /// <summary>
         /// 宛先の最大文字数
         /// </summary>
-        private const int AddressNameMaxCount = 10;
+        private const int AddressNameMaxCount = 8;
 
         /// <summary>
         /// 漢数字リスト
@@ -74,6 +76,16 @@ namespace PdfReport.Layouts
         private XRect RectAddressName;
 
         /// <summary>
+        /// 封筒下部のイメージ
+        /// </summary>
+        private XImage? LogoImage;
+
+        /// <summary>
+        /// 矩形：封筒下部のイメージ
+        /// </summary>
+        private XRect RectLogoImage;
+
+        /// <summary>
         /// コンストラクタ
         /// </summary>
         public EnvelopeLayout()
@@ -102,6 +114,13 @@ namespace PdfReport.Layouts
             RectPostNo = new XRect(180, 27, 300 + 100, PageShortSide);
             RectAddress = new XRect(PageShortSide - 40, 100, PageShortSide, PageLongSide);
             RectAddressName = new XRect(160 - 15, 100, PageShortSide, PageLongSide);
+
+            // ロゴイメージ設定
+            var logoPath = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/assets/Logo.png";
+            LogoImage = XImage.FromFile(logoPath);
+
+            // 矩形設定：ロゴイメージ(封筒下部、幅中央寄せ)
+            RectLogoImage = new XRect((PageShortSide - LogoImage!.PointWidth) / 2, PageLongSide - LogoImage.PointHeight - 10, LogoImage.PointWidth, LogoImage.PointHeight);
         }
 
         /// <summary>
@@ -176,6 +195,9 @@ namespace PdfReport.Layouts
                 XBrushes.Black,
                 RectAddressName,
                 XStringFormats.TopLeft);
+
+            // イメージ描画：封筒下部のロゴ
+            gfx.DrawImage(LogoImage!, RectLogoImage);
 
             return true;
         }

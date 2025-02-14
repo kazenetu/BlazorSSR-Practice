@@ -76,6 +76,11 @@ namespace PdfReport.Layouts
         private XRect RectAddressName;
 
         /// <summary>
+        /// 封筒下部のイメージ
+        /// </summary>
+        private XImage? LogoImage;
+
+        /// <summary>
         /// コンストラクタ
         /// </summary>
         public EnvelopeLayout()
@@ -104,6 +109,10 @@ namespace PdfReport.Layouts
             RectPostNo = new XRect(180, 27, 300 + 100, PageShortSide);
             RectAddress = new XRect(PageShortSide - 40, 100, PageShortSide, PageLongSide);
             RectAddressName = new XRect(160 - 15, 100, PageShortSide, PageLongSide);
+
+            // ロゴイメージ設定
+            var logoPath = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/assets/Logo.png";
+            LogoImage = XImage.FromFile(logoPath);
         }
 
         /// <summary>
@@ -180,11 +189,9 @@ namespace PdfReport.Layouts
                 XStringFormats.TopLeft);
 
             // イメージ描画：封筒下部のロゴ
-            var logoPath = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/assets/Logo.png";
-            var image = XImage.FromFile(logoPath);
-            var x = (PageShortSide - image.PointWidth) / 2;
-            var y = PageLongSide - image.PointHeight - 10;
-            gfx.DrawImage(image, x, y, image.PointWidth, image.PointHeight);
+            var x = (PageShortSide - LogoImage!.PointWidth) / 2;
+            var y = PageLongSide - LogoImage.PointHeight - 10;
+            gfx.DrawImage(LogoImage, x, y, LogoImage.PointWidth, LogoImage.PointHeight);
 
             return true;
         }

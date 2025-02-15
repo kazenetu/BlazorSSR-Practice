@@ -255,4 +255,14 @@
         await JS.InvokeVoidAsync("kanjiToFurigana", kanjiId, furiganaId);
     }
     #endregion
+
+    #region inputタグのEnterKeyイベント無効化
+    /// <summary>
+    /// inputタグのEnterKeyイベント無効化実行
+    /// </summary>
+    protected async Task SuppressEnterKey()
+    {
+        await JS.InvokeVoidAsync("suppressEnterKey");
+    }
+    #endregion
 }

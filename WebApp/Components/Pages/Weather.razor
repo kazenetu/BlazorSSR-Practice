@@ -5,8 +5,9 @@
 @using WebApp.Models
 @using WebApp.Repositories.Interfaces
 @inherits Base.PageBase
-@inject ILogger<Weather> Logger
 @inject IWeatherForecastRepository repository
+@inject ILogger<Weather> Logger
+@inject NavigationManager Navigation
 
 @if (IsBeforeLoginCheck)
 {
@@ -82,7 +83,17 @@ else
 }
 
 @code {
+    /// <summary>
+    /// セッション定数：検索条件
+    /// </summary>
+    public const string SessionWeatherSearch = "SessionWeatherSearch"; 
+
     private InputWeatherForecastModel Model { get; set; } = new();
+
+    /// <summary>
+    /// InputタグのEnterKeyを無効に設定したか？
+    /// </summary>
+    private bool DisabledEnterKey = false;
 
     /// <summary>
     /// ページング用：現在のページ数
@@ -104,6 +115,7 @@ else
     /// <param name="firstRender">初回表示か否か</param>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        var oldPage = Page;
         if (firstRender)
         {
             try
@@ -129,6 +141,11 @@ else
                     Page = 1;
                 }
 
+                // 検索条件の復元
+                var tempModel = await GetAsync<InputWeatherForecastModel>(SessionWeatherSearch);
+                if (tempModel is not null) 
+                    Model = tempModel;
+
                 // 検索結果を取得(総レコード数更新)
                 ShowPage(Page, true);
 
@@ -143,6 +160,23 @@ else
             {
                 Logger.LogInformation(await GetLogMessage("終了"));
             }
+        }
+
+        // IntputタグのEnterKey無効が実施されていない場合は設定
+        if (Page > 0 && !DisabledEnterKey)
+        {
+            // 「入力項目でエンターキー押すと誤送信」を無効化
+            await DisableEnterKey();
+            DisabledEnterKey = true;
+        }
+
+        if (oldPage <= 0)
+        {
+            DisabledEnterKey = false;
+            await DeleteAsync(SessionWeatherSearch);
+            Model = new();
+            TotalRecords = repository.GetTotalRecord(Model);
+            Navigation.NavigateTo("/weather/1");
         }
     }
 
@@ -160,13 +194,17 @@ else
     /// <summary>
     /// 検索イベント
     /// </summary>
-    private void Search()
+    private async Task Search()
     {
         // 1ページ
         Page = 1;
 
+        // 検索条件の保存
+        await SetAsync(SessionWeatherSearch, Model);
+
         // 検索結果を取得(総レコード数更新)
         ShowPage(Page, true);
+        Navigation.NavigateTo("/weather/1");
     }
 
     /// <summary>

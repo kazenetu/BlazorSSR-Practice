@@ -51,6 +51,9 @@
                 Logger.LogInformation(await GetLogMessage("初期カウンタ設定完了"));
 
                 StateHasChanged();
+
+                // 「入力項目でエンターキー押すと誤送信」を無効化
+                await DisableEnterKey();
             }
             catch (Exception ex)
             {

@@ -260,9 +260,9 @@
     /// <summary>
     /// inputタグのEnterKeyイベント無効化実行
     /// </summary>
-    protected async Task SuppressEnterKey()
+    protected async Task DisableEnterKey()
     {
-        await JS.InvokeVoidAsync("suppressEnterKey");
+        await JS.InvokeVoidAsync("disableEnterKey");
     }
     #endregion
 }

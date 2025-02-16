@@ -96,7 +96,7 @@
                 StateHasChanged();
 
                 // 「入力項目をエンターキーで誤送信」を無効化
-                await SuppressEnterKey();
+                await DisableEnterKey();
 
                 Logger.LogInformation(await GetLogMessage("対象データ取得完了"));
             }

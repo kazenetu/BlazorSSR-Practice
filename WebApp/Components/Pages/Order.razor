@@ -115,6 +115,11 @@ else
     /// </summary>
     public const string SessionOrderSearch = "SessionOrderSearch"; 
 
+    /// <summary>
+    /// InputタグのEnterKeyを無効に設定したか？
+    /// </summary>
+    private bool DisabledEnterKey = false;
+
     private InputOrderModel Model { get; set; } = new();
 
     #region ページング用
@@ -224,8 +229,17 @@ else
             }
         }
 
+        // IntputタグのEnterKey無効が実施されていない場合は設定
+        if (Page > 0 && !DisabledEnterKey)
+        {
+            // 「入力項目でエンターキー押すと誤送信」を無効化
+            await DisableEnterKey();
+            DisabledEnterKey = true;
+        }
+
         if (oldPage <= 0)
         {
+            DisabledEnterKey = false;
             await DeleteAsync(SessionOrderSearch);
             Model = new();
             TotalRecords = repository.GetTotalRecord(Model);

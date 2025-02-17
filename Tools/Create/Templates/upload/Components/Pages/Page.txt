@@ -107,6 +107,9 @@
                 Logger.LogInformation(await GetLogMessage("ログインチェック成功"));
 
                 StateHasChanged();
+
+                // 「入力項目でエンターキー押すと誤送信」を無効化
+                await DisableEnterKey();
             }
             catch (Exception ex)
             {

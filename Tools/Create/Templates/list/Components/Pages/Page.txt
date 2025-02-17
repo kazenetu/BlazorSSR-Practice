@@ -114,6 +114,11 @@ else
     /// </summary>
     public const string SessionSearch = "Session$ClassName$Search"; 
 
+    /// <summary>
+    /// InputタグのEnterKeyを無効に設定したか？
+    /// </summary>
+    private bool DisabledEnterKey = false;
+
     private Input$ClassName$Model Model { get; set; } = new();
 
     #region ページング用
@@ -224,16 +229,25 @@ else
             {
                 Logger.LogInformation(await GetLogMessage("終了"));
             }
+        }
 
-            // メニューから遷移した場合
-            if (oldPage <= 0)
-            {
-                // 遷移情報削除
-                await DeleteAsync(SessionSearch);
-                Model = new();
-                TotalRecords = repository.GetTotalRecord(Model);
-                Navigation.NavigateTo("/$uri$/1");
-            }
+        // IntputタグのEnterKey無効が実施されていない場合は設定
+        if (Page > 0 && !DisabledEnterKey)
+        {
+            // 「入力項目でエンターキー押すと誤送信」を無効化
+            await DisableEnterKey();
+            DisabledEnterKey = true;
+        }
+
+        // メニューから遷移した場合
+        if (oldPage <= 0)
+        {
+            DisabledEnterKey = false;
+            // 遷移情報削除
+            await DeleteAsync(SessionSearch);
+            Model = new();
+            TotalRecords = repository.GetTotalRecord(Model);
+            Navigation.NavigateTo("/$uri$/1");
         }
     }
 

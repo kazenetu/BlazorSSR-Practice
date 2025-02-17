@@ -48,6 +48,9 @@
 
                 Logger.LogInformation(await GetLogMessage("ログインチェック成功"));
 
+                // 「入力項目でエンターキー押すと誤送信」を無効化
+                await DisableEnterKey();
+
                 // TODO 初回実行処理（不要ならコメントごと削除）
             }
             catch (Exception ex)

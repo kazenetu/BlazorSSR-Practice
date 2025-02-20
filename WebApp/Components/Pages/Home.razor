@@ -1,8 +1,9 @@
 ﻿@page "/"
 @inherits Base.PageBase
 @using PdfReport;
-@using PdfReport.Interfaces;
-@using PdfReport.DataLists;
+@using PdfReport.Interfaces
+@using PdfReport.DataLists
+@using System.IO.Compression
 @using WebApp.Components.Parts
 @using WebApp.Models.Parts
 @inject ILogger<Home> Logger
@@ -22,6 +23,7 @@ Welcome to your new app.
 <div class="page-header">
     <PDFViewer ButtonName="封筒印刷PDF表示" GetDataFunction="DownLoadPDF" IsPortrait="true" />
     <FileDownload ButtonName="封筒印刷PDFダウンロード" GetDataFunction="DownLoadPDF" IsBinary="true"/>
+    <FileDownload ButtonName="封筒印刷ZIPダウンロード" GetDataFunction="DownLoadZip" IsBinary="true"/>
 </div>
 
 <div>
@@ -243,6 +245,71 @@ Welcome to your new app.
                 pdfMain.Create(ms);
 
                 return new DownLoadModel("test.pdf", ms.GetBuffer());
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, await GetLogError(ex));
+            return new DownLoadModel(string.Empty, null, "PDF作成に失敗しました。");
+        }
+        finally
+        {
+            Logger.LogInformation(await GetLogMessage("終了"));
+        }
+    }
+
+
+    /// <summary>
+    /// ZIPファイルダウンロード
+    /// </summary>
+    /// <returns>ダウンロード用モデル</returns>
+    /// <remarks>Dataにはbyte[]配列を設定</remarks>
+    private async Task<DownLoadModel> DownLoadZip()
+    {
+        try
+        {
+            Logger.LogInformation(await GetLogMessage("開始"));
+
+            var pdfDataList = new List<IData>();
+
+            // TODO DBから取得したデータを格納
+            pdfDataList.Add(new PdfReport.DataLists.Envelope("123-4567","123456789012345678","１２３４５６７８"));
+            pdfDataList.Add(new PdfReport.DataLists.Envelope("123-4567","Ａ県Ｂ市123-4","サンプル太郎"));
+
+            // 1件ごとにPDF作成、格納
+            var downLoadModels = new List<DownLoadModel>();
+            foreach(var pdfData in pdfDataList)
+            {
+                var pdfMain = new PdfMain(LayoutKinds.Envelope, new List<IData>{pdfData});
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    // PDF作成
+                    pdfMain.Create(ms);
+
+                    var addressName = pdfData.GetColumn(2).value.ToString();
+                    downLoadModels.Add(new DownLoadModel($"{addressName}.pdf", ms.GetBuffer()));
+                }
+            }
+            
+            // ZIP圧縮、ファイル生成
+            using(MemoryStream memoryStream = new MemoryStream())
+            using (ZipArchive archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+            {
+                foreach(var downloadModel in downLoadModels)
+                {
+                    var entry = archive.CreateEntry(downloadModel.FileName, CompressionLevel.Fastest);
+                    using (var entryStream = entry.Open())
+                    {
+                        entryStream.Write((byte[])downloadModel.Data!, 0, ((byte[])downloadModel.Data!).Length);
+                    }
+                }
+
+                // HACK ファイル名設定
+                var zipFileName = "test.zip";
+
+                // ZIPファイルのバイト配列を返す
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                return new DownLoadModel(zipFileName, memoryStream.ToArray());
             }
         }
         catch (Exception ex)

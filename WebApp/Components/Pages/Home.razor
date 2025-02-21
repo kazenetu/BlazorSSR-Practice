@@ -293,14 +293,16 @@ Welcome to your new app.
             
             // ZIP圧縮、ファイル生成
             using(MemoryStream memoryStream = new MemoryStream())
-            using (ZipArchive archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
             {
-                foreach(var downloadModel in downLoadModels)
+                using (ZipArchive archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
                 {
-                    var entry = archive.CreateEntry(downloadModel.FileName, CompressionLevel.Fastest);
-                    using (var entryStream = entry.Open())
+                    foreach(var downloadModel in downLoadModels)
                     {
-                        entryStream.Write((byte[])downloadModel.Data!, 0, ((byte[])downloadModel.Data!).Length);
+                        var entry = archive.CreateEntry(downloadModel.FileName, CompressionLevel.Fastest);
+                        using (var entryStream = entry.Open())
+                        {
+                            entryStream.Write((byte[])downloadModel.Data!, 0, ((byte[])downloadModel.Data!).Length);
+                        }
                     }
                 }
 

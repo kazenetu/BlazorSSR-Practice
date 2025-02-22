@@ -273,46 +273,11 @@ Welcome to your new app.
             var pdfDataList = new List<IData>();
 
             // TODO DBから取得したデータを格納
-            pdfDataList.Add(new PdfReport.DataLists.Envelope("123-4567","123456789012345678","１２３４５６７８"));
-            pdfDataList.Add(new PdfReport.DataLists.Envelope("123-4567","Ａ県Ｂ市123-4","サンプル太郎"));
+            pdfDataList.Add(new PdfReport.DataLists.Envelope("123-4567","123456789012345678","1"));
+            pdfDataList.Add(new PdfReport.DataLists.Envelope("123-4567","Ａ県Ｂ市123-4","2"));
 
-            // 1件ごとにPDF作成、格納
-            var downLoadModels = new List<DownLoadModel>();
-            foreach(var pdfData in pdfDataList)
-            {
-                var pdfMain = new PdfMain(LayoutKinds.Envelope, new List<IData>{pdfData});
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    // PDF作成
-                    pdfMain.Create(ms);
-
-                    var addressName = pdfData.GetColumn(2).value.ToString();
-                    downLoadModels.Add(new DownLoadModel($"{addressName}.pdf", ms.GetBuffer()));
-                }
-            }
-            
-            // ZIP圧縮、ファイル生成
-            using(MemoryStream memoryStream = new MemoryStream())
-            {
-                using (ZipArchive archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
-                {
-                    foreach(var downloadModel in downLoadModels)
-                    {
-                        var entry = archive.CreateEntry(downloadModel.FileName, CompressionLevel.Fastest);
-                        using (var entryStream = entry.Open())
-                        {
-                            entryStream.Write((byte[])downloadModel.Data!, 0, ((byte[])downloadModel.Data!).Length);
-                        }
-                    }
-                }
-
-                // HACK ファイル名設定
-                var zipFileName = "test.zip";
-
-                // ZIPファイルのバイト配列を返す
-                memoryStream.Seek(0, SeekOrigin.Begin);
-                return new DownLoadModel(zipFileName, memoryStream.ToArray());
-            }
+            // ZIPファイル作成
+            return CreateZipInPdfs("test.zip", LayoutKinds.Envelope, pdfDataList, 2);
         }
         catch (Exception ex)
         {
@@ -324,4 +289,55 @@ Welcome to your new app.
             Logger.LogInformation(await GetLogMessage("終了"));
         }
     }
+
+    /// <summary>
+    /// 要素単位でPDF作成し、ZIPファイル圧縮する
+    /// </summary>
+    /// <param name="zipFileName">Zipファイル名</param>
+    /// <param name="layoutKind">帳票レイアウト種別</param>
+    /// <param name="dataList">出力用データリスト</param>
+    /// <param name="pdfFileColumnIndex">PDF名に利用するカラム番号</param>
+    private DownLoadModel CreateZipInPdfs(string zipFileName ,LayoutKinds layoutKind, List<IData> dataList, int pdfFileColumnIndex)
+    {
+        // 1件ごとにPDF作成、格納
+        var downLoadModels = new List<DownLoadModel>();
+        foreach(var data in dataList)
+        {
+            var pdfMain = new PdfMain(layoutKind, new List<IData>{data});
+            using (MemoryStream ms = new MemoryStream())
+            {
+                // PDF作成
+                pdfMain.Create(ms);
+
+                var pdfFileName = data.GetColumn(pdfFileColumnIndex).value.ToString();
+                downLoadModels.Add(new DownLoadModel($"{pdfFileName}.pdf", ms.GetBuffer()));
+            }
+        }
+        
+        // ZIP圧縮、ファイル生成
+        byte[] contentData;
+        using(MemoryStream memoryStream = new MemoryStream())
+        {
+            using (ZipArchive archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+            {
+                foreach(var downloadModel in downLoadModels)
+                {
+                    var entry = archive.CreateEntry(downloadModel.FileName);
+                    using (var entryStream = entry.Open())
+                    {
+                        byte[] contents = (byte[])downloadModel.Data!;
+                        using (var zipStream = new MemoryStream(contents))
+                        {
+                            zipStream.CopyTo(entryStream);
+                        }
+                    }
+                }
+            }
+            // ZIPファイルのバイト配列を返す
+            contentData = memoryStream.ToArray();
+        }
+
+        return new DownLoadModel(zipFileName, contentData);
+    }
+
 }

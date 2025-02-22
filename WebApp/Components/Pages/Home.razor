@@ -290,14 +290,15 @@ Welcome to your new app.
         }
     }
 
-    /// <summary>
-    /// 要素単位でPDF作成し、ZIPファイル圧縮する
-    /// </summary>
-    /// <param name="zipFileName">Zipファイル名</param>
-    /// <param name="layoutKind">帳票レイアウト種別</param>
-    /// <param name="dataList">出力用データリスト</param>
-    /// <param name="pdfFileColumnIndex">PDF名に利用するカラム番号</param>
-    private DownLoadModel CreateZipInPdfs(string zipFileName ,LayoutKinds layoutKind, List<IData> dataList, int pdfFileColumnIndex)
+   /// <summary>
+   /// 要素単位でPDF作成し、ZIPファイル圧縮する
+   /// </summary>
+   /// <param name="zipFileName">Zipファイル名</param>
+   /// <param name="layoutKind">帳票レイアウト種別</param>
+   /// <param name="dataList">出力用データリスト</param>
+   /// <param name="pdfFileColumnIndex">PDF名に利用するカラム番号</param>
+   /// <returns>ダウンロード用モデル</returns>
+   private DownLoadModel CreateZipInPdfs(string zipFileName ,LayoutKinds layoutKind, List<IData> dataList, int pdfFileColumnIndex)
     {
         // 1件ごとにPDF作成、格納
         var downLoadModels = new List<DownLoadModel>();
@@ -333,10 +334,11 @@ Welcome to your new app.
                     }
                 }
             }
-            // ZIPファイルのバイト配列を返す
+            // ZIPファイルのバイト配列を格納
             contentData = memoryStream.ToArray();
         }
 
+        // Zipファイル名とバイト配列をダウンロード用モデルに格納して返す
         return new DownLoadModel(zipFileName, contentData);
     }
 

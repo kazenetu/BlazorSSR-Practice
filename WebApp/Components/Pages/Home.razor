@@ -273,8 +273,8 @@ Welcome to your new app.
             var pdfDataList = new List<IData>();
 
             // TODO DBから取得したデータを格納
-            pdfDataList.Add(new PdfReport.DataLists.Envelope("123-4567","123456789012345678","1"));
-            pdfDataList.Add(new PdfReport.DataLists.Envelope("123-4567","Ａ県Ｂ市123-4","2"));
+            pdfDataList.Add(new PdfReport.DataLists.Envelope("123-4567","123456789012345678","１２３４５６７８"));
+            pdfDataList.Add(new PdfReport.DataLists.Envelope("123-4567","Ａ県Ｂ市123-4","サンプル太郎"));
 
             // ZIPファイル作成
             return CreateZipInPdfs("test.zip", LayoutKinds.Envelope, pdfDataList, 2);

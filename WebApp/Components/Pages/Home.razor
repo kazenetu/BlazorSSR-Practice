@@ -1,8 +1,9 @@
 ﻿@page "/"
 @inherits Base.PageBase
 @using PdfReport;
-@using PdfReport.Interfaces;
-@using PdfReport.DataLists;
+@using PdfReport.Interfaces
+@using PdfReport.DataLists
+@using System.IO.Compression
 @using WebApp.Components.Parts
 @using WebApp.Models.Parts
 @inject ILogger<Home> Logger
@@ -22,6 +23,7 @@ Welcome to your new app.
 <div class="page-header">
     <PDFViewer ButtonName="封筒印刷PDF表示" GetDataFunction="DownLoadPDF" IsPortrait="true" />
     <FileDownload ButtonName="封筒印刷PDFダウンロード" GetDataFunction="DownLoadPDF" IsBinary="true"/>
+    <FileDownload ButtonName="封筒印刷ZIPダウンロード" GetDataFunction="DownLoadZip" IsBinary="true"/>
 </div>
 
 <div>
@@ -255,4 +257,37 @@ Welcome to your new app.
             Logger.LogInformation(await GetLogMessage("終了"));
         }
     }
+
+
+    /// <summary>
+    /// ZIPファイルダウンロード
+    /// </summary>
+    /// <returns>ダウンロード用モデル</returns>
+    /// <remarks>Dataにはbyte[]配列を設定</remarks>
+    private async Task<DownLoadModel> DownLoadZip()
+    {
+        try
+        {
+            Logger.LogInformation(await GetLogMessage("開始"));
+
+            var pdfDataList = new List<IData>();
+
+            // TODO DBから取得したデータを格納
+            pdfDataList.Add(new PdfReport.DataLists.Envelope("123-4567","123456789012345678","１２３４５６７８"));
+            pdfDataList.Add(new PdfReport.DataLists.Envelope("123-4567","Ａ県Ｂ市123-4","サンプル太郎"));
+
+            // ZIPファイル作成
+            return CreateZipInPdfs("test.zip", LayoutKinds.Envelope, pdfDataList, 2);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, await GetLogError(ex));
+            return new DownLoadModel(string.Empty, null, "PDF作成に失敗しました。");
+        }
+        finally
+        {
+            Logger.LogInformation(await GetLogMessage("終了"));
+        }
+    }
+
 }

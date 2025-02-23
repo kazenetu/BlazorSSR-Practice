@@ -47,32 +47,32 @@ namespace PdfReport.Layouts
 
         /// <summary>
         /// フォント：郵便番号
-        /// </summary> <summary>
+        /// </summary>
         private XFont? FontPostNo;
 
         /// <summary>
         /// フォント：住所
-        /// </summary> <summary>
+        /// </summary>
         private XFont? FontAddress;
 
         /// <summary>
         /// フォント：宛先
-        /// </summary> <summary>
+        /// </summary>
         private XFont? FontAddressName;
 
         /// <summary>
         /// 矩形：郵便番号
-        /// </summary> <summary>
+        /// </summary>
         private XRect RectPostNo;
 
         /// <summary>
         /// 矩形：住所
-        /// </summary> <summary>
+        /// </summary>
         private XRect RectAddress;
 
         /// <summary>
         /// 矩形：宛先
-        /// </summary> <summary>
+        /// </summary>
         private XRect RectAddressName;
 
         /// <summary>

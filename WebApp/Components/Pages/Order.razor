@@ -35,7 +35,7 @@ else
             <button @onclick="@(() => ToEdit(string.Empty))" class="btn btn-outline-success">新規作成</button>
         </div>
         <div class="col">
-            <FileDownload ButtonName="CSVダウンロード" GetDataFunction="DownLoadCSV" IsShiftJis="true"/>
+            <FileDownload ButtonName="CSVダウンロード" GetDataFunction="DownLoadCSV" OKClickFunction="OnOKClickedCSV" IsShiftJis="true"/>
             <PDFViewer ButtonName="PDF表示" GetDataFunction="DownLoadPDF" IsPortrait="true" />
             <PDFViewer ButtonName="PDF表示(別ウインドウ)" GetDataFunction="DownLoadPDF" IsNewWindow="true" />
         </div>
@@ -309,6 +309,14 @@ else
         {
             Logger.LogInformation(await GetLogMessage("終了"));
         }
+    }
+
+    /// <summary>
+    /// CSVダウンロード時のエラメッセージOKボタンクリックイベント
+    /// </summary>
+    private async Task OnOKClickedCSV()
+    {
+        await ShowAlert("OKボタンが押されました");
     }
 
     /// <summary>

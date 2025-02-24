@@ -274,11 +274,17 @@ else
     }
 
     /// <summary>
+    /// CSVダウンロード:例外エラー発生しているか？
+    /// </summary>
+    private bool IsExceptionDownLoadCSV;
+
+    /// <summary>
     /// CSVダウンロード
     /// </summary>
     /// <returns>ダウンロード用モデル</returns>
     private async Task<DownLoadModel> DownLoadCSV()
     {
+        IsExceptionDownLoadCSV = false;
         try
         {
             Logger.LogInformation(await GetLogMessage("開始"));
@@ -303,6 +309,7 @@ else
         catch (Exception ex)
         {
             Logger.LogError(ex, await GetLogError(ex));
+            IsExceptionDownLoadCSV = true;
             return new DownLoadModel(string.Empty, null, "CSV作成に失敗しました。");
         }
         finally
@@ -316,7 +323,13 @@ else
     /// </summary>
     private async Task OnOKClickedCSV()
     {
-        await ShowAlert("OKボタンが押されました");
+        // 例外エラー時はエラーページに遷移
+        if (IsExceptionDownLoadCSV)
+        {
+            await Task.Run(()=>{
+                GotoErrorPage();
+            });
+        }
     }
 
     /// <summary>

@@ -54,6 +54,12 @@
     public string ButtonName { get; set; } = "ダウンロード";
 
     /// <summary>
+    /// ダウンロードファイルはバイナリか否か
+    /// </summary>
+    [Parameter]
+    public bool IsBinary { get; set; } = false;
+
+    /// <summary>
     /// ダウンロードファイルの文字コードはShiftJisか否か
     /// </summary>
     [Parameter]
@@ -88,29 +94,61 @@
             if (string.IsNullOrEmpty(model.FileName) || model.Data is null)
                 return;
 
-            // ダウンロードの文字コードを指定(デフォルトはUTF8)
-            var encoding = System.Text.Encoding.UTF8;
-            if (IsShiftJis)
+
+            // ダウンロードモードで処理分岐
+            if (IsBinary)
             {
-                var provider = System.Text.CodePagesEncodingProvider.Instance;
-                encoding = provider.GetEncoding(932);
+                await DownloadBinary(model);
             }
-
-            // データ書き出しとファイル出力JSメソッド呼び出し
-            using (var memoryStream = new MemoryStream())
-            using (var writer = new StreamWriter(memoryStream, encoding!))
+            else
             {
-                writer.WriteLine(model.Data);
-                writer.Flush();
-                memoryStream.Position = 0;
-
-                using var streamRef = new DotNetStreamReference(memoryStream);
-                await JS.InvokeVoidAsync("downloadFileFromStream", model!.FileName, streamRef);
+                await DownloadText(model);
             }
         }
         catch (Exception ex)
         {
             throw ex;
+        }
+    }
+
+    /// <summary>
+    /// テキスト出力
+    /// </summary>
+    /// <param name="model">出力対象</param>
+    private async Task DownloadText(DownLoadModel model)
+    {
+        // ダウンロードの文字コードを指定(デフォルトはUTF8)
+        var encoding = System.Text.Encoding.UTF8;
+        if (IsShiftJis)
+        {
+            var provider = System.Text.CodePagesEncodingProvider.Instance;
+            encoding = provider.GetEncoding(932);
+        }
+
+        // データ書き出しとファイル出力JSメソッド呼び出し
+        using (var memoryStream = new MemoryStream())
+        using (var writer = new StreamWriter(memoryStream, encoding!))
+        {
+            writer.WriteLine(model.Data);
+            writer.Flush();
+            memoryStream.Position = 0;
+
+            using var streamRef = new DotNetStreamReference(memoryStream);
+            await JS.InvokeVoidAsync("downloadFileFromStream", model!.FileName, streamRef);
+        }
+    }
+
+    /// <summary>
+    /// バイナリ出力
+    /// </summary>
+    /// <param name="model">出力対象</param>
+    private async Task DownloadBinary(DownLoadModel model)
+    {
+        // データ書き出しとファイル出力JSメソッド呼び出し
+        using (var memoryStream = new MemoryStream((byte[])model.Data!))
+        {
+            using var streamRef = new DotNetStreamReference(memoryStream);
+            await JS.InvokeVoidAsync("downloadFileFromStream", model!.FileName, streamRef);
         }
     }
 }

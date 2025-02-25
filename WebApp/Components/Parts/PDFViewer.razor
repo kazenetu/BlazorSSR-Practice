@@ -1,5 +1,6 @@
 @namespace WebApp.Components.Parts
 @using WebApp.Models.Parts
+@using WebApp.Components.Providers
 @inject IJSRuntime JS
 
 <button class="btn btn-primary" @onclick="Preview">@ButtonName</button>
@@ -53,6 +54,32 @@
 </script>
 
 @code {
+    #region ダイアログ表示
+    /// <summary>
+    /// アラートメッセージOKボタンクリック後のイベント
+    /// </summary>
+    [Parameter]
+    public Func<Task>? OKClickFunction { get; set; }
+
+    /// <summary>
+    /// ダイアログプロバイダークラス
+    /// </summary>
+    [CascadingParameter]
+    private DialogProvider? dialogProvider { get; set; }
+
+    /// <summary>
+    /// アラートメッセージ表示
+    /// </summary>
+    /// <param name="message">メッセージ本文</param>
+    /// <param name="submitFunction">「OK」クリック時のコールバックメソッド</param>
+    protected async Task ShowAlert(string message, Func<Task>? submitFunction = null)
+    {
+        if(dialogProvider is null)  return;
+
+        await dialogProvider.ShowAlert(message, submitFunction);
+    }
+    #endregion
+
     /// <summary>
     /// ボタン名
     /// </summary>
@@ -93,7 +120,7 @@
             // エラーメッセージが設定されている場合はエラーメッセージ表示
             if (!string.IsNullOrEmpty(model.ErrorMessage))
             {
-                await JS.InvokeVoidAsync("showAlert", model.ErrorMessage);
+                await ShowAlert(model.ErrorMessage, OKClickFunction);
             }
 
             // ファイル名やデータが設定されていない場合は終了

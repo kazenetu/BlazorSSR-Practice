@@ -23,7 +23,7 @@
 <h1>$Title$</h1>
 
 @* CSVパーツ実装例(IsShiftJis:true SJISで出力、IsShiftJis:false UTF8で出力) *@
-<FileDownload ButtonName="CSVダウンロード" GetDataFunction="DownLoadCSV" IsShiftJis="true" />
+<FileDownload ButtonName="CSVダウンロード" GetDataFunction="DownLoadCSV" OKClickFunction="OnOKClickedCSV" IsShiftJis="true" />
 
 
 @code {
@@ -69,12 +69,18 @@
     }
 
     /// <summary>
+    /// CSVダウンロード:例外エラー発生しているか？
+    /// </summary>
+    private bool IsExceptionDownLoadCSV;
+
+    /// <summary>
     /// CSVダウンロード
     /// </summary>
     /// <returns>ダウンロード用モデル</returns>
     /// <remarks>Dataにはbyte[]配列を設定</remarks>
     private async Task<DownLoadModel> DownLoadCSV()
     {
+        IsExceptionDownLoadCSV = false;
         try
         {
             Logger.LogInformation(await GetLogMessage("開始"));
@@ -102,11 +108,26 @@
         catch (Exception ex)
         {
             Logger.LogError(ex, await GetLogError(ex));
+            IsExceptionDownLoadCSV = true;
             return new DownLoadModel(string.Empty, null, "CSV作成に失敗しました。");
         }
         finally
         {
             Logger.LogInformation(await GetLogMessage("終了"));
+        }
+    }
+
+    /// <summary>
+    /// CSVダウンロード時のエラメッセージOKボタンクリックイベント
+    /// </summary>
+    private async Task OnOKClickedCSV()
+    {
+        // 例外エラー時はエラーページに遷移
+        if (IsExceptionDownLoadCSV)
+        {
+            await Task.Run(()=>{
+                GotoErrorPage();
+            });
         }
     }
 }

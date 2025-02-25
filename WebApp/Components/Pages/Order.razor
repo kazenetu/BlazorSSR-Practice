@@ -273,6 +273,7 @@ else
         await GotoPageAsync($"/order-edit/{productName}");
     }
 
+    #region CSVダウンロード
     /// <summary>
     /// CSVダウンロード:例外エラー発生しているか？
     /// </summary>
@@ -331,6 +332,7 @@ else
             });
         }
     }
+    #endregion
 
     /// <summary>
     /// PDFダウンロード

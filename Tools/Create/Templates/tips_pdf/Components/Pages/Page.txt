@@ -68,6 +68,7 @@
         }
     }
 
+    #region PDF表示
     /// <summary>
     /// PDF表示:例外エラー発生しているか？
     /// </summary>
@@ -139,4 +140,5 @@
             });
         }
     }
+    #endregion
 }

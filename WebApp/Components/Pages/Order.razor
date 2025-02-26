@@ -36,8 +36,8 @@ else
         </div>
         <div class="col">
             <FileDownload ButtonName="CSVダウンロード" GetDataFunction="DownLoadCSV" OKClickFunction="OnOKClickedCSV" IsShiftJis="true"/>
-            <PDFViewer ButtonName="PDF表示" GetDataFunction="DownLoadPDF" IsPortrait="true" />
-            <PDFViewer ButtonName="PDF表示(別ウインドウ)" GetDataFunction="DownLoadPDF" IsNewWindow="true" />
+            <PDFViewer ButtonName="PDF表示" GetDataFunction="DownLoadPDF" OKClickFunction="OnOKClickedPDF" IsPortrait="true" />
+            <PDFViewer ButtonName="PDF表示(別ウインドウ)" GetDataFunction="DownLoadPDF" OKClickFunction="OnOKClickedPDF" IsNewWindow="true" />
         </div>
     </div>
 
@@ -335,12 +335,18 @@ else
     #endregion
 
     /// <summary>
+    /// PDF表示:例外エラー発生しているか？
+    /// </summary>
+    private bool IsExceptionDisplayPDF;
+
+    /// <summary>
     /// PDFダウンロード
     /// </summary>
     /// <returns>ダウンロード用モデル</returns>
     /// <remarks>Dataにはbyte[]配列を設定</remarks>
     private async Task<DownLoadModel> DownLoadPDF()
     {
+        IsExceptionDisplayPDF = false;
         try
         {
             Logger.LogInformation(await GetLogMessage("開始"));
@@ -370,11 +376,26 @@ else
         catch (Exception ex)
         {
             Logger.LogError(ex, await GetLogError(ex));
+            IsExceptionDisplayPDF = true;
             return new DownLoadModel(string.Empty, null, "PDF作成に失敗しました。");
         }
         finally
         {
             Logger.LogInformation(await GetLogMessage("終了"));
+        }
+    }
+
+    /// <summary>
+    /// PDFダウンロード時のエラメッセージOKボタンクリックイベント
+    /// </summary>
+    private async Task OnOKClickedPDF()
+    {
+        // 例外エラー時はエラーページに遷移
+        if (IsExceptionDisplayPDF)
+        {
+            await Task.Run(()=>{
+                GotoErrorPage();
+            });
         }
     }
 }

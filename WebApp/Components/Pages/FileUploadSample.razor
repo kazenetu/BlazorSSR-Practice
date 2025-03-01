@@ -20,12 +20,14 @@
 
 <EditForm method="post" Model="Model" OnValidSubmit="Save" id="edit">
     <div class="row-margin">
-        <InputRadioGroup @bind-Value="Model.IsShiftJisMode">
-            <label>
-                <InputRadio Value="true" />ShiftJIS読み込み
+        <InputRadioGroup @bind-Value="Model.IsShiftJisMode" class="form-check">
+            <InputRadio Value="true" class="form-check-input" id="sjis"/>
+            <label class="form-check-label" for="sjis">
+                ShiftJIS読み込み
             </label>
-            <label>
-                <InputRadio Value="false" />UTF8読み込み
+            <InputRadio Value="false" class="form-check-input" id="utf8"/>
+            <label class="form-check-label" for="utf8">
+                UTF8読み込み
             </label>
         </InputRadioGroup>
     </div>

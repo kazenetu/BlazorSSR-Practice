@@ -19,16 +19,25 @@
 <h1>ファイルアップロードサンプル</h1>
 
 <EditForm method="post" Model="Model" OnValidSubmit="Save" id="edit">
-    <div class="row-margin">
+    <div class="row row-margin">
         <InputRadioGroup @bind-Value="Model.IsShiftJisMode" class="form-check">
-            <InputRadio Value="true" class="form-check-input" id="sjis"/>
-            <label class="form-check-label" for="sjis">
-                ShiftJIS読み込み
-            </label>
-            <InputRadio Value="false" class="form-check-input" id="utf8"/>
-            <label class="form-check-label" for="utf8">
-                UTF8読み込み
-            </label>
+                <span class="input-group">
+                    <span class="input-group-text">
+                        <InputRadio Value="true" class="form-check-input mt-0" id="sjis"/>
+                        <label class="form-check-label" for="sjis">
+                            ShiftJIS読み込み
+                        </label>
+                    </span>
+                </span>
+
+                <span class="input-group">
+                    <span class="input-group-text">
+                        <InputRadio Value="false" class="form-check-input mt-0" id="utf8"/>
+                        <label class="form-check-label" for="utf8">
+                            UTF8読み込み
+                        </label>
+                    </span>
+                </span>
         </InputRadioGroup>
     </div>
 

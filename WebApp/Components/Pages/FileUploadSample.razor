@@ -21,7 +21,7 @@
 <EditForm method="post" Model="Model" OnValidSubmit="Save" id="edit">
     <div class="row row-margin">
         <InputRadioGroup @bind-Value="Model.IsShiftJisMode" class="form-check">
-                <span class="input-group">
+                <span class="input-group-radio">
                     <span class="input-group-text">
                         <InputRadio Value="true" class="form-check-input mt-0" id="sjis"/>
                         <label class="form-check-label" for="sjis">
@@ -30,7 +30,7 @@
                     </span>
                 </span>
 
-                <span class="input-group">
+                <span class="input-group-radio">
                     <span class="input-group-text">
                         <InputRadio Value="false" class="form-check-input mt-0" id="utf8"/>
                         <label class="form-check-label" for="utf8">

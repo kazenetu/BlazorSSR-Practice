@@ -71,3 +71,12 @@ table.fiexed-header thead{
     margin-top: 1rem;
     margin-bottom: 1rem;
 }
+
+.input-group-radio
+{
+    width: auto;
+}
+.input-group-radio .form-check-input
+{
+    margin-right: 0.5em;
+}

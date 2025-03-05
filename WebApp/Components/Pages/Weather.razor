@@ -88,6 +88,11 @@ else
     /// </summary>
     public const string SessionWeatherSearch = "SessionWeatherSearch"; 
 
+    /// <summary>
+    /// 入力条件
+    /// </summary>
+    private InputWeatherForecastModel InputModel { get; set; } = new();
+
     private InputWeatherForecastModel Model { get; set; } = new();
 
     /// <summary>

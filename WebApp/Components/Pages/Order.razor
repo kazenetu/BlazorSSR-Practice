@@ -120,6 +120,11 @@ else
     /// </summary>
     private bool DisabledEnterKey = false;
 
+    /// <summary>
+    /// 入力条件
+    /// </summary>
+    private InputOrderModel InputModel { get; set; } = new();
+
     private InputOrderModel Model { get; set; } = new();
 
     #region ページング用

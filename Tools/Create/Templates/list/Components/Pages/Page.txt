@@ -188,6 +188,8 @@ else
     }
     #endregion
 
+    /// <summary>
+    /// 初期処理
     /// </summary>
     /// <param name="firstRender">初回表示か否か</param>
     protected override async Task OnAfterRenderAsync(bool firstRender)

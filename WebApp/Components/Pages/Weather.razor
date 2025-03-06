@@ -27,29 +27,29 @@
 }
 else
 {
-    <EditForm method="post" Model="Model" OnSubmit="Search" id="seach">
+    <EditForm method="post" Model="InputModel" OnSubmit="Search" id="seach">
         <div class="card col-md-8 offset-md-2 mb-5">
             <div class="card-body">
 
                 <div class="row row-margin">
                     <div class="col">
                         <label class="col-md-4" for="StartDate">日付</label>
-                        <InputDate class="col-md-6" id="StartDate" @bind-Value="Model!.StartDate" />
+                        <InputDate class="col-md-6" id="StartDate" @bind-Value="InputModel!.StartDate" />
                     </div>
                     <div class="col">
                         <label class="col-md-4" for="EndDate">〜</label>
-                        <InputDate class="col-md-6" id="EndDate" @bind-Value="Model!.EndDate" />
+                        <InputDate class="col-md-6" id="EndDate" @bind-Value="InputModel!.EndDate" />
                     </div>
                 </div>
 
                 <div class="row row-margin">
                     <div class="col">
                         <label class="col-md-4" for="StartDate">温度</label>
-                        <InputNumber class="col-md-4 text-end" id="StartDate" @bind-Value="Model!.StartTemperatureC" />
+                        <InputNumber class="col-md-4 text-end" id="StartDate" @bind-Value="InputModel!.StartTemperatureC" />
                     </div>
                     <div class="col">
                         <label class="col-md-4" for="EndDate">〜</label>
-                        <InputNumber class="col-md-4 text-end" id="EndDate" @bind-Value="Model!.EndTemperatureC" />
+                        <InputNumber class="col-md-4 text-end" id="EndDate" @bind-Value="InputModel!.EndTemperatureC" />
                     </div>
                 </div>
 
@@ -93,6 +93,9 @@ else
     /// </summary>
     private InputWeatherForecastModel InputModel { get; set; } = new();
 
+    /// <summary>
+    /// 検索条件
+    /// </summary>
     private InputWeatherForecastModel Model { get; set; } = new();
 
     /// <summary>
@@ -148,8 +151,11 @@ else
 
                 // 検索条件の復元
                 var tempModel = await GetAsync<InputWeatherForecastModel>(SessionWeatherSearch);
-                if (tempModel is not null) 
-                    Model = tempModel;
+                if (tempModel is not null)
+                    InputModel = tempModel;
+
+                // 検索条件に入力条件を設定
+                Model = InputModel.Copy();
 
                 // 検索結果を取得(総レコード数更新)
                 ShowPage(Page, true);
@@ -179,6 +185,7 @@ else
         {
             DisabledEnterKey = false;
             await DeleteAsync(SessionWeatherSearch);
+            InputModel = new();
             Model = new();
             TotalRecords = repository.GetTotalRecord(Model);
             Navigation.NavigateTo("/weather/1");
@@ -205,7 +212,10 @@ else
         Page = 1;
 
         // 検索条件の保存
-        await SetAsync(SessionWeatherSearch, Model);
+        await SetAsync(SessionWeatherSearch, InputModel);
+
+        // 検索条件に入力条件を設定
+        Model = InputModel.Copy();
 
         // 検索結果を取得(総レコード数更新)
         ShowPage(Page, true);

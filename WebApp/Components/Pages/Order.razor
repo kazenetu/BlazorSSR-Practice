@@ -41,36 +41,36 @@ else
         </div>
     </div>
 
-    <EditForm method="post" Model="Model" OnSubmit="Search" id="seach">
+    <EditForm method="post" Model="InputModel" OnSubmit="Search" id="seach">
         <div class="card col-md-8 offset-md-2 mb-5">
             <div class="card-body">
 
                 <div class="row row-margin">
                     <div class="col">
                         <label class="" for="SerchProductName">製品名(あいまい検索)</label>
-                        <InputText class="col-md-6" id="SerchProductName" @bind-Value="Model!.ProductName" />
+                        <InputText class="col-md-6" id="SerchProductName" @bind-Value="InputModel!.ProductName" />
                     </div>
                 </div>
 
                 <div class="row row-margin">
                     <div class="col">
                         <label class="col-md-4" for="StartUnitPrice">単価</label>
-                        <InputNumber class="col-md-4 text-end" id="StartUnitPrice" @bind-Value="Model!.StartUnitPrice" />
+                        <InputNumber class="col-md-4 text-end" id="StartUnitPrice" @bind-Value="InputModel!.StartUnitPrice" />
                     </div>
                     <div class="col">
                         <label class="col-md-4" for="EndUnitPrice">〜</label>
-                        <InputNumber class="col-md-4 text-end" id="EndUnitPrice" @bind-Value="Model!.EndUnitPrice" />
+                        <InputNumber class="col-md-4 text-end" id="EndUnitPrice" @bind-Value="InputModel!.EndUnitPrice" />
                     </div>
                 </div>
 
                 <div class="row row-margin">
                     <div class="col">
                         <label class="col-md-4" for="StartTotalPrice">合計金額</label>
-                        <InputNumber class="col-md-4 text-end" id="StartTotalPrice" @bind-Value="Model!.StartTotalPrice" />
+                        <InputNumber class="col-md-4 text-end" id="StartTotalPrice" @bind-Value="InputModel!.StartTotalPrice" />
                     </div>
                     <div class="col">
                         <label class="col-md-4" for="EndTotalPrice">〜</label>
-                        <InputNumber class="col-md-4 text-end" id="EndTotalPrice" @bind-Value="Model!.EndTotalPrice" />
+                        <InputNumber class="col-md-4 text-end" id="EndTotalPrice" @bind-Value="InputModel!.EndTotalPrice" />
                     </div>
                 </div>
 
@@ -125,6 +125,9 @@ else
     /// </summary>
     private InputOrderModel InputModel { get; set; } = new();
 
+    /// <summary>
+    /// 検索条件
+    /// </summary>
     private InputOrderModel Model { get; set; } = new();
 
     #region ページング用
@@ -216,7 +219,10 @@ else
                 // 検索条件の復元
                 var tempModel = await GetAsync<InputOrderModel>(SessionOrderSearch);
                 if (tempModel is not null) 
-                    Model = tempModel;
+                    InputModel = tempModel;
+
+                // 検索条件に入力条件を設定
+                Model = InputModel.Copy();
 
                 // 検索結果を取得(総レコード数更新)
                 ShowPage(Page, true);
@@ -246,6 +252,7 @@ else
         {
             DisabledEnterKey = false;
             await DeleteAsync(SessionOrderSearch);
+            InputModel = new();
             Model = new();
             TotalRecords = repository.GetTotalRecord(Model);
             Navigation.NavigateTo("/order/1");
@@ -261,7 +268,10 @@ else
         Page = 1;
 
         // 検索条件の保存
-        await SetAsync(SessionOrderSearch, Model);
+        await SetAsync(SessionOrderSearch, InputModel);
+
+        // 検索条件に入力条件を設定
+        Model = InputModel.Copy();
 
         // 検索結果を取得(総レコード数更新)
         ShowPage(Page, true);

@@ -32,7 +32,7 @@ else
     </div>
 
     @* 検索条件 *@
-    <EditForm method="post" Model="Model" OnSubmit="Search" id="seach">
+    <EditForm method="post" Model="InputModel" OnSubmit="Search" id="seach">
         <div class="card col-md-8 offset-md-2 mb-5">
             <div class="card-body">
 
@@ -41,18 +41,18 @@ else
                 <div class="row row-margin">
                     <div class="col">
                         <label class="" for="SerchProductName">製品名(あいまい検索)</label>
-                        <InputText class="col-md-6" id="SerchProductName" @bind-Value="Model!.ProductName" />
+                        <InputText class="col-md-6" id="SerchProductName" @bind-Value="InputModel!.ProductName" />
                     </div>
                 </div>
 
                 <div class="row row-margin">
                     <div class="col">
                         <label class="col-md-4" for="StartUnitPrice">単価</label>
-                        <InputNumber class="col-md-4 text-end" id="StartUnitPrice" @bind-Value="Model!.StartUnitPrice" />
+                        <InputNumber class="col-md-4 text-end" id="StartUnitPrice" @bind-Value="InputModel!.StartUnitPrice" />
                     </div>
                     <div class="col">
                         <label class="col-md-4" for="EndUnitPrice">〜</label>
-                        <InputNumber class="col-md-4 text-end" id="EndUnitPrice" @bind-Value="Model!.EndUnitPrice" />
+                        <InputNumber class="col-md-4 text-end" id="EndUnitPrice" @bind-Value="InputModel!.EndUnitPrice" />
                     </div>
                 </div>
 
@@ -119,6 +119,14 @@ else
     /// </summary>
     private bool DisabledEnterKey = false;
 
+    /// <summary>
+    /// 入力条件
+    /// </summary>
+    private Input$ClassName$Model InputModel { get; set; } = new();
+
+    /// <summary>
+    /// 検索条件
+    /// </summary>
     private Input$ClassName$Model Model { get; set; } = new();
 
     #region ページング用
@@ -213,7 +221,10 @@ else
                 // 検索条件の復元
                 var tempModel = await GetAsync<Input$ClassName$Model>(SessionSearch);
                 if (tempModel is not null) 
-                    Model = tempModel;
+                    InputModel = tempModel;
+
+                // 検索条件に入力条件を設定
+                Model = InputModel.Copy();
 
                 // 検索結果を取得(総レコード数更新)
                 ShowPage(Page, true);
@@ -245,6 +256,7 @@ else
             DisabledEnterKey = false;
             // 遷移情報削除
             await DeleteAsync(SessionSearch);
+            InputModel = new();
             Model = new();
             TotalRecords = repository.GetTotalRecord(Model);
             Navigation.NavigateTo("/$uri$/1");
@@ -260,7 +272,10 @@ else
         Page = 1;
 
         // 検索条件の保存
-        await SetAsync(SessionSearch, Model);
+        await SetAsync(SessionSearch, InputModel);
+
+        // 検索条件に入力条件を設定
+        Model = InputModel.Copy();
 
         // 検索結果を取得(総レコード数更新)
         ShowPage(Page, true);

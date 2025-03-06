@@ -11,4 +11,13 @@ public class Input$ClassName$Model
     // public decimal? EndUnitPrice { set; get; }
     // public decimal? StartTotalPrice { set; get; }
     // public decimal? EndTotalPrice { set; get; }
+
+    /// <summary>
+    /// 複製
+    /// </summary>
+    /// <returns>複製オブジェクト</returns>
+    public Input$ClassName$Model Copy()
+    {
+        return (Input$ClassName$Model)this.MemberwiseClone();
+    }
 }

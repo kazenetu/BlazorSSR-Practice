@@ -6,4 +6,13 @@ namespace WebApp.Models;
 public class Input$ClassName$Model
 {
     // TODO 入力情報
+
+    /// <summary>
+    /// 複製
+    /// </summary>
+    /// <returns>複製オブジェクト</returns>
+    public Input$ClassName$Model Copy()
+    {
+        return (Input$ClassName$Model)this.MemberwiseClone();
+    }
 }

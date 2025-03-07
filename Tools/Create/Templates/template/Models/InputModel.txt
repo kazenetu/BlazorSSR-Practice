@@ -3,7 +3,7 @@ namespace WebApp.Models;
 /// <summary>
 /// Input$ClassName$Model 入力情報
 /// </summary>
-public class Input$ClassName$Model
+public record Input$ClassName$Model
 {
     // TODO 入力情報
 

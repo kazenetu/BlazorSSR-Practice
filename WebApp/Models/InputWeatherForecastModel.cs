@@ -1,6 +1,6 @@
 namespace WebApp.Models;
 
-public class InputWeatherForecastModel
+public record InputWeatherForecastModel
 {
     public DateOnly? StartDate { set; get; }
     public DateOnly? EndDate { set; get; }

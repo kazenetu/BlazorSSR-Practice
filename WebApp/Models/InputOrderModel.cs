@@ -1,6 +1,6 @@
 namespace WebApp.Models;
 
-public class InputOrderModel
+public record InputOrderModel
 {
     public string? ProductName { set; get; }
     public decimal? StartUnitPrice { set; get; }

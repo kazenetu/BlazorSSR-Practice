@@ -154,6 +154,13 @@ else
     {
         await base.OnParametersSetAsync();
 
+        // 入力条件と検索条件が不一致の場合
+        if (InputModel != Model)
+        {
+            // 入力情報を検索条件で上書き
+            InputModel = Model.Copy();
+        }
+
         // 検索結果を取得
         ShowPage(Page);
     }

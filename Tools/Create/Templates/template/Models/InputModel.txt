@@ -3,7 +3,16 @@ namespace WebApp.Models;
 /// <summary>
 /// Input$ClassName$Model 入力情報
 /// </summary>
-public class Input$ClassName$Model
+public record Input$ClassName$Model
 {
     // TODO 入力情報
+
+    /// <summary>
+    /// 複製
+    /// </summary>
+    /// <returns>複製オブジェクト</returns>
+    public Input$ClassName$Model Copy()
+    {
+        return (Input$ClassName$Model)this.MemberwiseClone();
+    }
 }

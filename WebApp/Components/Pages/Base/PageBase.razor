@@ -280,7 +280,7 @@
     /// <param name="dataList">出力用データリスト</param>
     /// <param name="pdfFileColumnIndex">PDF名に利用するカラム番号</param>
     /// <returns>ダウンロード用モデル</returns>
-    protected DownLoadModel CreateZipInPdfs(string zipFileName ,LayoutKinds layoutKind, List<IData> dataList, int pdfFileColumnIndex)
+    protected DownLoadModel CompressMultiplePDFsIntoZIP(string zipFileName ,LayoutKinds layoutKind, List<IData> dataList, int pdfFileColumnIndex)
     {
         // 1件ごとにPDF作成、格納
         var downLoadModels = new List<DownLoadModel>();

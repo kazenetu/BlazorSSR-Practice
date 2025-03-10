@@ -5,11 +5,14 @@ window.disableEnterKey = async () => {
         if (isNaN(parseInt(index))) continue;
 
         // inputタグにエンターキー無効化を実施
-        items[index].addEventListener('keydown', function (event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                return false;
-            }
-        });
+        items[index].removeEventListener('keydown', disableEnterKeyEvent);
+        items[index].addEventListener('keydown', disableEnterKeyEvent);
+    }
+}
+disableEnterKeyEvent = function (event) {
+    console.log(`event.key=${event.key} code=${event.code}`);
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        return false;
     }
 }

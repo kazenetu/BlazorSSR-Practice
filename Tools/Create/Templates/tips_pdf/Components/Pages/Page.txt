@@ -30,6 +30,11 @@
     private Input$ClassName$Model Model { get; set; } = new();
 
     /// <summary>
+    /// InputタグのEnterKeyを無効に設定したか？
+    /// </summary>
+    private bool DisabledEnterKey = false;
+
+    /// <summary>
     /// 初期処理
     /// </summary>
     /// <param name="firstRender">初回表示か否か</param>
@@ -66,6 +71,14 @@
                 Logger.LogInformation(await GetLogMessage("終了"));
             }
         }
+
+        // IntputタグのEnterKey無効が実施されていない場合は設定
+        if (!DisabledEnterKey)
+        {
+            // 「入力項目でエンターキー押すと誤送信」を無効化
+            await DisableEnterKey();
+            DisabledEnterKey = true;
+        }
     }
 
     #region PDF表示
@@ -81,6 +94,8 @@
     /// <remarks>Dataにはbyte[]配列を設定</remarks>
     private async Task<DownLoadModel> DownLoadPDF()
     {
+        DisabledEnterKey = false;
+
         IsExceptionDisplayPDF = false;
         try
         {

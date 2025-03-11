@@ -153,6 +153,7 @@ else
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
+        DisabledEnterKey = false;
 
         // 入力条件と検索条件が不一致の場合
         if (InputModel != Model)
@@ -307,6 +308,7 @@ else
     /// <returns>ダウンロード用モデル</returns>
     private async Task<DownLoadModel> DownLoadCSV()
     {
+        DisabledEnterKey = false;
         IsExceptionDownLoadCSV = false;
         try
         {
@@ -369,6 +371,8 @@ else
     /// <remarks>Dataにはbyte[]配列を設定</remarks>
     private async Task<DownLoadModel> DownLoadPDF()
     {
+        DisabledEnterKey = false;
+
         IsExceptionDisplayPDF = false;
         try
         {

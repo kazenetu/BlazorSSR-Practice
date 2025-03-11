@@ -157,6 +157,7 @@ else
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
+        DisabledEnterKey = false;
 
         // 入力条件と検索条件が不一致の場合
         if (InputModel != Model)

@@ -81,22 +81,17 @@ Welcome to your new app.
         </div>
         <div class="row row-margin">
             <div class="col">
-                <label class="col-md-2" for="addressKanji">漢字</label>
+                <label class="col-md-2" for="addressKanji">住所漢字</label>
                 <InputText class="col-md-9" id="addressKanji" @bind-Value="addressKanji" />
                 <div class="container" style="margin-top:1rem">
                     <button class="col-3 offset-md-8 btn btn-primary btn-sm" @onclick="SearchAddress">住所で郵便番号設定</button>
-                    <button class="col-3 offset-md-8 btn btn-primary btn-sm" @onclick="ConversionConvertKanjiToKana">住所漢字をかなに変換して設定</button>
+                    <button class="col-3 offset-md-8 btn btn-primary btn-sm" @onclick="ConversionConvertKanjiToKana">住所漢字をカナに変換して設定</button>
                 </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col col-md-2 offset-md-3">
-            ↓
             </div>
         </div>
         <div class="row row-margin">
             <div class="col">
-                <label class="col-md-2" for="addressKana">カタカナ</label>
+                <label class="col-md-2" for="addressKana">住所カナ</label>
                 <InputText class="col-md-9" id="addressKana" @bind-Value="addressKana" />
             </div>
         </div>

@@ -75,6 +75,8 @@ public class PostMasterRepository : RepositoryBase, IPostMasterRepository
 
         // SQL発行
         var sqlResult = db.Fill(sql.ToString());
+
+        var postMasterModels = new List<(int mismatchCount, PostMasterModel model)>();
         foreach (DataRow row in sqlResult.Rows)
         {
             // 郵便番号・住所 クラス インスタンス作成
@@ -86,8 +88,22 @@ public class PostMasterRepository : RepositoryBase, IPostMasterRepository
             var shikuson = Parse<string>(row["sikuson"]);
             var machi = Parse<string>(row["machi"]);
 
-            return new PostMasterModel(PostCd, todohuken, shikuson, machi, todohukenKana, shikusonKana, machiKana);
+            // 不一致文字数取得
+            var tempAddress = $"{todohuken}{shikuson}{machi}";
+            var mismatchCount = address.Replace(tempAddress, string.Empty).Length;
+            if (mismatchCount == address.Length) mismatchCount = int.MaxValue;
+
+            // リスト追加
+            postMasterModels.Add((mismatchCount, new PostMasterModel(PostCd, todohuken, shikuson, machi, todohukenKana, shikusonKana, machiKana)));
         }
+
+        // リストが存在する場合、最小文字数のModelを返す
+        if (postMasterModels.Any())
+        {
+            return postMasterModels.OrderBy(item => item.mismatchCount).First().model;
+   
+        }
+
         return new PostMasterModel(string.Empty, string.Empty, string.Empty, string.Empty);
     }
 
@@ -110,8 +126,11 @@ public class PostMasterRepository : RepositoryBase, IPostMasterRepository
 
         // SQL発行
         var sqlResult = db.Fill(sql.ToString());
+        var postMasterModels = new List<(int mismatchCount, PostMasterModel model)>();
         foreach (DataRow row in sqlResult.Rows)
         {
+            // 郵便番号・住所 クラス インスタンス作成
+            var PostCd = Parse<string>(row["post_cd"]);
             var todohukenKana = Parse<string>(row["todohuken_kana"]);
             var shikusonKana = Parse<string>(row["sikuson_kana"]);
             var machiKana = Parse<string>(row["machi_kana"]);
@@ -119,11 +138,25 @@ public class PostMasterRepository : RepositoryBase, IPostMasterRepository
             var shikuson = Parse<string>(row["sikuson"]);
             var machi = Parse<string>(row["machi"]);
 
-            var addressKanji = $"{todohuken}{shikuson}{machi}";
-            var addressKana = $"{todohukenKana}{shikusonKana}{machiKana}{address.Replace(addressKanji,string.Empty)}";
+            // 不一致文字数取得
+            var tempAddress = $"{todohuken}{shikuson}{machi}";
+            var mismatchCount = address.Replace(tempAddress, string.Empty).Length;
+            if (mismatchCount == address.Length) mismatchCount = int.MaxValue;
+
+            // リスト追加
+            postMasterModels.Add((mismatchCount, new PostMasterModel(PostCd, todohuken, shikuson, machi, todohukenKana, shikusonKana, machiKana)));
+        }
+
+        // リストが存在する場合、最小文字数のModelでフリガナを作成して返す
+        if (postMasterModels.Any())
+        {
+            var target = postMasterModels.OrderBy(item => item.mismatchCount).First().model;
+            var addressKanji = $"{target.Todohuken}{target.Shikuson}{target.Machi}";
+            var addressKana = $"{target.TodohukenKana}{target.ShikusonKana}{target.MachiKana}{address.Replace(addressKanji, string.Empty)}";
 
             return addressKana;
         }
+
         return string.Empty;
    }
 }

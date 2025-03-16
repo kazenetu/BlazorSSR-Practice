@@ -65,7 +65,7 @@ public class PostMasterRepository : RepositoryBase, IPostMasterRepository
     {
         var sql = new StringBuilder();
         sql.AppendLine("SELECT post_cd, todohuken_kana, sikuson_kana, machi_kana, todohuken, sikuson, machi FROM post_master ");
-        sql.AppendLine("where @address like todohuken||sikuson||machi||'%' ;");
+        sql.AppendLine("where @address like todohuken||sikuson||machi||'%'");
 
         // パラメータ初期化
         db!.ClearParam();
@@ -116,7 +116,7 @@ public class PostMasterRepository : RepositoryBase, IPostMasterRepository
     {
         var sql = new StringBuilder();
         sql.AppendLine("SELECT post_cd, todohuken_kana, sikuson_kana, machi_kana, todohuken, sikuson, machi FROM post_master ");
-        sql.AppendLine("where @address like todohuken||sikuson||machi||'%' ;");
+        sql.AppendLine("where @address like todohuken||sikuson||machi||'%'");
 
         // パラメータ初期化
         db!.ClearParam();

@@ -65,6 +65,39 @@ Welcome to your new app.
     </div>
 </div>
 
+@* 郵便番号データ検索サンプル *@
+<div class="card" style="margin-top:3rem;width:35rem;">
+    <div class="card-body">
+        <div class="card-title">郵便番号・住所検索</div>
+
+        <div class="row row-margin">
+            <div class="col">
+                <label class="col-md-2" for="postCd">郵便番号</label>
+                <InputText class="col-md-9" id="postCd" @bind-Value="postCd"/>
+                <div class="container" style="margin-top:1rem">
+                    <button class="col-3 offset-md-8 btn btn-primary btn-sm" @onclick="SearchPost">郵便番号で住所設定</button>
+                </div>
+            </div>
+        </div>
+        <div class="row row-margin">
+            <div class="col">
+                <label class="col-md-2" for="addressKanji">住所漢字</label>
+                <InputText class="col-md-9" id="addressKanji" @bind-Value="addressKanji" />
+                <div class="container" style="margin-top:1rem">
+                    <button class="col-3 offset-md-8 btn btn-primary btn-sm" @onclick="SearchAddress">住所で郵便番号設定</button>
+                    <button class="col-3 offset-md-8 btn btn-primary btn-sm" @onclick="ConversionConvertKanjiToKana">住所漢字をカナに変換して設定</button>
+                </div>
+            </div>
+        </div>
+        <div class="row row-margin">
+            <div class="col">
+                <label class="col-md-2" for="addressKana">住所カナ</label>
+                <InputText class="col-md-9" id="addressKana" @bind-Value="addressKana" />
+            </div>
+        </div>
+    </div>
+</div>
+
 <div>
     <button class="btn btn-primary" @onclick="ShowDialogTest">ダイアログ表示</button>
 </div>
@@ -290,4 +323,68 @@ Welcome to your new app.
         }
     }
 
+    #region 郵便番号データ検索
+    /// <summary>
+    /// 郵便番号テキスト用文字列
+    /// </summary>
+    private string? postCd;
+
+    /// <summary>
+    /// 住所漢字テキスト用文字列
+    /// </summary>
+    private string? addressKanji;
+
+    /// <summary>
+    /// 住所カナテキスト用文字列
+    /// </summary>
+    private string? addressKana;
+
+    /// <summary>
+    /// 郵便番号検索
+    /// </summary>
+    private void SearchPost()
+    {
+        if (postCd is null) return;
+
+        var result = SearchPostCd(postCd.Replace("-", string.Empty));
+        if (string.IsNullOrEmpty(result.PostCd))
+        {
+            addressKanji = "取得できませんでした";
+            addressKana  = "取得できませんでした";
+        }
+        else
+        {
+            addressKanji = $"{result.Todohuken}{result.Shikuson}{result.Machi}";
+            addressKana = $"{result.TodohukenKana}{result.ShikusonKana}{result.MachiKana}";
+        }
+    }
+
+    /// <summary>
+    /// 住所漢字から郵便番号
+    /// </summary>
+    private void SearchAddress()
+    {
+        if (addressKanji is null) return;
+
+        var result = SearchAddress(addressKanji);
+        if (string.IsNullOrEmpty(result.PostCd))
+            postCd = "取得できませんでした";
+        else
+            postCd = $"{result.PostCd.Substring(0,3)}-{result.PostCd.Substring(3)}";
+    }
+
+    /// <summary>
+    /// 住所漢字を住所カナに設定
+    /// </summary>
+    private void ConversionConvertKanjiToKana()
+    {
+        if (addressKanji is null) return;
+
+        var result = GetAddressKana(addressKanji);
+        if (string.IsNullOrEmpty(result))
+            addressKana = "取得できませんでした";
+        else
+            addressKana = result;
+    }
+    #endregion
 }

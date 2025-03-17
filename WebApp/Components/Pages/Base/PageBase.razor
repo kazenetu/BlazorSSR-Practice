@@ -1,5 +1,6 @@
 @namespace WebApp.Components.Pages.Base
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using WebApp.Repositories.Interfaces
 @using PdfReport;
 @using PdfReport.Interfaces
 @using PdfReport.DataLists
@@ -8,6 +9,7 @@
 @using WebApp.Components.Providers
 @using WebApp.Models
 @using WebApp.Models.Parts
+@inject IPostMasterRepository postMasterRepository
 @inject IJSRuntime JS
 @inject NavigationManager Navigation
 
@@ -322,6 +324,40 @@
 
         // Zipファイル名とバイト配列をダウンロード用モデルに格納して返す
         return new DownLoadModel(zipFileName, contentData);
+    }
+    #endregion
+
+    #region 郵便番号・住所検索
+    /// <summary>
+    /// 郵便番号検索
+    /// </summary>
+    /// <param name="postCd">郵便番号</param>
+    /// <returns>郵便番号・住所 クラス</returns>
+    /// <remarks>住所を設定</remarks>
+    protected PostMasterModel SearchPostCd(string postCd)
+    {
+        return postMasterRepository.SearchPostCd(postCd);
+    }
+
+    /// <summary>
+    /// 住所検索
+    /// </summary>
+    /// <param name="address">住所文字列</param>
+    /// <returns>郵便番号・住所 クラス</returns>
+    /// <remarks>郵便番号を設定</remarks>
+    protected PostMasterModel SearchAddress(string address)
+    {
+        return postMasterRepository.SearchAddress(address);
+    }
+
+    /// <summary>
+    /// 住所カナ取得
+    /// </summary>
+    /// <param name="address">住所文字列</param>
+    /// <returns>住所カナ文字列</returns>
+    protected string GetAddressKana(string address)
+    {
+        return postMasterRepository.GetAddressKana(address);
     }
     #endregion
 }

@@ -125,7 +125,7 @@
             userData = $"{userModel.ID} {userModel.Fullname} ";
         }
 
-        return $"{userData}{message} url={Navigation.Uri} method={memberName} requestID={Activity.Current?.Id}";
+        return $"[{Activity.Current?.Id}] {userData}{message} url={Navigation.Uri} method={memberName}";
     }
 
     /// <summary>
@@ -143,7 +143,7 @@
             userData = $"{userModel.ID} {userModel.Fullname} ";
         }
 
-        return $"Error {userData}Message[{exception.Message}] StackTrace[{exception.StackTrace}] url={Navigation.Uri} method={memberName} requestID={Activity.Current?.Id}";
+        return $"[{Activity.Current?.Id}] Error {userData}Message[{exception.Message}] StackTrace[{exception.StackTrace}] url={Navigation.Uri} method={memberName}";
     }
     #endregion
 

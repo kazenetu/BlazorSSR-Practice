@@ -126,7 +126,7 @@
         }
         var page = Navigation.Uri.Replace(Navigation.BaseUri, string.Empty);
 
-        return $"[{Activity.Current?.Id}] {userData}{message} page={page} method={memberName}";
+        return $"[{Activity.Current?.Id}] page={page, -20} method={memberName, -22} {userData, -10}{message,-15}";
     }
 
     /// <summary>

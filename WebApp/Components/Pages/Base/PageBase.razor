@@ -126,7 +126,7 @@
         }
         var page = Navigation.Uri.Replace(Navigation.BaseUri, string.Empty);
 
-        return $"[{Activity.Current?.Id}] {userData}{message} url={page} method={memberName}";
+        return $"[{Activity.Current?.Id}] {userData}{message} page={page} method={memberName}";
     }
 
     /// <summary>
@@ -145,7 +145,7 @@
         }
         var page = Navigation.Uri.Replace(Navigation.BaseUri, string.Empty);
 
-        return $"[{Activity.Current?.Id}] Error {userData}Message[{exception.Message}] StackTrace[{exception.StackTrace}] url={page} method={memberName}";
+        return $"[{Activity.Current?.Id}] Error {userData}Message[{exception.Message}] StackTrace[{exception.StackTrace}] page={page} method={memberName}";
     }
     #endregion
 

@@ -126,7 +126,19 @@
         }
         var page = Navigation.Uri.Replace(Navigation.BaseUri, string.Empty);
 
-        return $"[{Activity.Current?.Id}] page={page, -20} method={memberName, -22} {userData, -10}{message,-15}";
+        // 日本語要素の最大桁設定
+        var maxCount = 0;
+        var user = userData.Trim();
+        var userCount = user.Length;
+        maxCount = 10;
+        if (userCount < maxCount) user += string.Join("",Enumerable.Repeat("　", maxCount-userCount));
+
+        var msg = message.Trim();
+        var msgCount = msg.Length;
+        maxCount = 15;
+        if (msgCount < maxCount) msg += string.Join("",Enumerable.Repeat("　", maxCount-msgCount));
+
+        return $"[{Activity.Current?.Id}] page={page, -20} method={memberName, -22} {user}{msg}";
     }
 
     /// <summary>

@@ -28,7 +28,7 @@ public class PostMasterRepository : RepositoryBase, IPostMasterRepository
     public PostMasterModel SearchPostCd(string postCd)
     {
         var sql = new StringBuilder();
-        sql.AppendLine("SELECT post_cd, todohuken_kana, sikuson_kana, machi_kana, todohuken, sikuson, machi FROM post_master ");
+        sql.AppendLine("SELECT post_cd, todohuken_kana, sikuson_kana, machi_kana, todohuken, sikuson, machi, address, address_kana FROM post_master ");
         sql.AppendLine("WHERE post_cd = @post_cd");
 
         // パラメータ初期化
@@ -49,8 +49,10 @@ public class PostMasterRepository : RepositoryBase, IPostMasterRepository
             var todohuken = Parse<string>(row["todohuken"]);
             var shikuson = Parse<string>(row["sikuson"]);
             var machi = Parse<string>(row["machi"]);
+            var dbAddress = Parse<string>(row["address"]);
+            var dbAddressKana = Parse<string>(row["address_kana"]);
 
-            return new PostMasterModel(postCd, todohuken, shikuson, machi, todohukenKana, shikusonKana, machiKana);
+            return new PostMasterModel(PostCd, todohuken, shikuson, machi, todohukenKana, shikusonKana, machiKana, dbAddress, dbAddressKana);
         }
         return new PostMasterModel(string.Empty, string.Empty, string.Empty, string.Empty);
     }

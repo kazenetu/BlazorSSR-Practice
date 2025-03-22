@@ -354,8 +354,8 @@ Welcome to your new app.
         }
         else
         {
-            addressKanji = $"{result.Todohuken}{result.Shikuson}{result.Machi}";
-            addressKana = $"{result.TodohukenKana}{result.ShikusonKana}{result.MachiKana}";
+            addressKanji = result.Address;
+            addressKana = result.AddressKana;
         }
     }
 
@@ -370,7 +370,7 @@ Welcome to your new app.
         if (string.IsNullOrEmpty(result.PostCd))
             postCd = "取得できませんでした";
         else
-            postCd = $"{result.PostCd.Substring(0,3)}-{result.PostCd.Substring(3)}";
+        postCd = $"{result.PostCd.Substring(0,3)}-{result.PostCd.Substring(3)}";
     }
 
     /// <summary>
@@ -384,7 +384,7 @@ Welcome to your new app.
         if (string.IsNullOrEmpty(result))
             addressKana = "取得できませんでした";
         else
-            addressKana = result;
+        addressKana = result;
     }
     #endregion
 }

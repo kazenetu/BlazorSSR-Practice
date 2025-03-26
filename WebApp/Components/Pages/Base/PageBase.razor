@@ -369,9 +369,9 @@
     /// </summary>
     /// <param name="address">住所文字列</param>
     /// <returns>住所カナ文字列</returns>
-    protected string GetAddressKana(string address)
+    protected async Task<string> GetAddressKanaAsync(string address)
     {
-        return postMasterRepository.GetAddressKana(address);
+        return await JS.InvokeAsync<string>("getFurigana", postMasterRepository.GetAddressKana(address));
     }
     #endregion
 }

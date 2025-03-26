@@ -380,7 +380,7 @@ Welcome to your new app.
     {
         if (addressKanji is null) return;
 
-        var result = await GetAddressKana(addressKanji);
+        var result = await GetAddressKanaAsync(addressKanji);
         if (string.IsNullOrEmpty(result))
             addressKana = "取得できませんでした";
         else

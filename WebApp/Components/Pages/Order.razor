@@ -329,7 +329,11 @@ else
                 data.AppendLine($"{oder.No},{oder.ProductName},{oder.UnitPrice},{oder.Qty},{oder.TotalPrice}");
             }
 
-            return new DownLoadModel("test.csv", data);
+            // HACK CSVファイル名指定
+            var csvFileName = $"test.csv"; 
+
+            // CSVファイル名とCSVデータを返す
+            return new DownLoadModel(csvFileName, data);
         }
         catch (Exception ex)
         {

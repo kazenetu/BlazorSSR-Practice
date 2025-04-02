@@ -118,8 +118,11 @@
             //     data.AppendLine($"{dbRecord.No},{dbRecord.Key},{dbRecord.UnitPrice},{dbRecord.Qty},{dbRecord.TotalPrice}");
             // }
 
-            // TODO ファイル名設定
-            return new DownLoadModel("test.csv", data);
+            // HACK CSVファイル名指定
+            var csvFileName = $"test.csv"; 
+
+            // CSVファイル名とCSVデータを返す
+            return new DownLoadModel(csvFileName, data);
         }
         catch (Exception ex)
         {

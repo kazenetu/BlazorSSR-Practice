@@ -303,7 +303,7 @@ else
 
         // 画面遷移
         if (key is null)
-            await GotoPageAsync($"/{editPageUrl}/{key}");
+            await GotoPageAsync($"/{editPageUrl}");
         else        
             await GotoPageAsync($"/{editPageUrl}/{key}");
     }

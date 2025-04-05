@@ -126,8 +126,11 @@
                 // PDF作成
                 pdfMain.Create(ms);
 
-                // TODO ファイル名設定
-                return new DownLoadModel("test.pdf", ms.GetBuffer());
+                // HACK 「PDFビューアのファイル保存」時のファイル名指定
+                var pdfFileName = $"test.pdf"; 
+
+                // 「PDFビューアのファイル保存」時のファイル名とビューア表示用PDFデータを返す
+                return new DownLoadModel(pdfFileName, ms.GetBuffer());
             }
         }
         catch (Exception ex)

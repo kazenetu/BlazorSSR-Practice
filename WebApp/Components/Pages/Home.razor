@@ -309,8 +309,11 @@ Welcome to your new app.
             pdfDataList.Add(new PdfReport.DataLists.Envelope("123-4567","123456789012345678","１２３４５６７８"));
             pdfDataList.Add(new PdfReport.DataLists.Envelope("123-4567","Ａ県Ｂ市123-4","サンプル太郎"));
 
+            // HACK ZIPファイル名指定
+            var zipFileName = $"test.zip"; 
+
             // ZIPファイル作成
-            return CompressMultiplePDFsIntoZIP("test.zip", LayoutKinds.Envelope, pdfDataList, 2);
+            return CompressMultiplePDFsIntoZIP(zipFileName, LayoutKinds.Envelope, pdfDataList, 2);
         }
         catch (Exception ex)
         {

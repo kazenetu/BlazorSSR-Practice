@@ -296,7 +296,7 @@ else
     /// 新規・編集
     /// </summary>
     /// <param name="key">主キー</param>
-    private async Task ToEdit($EditKeyType$? key)
+    private async Task ToEdit($EditKeyType$? key = null)
     {
         // HACK 編集ページURL
         var editPageUrl = "order-edit";

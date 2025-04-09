@@ -27,7 +27,7 @@ else
 {
     <div class="row page-header">
         <div class="col">
-            <button @onclick="@(() => ToEdit(null))" class="btn btn-outline-success">新規作成</button>
+            <button @onclick="@(() => ToEdit())" class="btn btn-outline-success">新規作成</button>
         </div>
     </div>
 
@@ -296,14 +296,14 @@ else
     /// 新規・編集
     /// </summary>
     /// <param name="key">主キー</param>
-    private async Task ToEdit($EditKeyType$? key)
+    private async Task ToEdit($EditKeyType$? key = null)
     {
         // HACK 編集ページURL
         var editPageUrl = "order-edit";
 
         // 画面遷移
         if (key is null)
-            await GotoPageAsync($"/{editPageUrl}/{key}");
+            await GotoPageAsync($"/{editPageUrl}");
         else        
             await GotoPageAsync($"/{editPageUrl}/{key}");
     }

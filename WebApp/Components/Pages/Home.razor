@@ -1,5 +1,6 @@
 ﻿@page "/"
 @inherits Base.PageBase
+@using ClosedXML.Excel
 @using PdfReport;
 @using PdfReport.Interfaces
 @using PdfReport.DataLists
@@ -24,6 +25,7 @@ Welcome to your new app.
     <PDFViewer ButtonName="封筒印刷PDF表示" GetDataFunction="DownLoadPDF" IsPortrait="true" />
     <FileDownload ButtonName="封筒印刷PDFダウンロード" GetDataFunction="DownLoadPDF" IsBinary="true"/>
     <FileDownload ButtonName="封筒印刷ZIPダウンロード" GetDataFunction="DownLoadZip" IsBinary="true"/>
+    <FileDownload ButtonName="Excelダウンロード" GetDataFunction="OutputExcel" IsBinary="true"/>
 </div>
 
 <div>
@@ -210,6 +212,44 @@ Welcome to your new app.
     {
         await ShowConfirm("a", ShowConfirmYes);
     }
+
+    private static ReaderWriterLockSlim cacheLock = new ReaderWriterLockSlim();
+    private async Task<DownLoadModel> OutputExcel()
+    {
+        cacheLock.EnterWriteLock();
+        try
+        {
+            Logger.LogInformation(await GetLogMessage("開始"));
+            var result = new DownLoadModel("test.xlsx", CreateExcel());
+            Logger.LogInformation(await GetLogMessage("終了"));
+            return result;
+        }
+        finally
+        {
+            cacheLock.ExitWriteLock();
+        }
+    }
+    private byte[] CreateExcel()
+    {
+        var wb = BuildExcelFile(10);
+
+        using (MemoryStream ms = new MemoryStream())
+        {
+            wb.SaveAs(ms);
+            ms.Seek(0, SeekOrigin.Begin);
+            return ms.ToArray();
+        }
+    }
+    private XLWorkbook BuildExcelFile(int id)
+    {
+        //https://github.com/closedxml/closedxml/wiki/How-can-I-insert-an-image
+        //Creating the workbook
+        var wb = new XLWorkbook();
+        var ws = wb.AddWorksheet("Sheet1");
+        ws.FirstCell().SetValue(id);
+        return wb;
+    }
+
 
     /// <summary>
     /// 初期処理

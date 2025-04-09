@@ -213,22 +213,41 @@ Welcome to your new app.
         await ShowConfirm("a", ShowConfirmYes);
     }
 
+    /// <summary>
+    /// 排他ロックオブジェクト
+    /// </summary>
     private static ReaderWriterLockSlim cacheLock = new ReaderWriterLockSlim();
+
+    /// <summary>
+    /// Excel出力
+    /// </summary>
+    /// <returns>ダウンロード用モデル</returns>
+    /// <remarks>Dataにはbyte[]配列を設定</remarks>
     private async Task<DownLoadModel> OutputExcel()
     {
         cacheLock.EnterWriteLock();
         try
         {
             Logger.LogInformation(await GetLogMessage("開始"));
-            var result = new DownLoadModel("test.xlsx", CreateExcel());
-            Logger.LogInformation(await GetLogMessage("終了"));
-            return result;
+
+            return new DownLoadModel("test.xlsx", CreateExcel());
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, await GetLogError(ex));
+            return new DownLoadModel(string.Empty, null, "Excel作成に失敗しました。");
         }
         finally
         {
             cacheLock.ExitWriteLock();
+            Logger.LogInformation(await GetLogMessage("終了"));
         }
     }
+
+    /// <summary>
+    /// Excelファイル作成
+    /// </summary>
+    /// <returns>Excelのbyte配列</returns>
     private byte[] CreateExcel()
     {
         var wb = BuildExcelFile(10);
@@ -240,16 +259,21 @@ Welcome to your new app.
             return ms.ToArray();
         }
     }
+
+    /// <summary>
+    /// Excelワークブック作成
+    /// </summary>
+    /// <param name="id">A1セルに設定する値</param>
+    /// <returns>XLWorkbookインスタンス</returns>
     private XLWorkbook BuildExcelFile(int id)
     {
-        //https://github.com/closedxml/closedxml/wiki/How-can-I-insert-an-image
+        //TODO イメージ追加例 https://github.com/closedxml/closedxml/wiki/How-can-I-insert-an-image
         //Creating the workbook
         var wb = new XLWorkbook();
         var ws = wb.AddWorksheet("Sheet1");
         ws.FirstCell().SetValue(id);
         return wb;
     }
-
 
     /// <summary>
     /// 初期処理

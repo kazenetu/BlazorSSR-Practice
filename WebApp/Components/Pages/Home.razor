@@ -213,6 +213,7 @@ Welcome to your new app.
         await ShowConfirm("a", ShowConfirmYes);
     }
 
+    #region Excel出力
     /// <summary>
     /// 排他ロックオブジェクト
     /// </summary>
@@ -274,6 +275,7 @@ Welcome to your new app.
         ws.FirstCell().SetValue(id);
         return wb;
     }
+    #endregion
 
     /// <summary>
     /// 初期処理

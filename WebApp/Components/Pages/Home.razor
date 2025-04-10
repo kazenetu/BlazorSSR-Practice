@@ -231,7 +231,7 @@ Welcome to your new app.
         {
             Logger.LogInformation(await GetLogMessage("開始"));
 
-            return new DownLoadModel("test.xlsx", CreateExcel());
+            return CreateExcel("test.xlsx", GetWorkBook(10));
         }
         catch (Exception ex)
         {
@@ -248,16 +248,16 @@ Welcome to your new app.
     /// <summary>
     /// Excelファイル作成
     /// </summary>
+    /// <param name="fileName">ファイル名</param>
+    /// <param name="wb">Excelワークブックインスタンス</param>
     /// <returns>Excelのbyte配列</returns>
-    private byte[] CreateExcel()
+    private DownLoadModel CreateExcel(string fileName, XLWorkbook wb)
     {
-        var wb = BuildExcelFile(10);
-
         using (MemoryStream ms = new MemoryStream())
         {
             wb.SaveAs(ms);
             ms.Seek(0, SeekOrigin.Begin);
-            return ms.ToArray();
+            return new DownLoadModel(fileName, ms.ToArray());
         }
     }
 
@@ -266,7 +266,7 @@ Welcome to your new app.
     /// </summary>
     /// <param name="id">A1セルに設定する値</param>
     /// <returns>XLWorkbookインスタンス</returns>
-    private XLWorkbook BuildExcelFile(int id)
+    private XLWorkbook GetWorkBook(int id)
     {
         //TODO イメージ追加例 https://github.com/closedxml/closedxml/wiki/How-can-I-insert-an-image
         //Creating the workbook

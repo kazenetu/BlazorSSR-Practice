@@ -1,5 +1,6 @@
 ﻿@page "/"
 @inherits Base.PageBase
+@using ClosedXML.Excel
 @using PdfReport;
 @using PdfReport.Interfaces
 @using PdfReport.DataLists
@@ -24,6 +25,7 @@ Welcome to your new app.
     <PDFViewer ButtonName="封筒印刷PDF表示" GetDataFunction="DownLoadPDF" IsPortrait="true" />
     <FileDownload ButtonName="封筒印刷PDFダウンロード" GetDataFunction="DownLoadPDF" IsBinary="true"/>
     <FileDownload ButtonName="封筒印刷ZIPダウンロード" GetDataFunction="DownLoadZip" IsBinary="true"/>
+    <FileDownload ButtonName="Excelダウンロード" GetDataFunction="OutputExcel" IsBinary="true"/>
 </div>
 
 <div>
@@ -210,6 +212,54 @@ Welcome to your new app.
     {
         await ShowConfirm("a", ShowConfirmYes);
     }
+
+    #region Excel出力
+    /// <summary>
+    /// 排他ロックオブジェクト
+    /// </summary>
+    private static ReaderWriterLockSlim cacheLock = new ReaderWriterLockSlim();
+
+    /// <summary>
+    /// Excel出力
+    /// </summary>
+    /// <returns>ダウンロード用モデル</returns>
+    /// <remarks>Dataにはbyte[]配列を設定</remarks>
+    private async Task<DownLoadModel> OutputExcel()
+    {
+        cacheLock.EnterWriteLock();
+        try
+        {
+            Logger.LogInformation(await GetLogMessage("開始"));
+
+            return CreateExcel("test.xlsx", GetWorkBook(10));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, await GetLogError(ex));
+            return new DownLoadModel(string.Empty, null, "Excel作成に失敗しました。");
+        }
+        finally
+        {
+            cacheLock.ExitWriteLock();
+            Logger.LogInformation(await GetLogMessage("終了"));
+        }
+    }
+
+    /// <summary>
+    /// Excelワークブック作成
+    /// </summary>
+    /// <param name="id">A1セルに設定する値</param>
+    /// <returns>XLWorkbookインスタンス</returns>
+    private XLWorkbook GetWorkBook(int id)
+    {
+        //TODO イメージ追加例 https://github.com/closedxml/closedxml/wiki/How-can-I-insert-an-image
+        //Creating the workbook
+        var wb = new XLWorkbook();
+        var ws = wb.AddWorksheet("Sheet1");
+        ws.FirstCell().SetValue(id);
+        return wb;
+    }
+    #endregion
 
     /// <summary>
     /// 初期処理

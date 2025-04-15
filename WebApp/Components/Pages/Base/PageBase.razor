@@ -141,11 +141,16 @@
         }
         var page = Navigation.Uri.Replace(Navigation.BaseUri, string.Empty);
 
+        if (Title is null)
+        {
+            if (Title is null) Title = "設定なし";
+        }
+
         // 日本語要素の最大桁設定
         var maxCount = 0;
-        var user = userData.Trim();
+        var user = userData.Trim() + "　" + Title;
         var userCount = user.Length;
-        maxCount = 10;
+        maxCount = 20;
         if (userCount < maxCount) user += string.Join("",Enumerable.Repeat("　", maxCount-userCount));
 
         var msg = message.Trim();

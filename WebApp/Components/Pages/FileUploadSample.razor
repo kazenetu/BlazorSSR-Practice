@@ -14,9 +14,9 @@
     return;
 }
 
-<PageTitle>ファイルアップロードサンプル</PageTitle>
+<PageTitle>@Title</PageTitle>
 
-<h1>ファイルアップロードサンプル</h1>
+<h1>@Title</h1>
 
 <EditForm method="post" Model="Model" OnValidSubmit="Save" id="edit">
     <div class="row row-margin">
@@ -74,6 +74,15 @@
     private FileUploadSampleModel Model = new();
 
     private UpLoadeModel? FileModel;
+
+    /// <summary>
+    /// 初期化処理
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        // タイトル設定
+        Title = "ファイルアップロードサンプル";
+    }
 
     /// <summary>
     /// 初期処理

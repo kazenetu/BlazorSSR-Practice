@@ -15,9 +15,9 @@
     return;
 }
 
-<PageTitle>Home</PageTitle>
+<PageTitle>@Title</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>@Title</h1>
 
 Welcome to your new app.
 
@@ -262,6 +262,16 @@ Welcome to your new app.
     #endregion
 
     /// <summary>
+    /// 初期化処理
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        // タイトル設定
+        Title = "ホーム";
+        StateHasChanged();
+    }
+
+   /// <summary>
     /// 初期処理
     /// </summary>
     /// <param name="firstRender">初回表示か否か</param>

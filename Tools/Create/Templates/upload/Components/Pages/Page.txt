@@ -14,9 +14,9 @@
     return;
 }
 
-<PageTitle>$Title$</PageTitle>
+<PageTitle>@Title</PageTitle>
 
-<h1>$Title$</h1>
+<h1>@Title</h1>
 
 <EditForm method="post" Model="Model" OnValidSubmit="Save" id="edit">
     
@@ -81,6 +81,15 @@
     /// アップロードファイル情報
     /// </summary>
     private UpLoadeModel? FileModel;
+
+    /// <summary>
+    /// 初期化処理
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        // タイトル設定
+        Title = "$Title$";
+    }
 
     /// <summary>
     /// 初期処理

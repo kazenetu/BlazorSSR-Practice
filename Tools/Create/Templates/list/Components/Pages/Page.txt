@@ -15,9 +15,9 @@
     return;
 }
 
-<PageTitle>$Title$</PageTitle>
+<PageTitle>@Title</PageTitle>
 
-<h1>$Title$</h1>
+<h1>@Title</h1>
 
 @if (PageRecords == null)
 {
@@ -195,6 +195,15 @@ else
         StateHasChanged();
     }
     #endregion
+
+    /// <summary>
+    /// 初期化処理
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        // タイトル設定
+        Title = "$Title$";
+    }
 
     /// <summary>
     /// 初期処理

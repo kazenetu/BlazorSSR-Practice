@@ -18,9 +18,9 @@
     return;
 }
 
-<PageTitle>$Title$</PageTitle>
+<PageTitle>@Title</PageTitle>
 
-<h1>$Title$</h1>
+<h1>@Title</h1>
 
 @* CSVパーツ実装例(IsShiftJis:true SJISで出力、IsShiftJis:false UTF8で出力) *@
 <FileDownload ButtonName="CSVダウンロード" GetDataFunction="DownLoadCSV" OKClickFunction="OnOKClickedCSV" IsShiftJis="true" />
@@ -33,6 +33,15 @@
     /// InputタグのEnterKeyを無効に設定したか？
     /// </summary>
     private bool DisabledEnterKey = false;
+
+    /// <summary>
+    /// 初期化処理
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        // タイトル設定
+        Title = "$Title$";
+    }
 
     /// <summary>
     /// 初期処理

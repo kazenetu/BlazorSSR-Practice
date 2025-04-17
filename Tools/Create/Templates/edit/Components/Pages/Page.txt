@@ -12,9 +12,9 @@
     return;
 }
 
-<PageTitle>$Title$</PageTitle>
+<PageTitle>@Title</PageTitle>
 
-<h1>$Title$</h1>
+<h1>@Title</h1>
 
 <div class="row page-header">
     <div class="col">
@@ -65,6 +65,15 @@
     /// </summary>
     [SupplyParameterFromForm]
     private $ClassName$Model? Model { get; set; }
+
+    /// <summary>
+    /// 初期化処理
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        // タイトル設定
+        Title = "$Title$";
+    }
 
     /// <summary>
     /// 初期処理

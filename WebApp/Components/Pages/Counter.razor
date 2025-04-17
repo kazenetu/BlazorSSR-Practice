@@ -9,9 +9,9 @@
     return;
 }
 
-<PageTitle>Counter</PageTitle>
+<PageTitle>@Title</PageTitle>
 
-<h1>Counter</h1>
+<h1>@Title</h1>
 
 <p>Current count: <strong>@count</strong></p>
 <button @onclick="CountUp" class="btn btn-outline-success">CounteUp</button>
@@ -19,6 +19,15 @@
 
 @code {
     private int count;
+
+    /// <summary>
+    /// 初期化処理
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        // タイトル設定
+        Title = "カウントアップ";
+    }
 
     /// <summary>
     /// 初期処理

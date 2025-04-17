@@ -20,9 +20,9 @@
     return;
 }
 
-<PageTitle>注文一覧</PageTitle>
+<PageTitle>@Title</PageTitle>
 
-<h1>注文一覧</h1>
+<h1>@Title</h1>
 
 @if (pageRecords == null)
 {
@@ -191,6 +191,16 @@ else
         StateHasChanged();
     }
     #endregion
+
+    /// <summary>
+    /// 初期化処理
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        // タイトル設定
+        Title = "注文一覧";
+        StateHasChanged();
+    }
 
     /// <summary>
     /// 初期処理

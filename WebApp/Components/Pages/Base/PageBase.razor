@@ -33,6 +33,16 @@
     protected bool IsBeforeLoginCheck  { get; set; } = true;
 
     /// <summary>
+    /// ページタイトル名
+    /// </summary>
+    protected string? Title = null;
+
+    /// <summary>
+    /// ログ用ユーザー情報
+    /// </summary>
+    private UserModel? UserModelData = null;
+
+    /// <summary>
     /// セッションの取得
     /// </summary>
     /// <param name="name">キー名</param>
@@ -120,18 +130,27 @@
     protected async Task<string> GetLogMessage(string message, [System.Runtime.CompilerServices.CallerMemberName] string memberName = "")
     {
         var userData = string.Empty;
-        var userModel = await GetUserAsync();
-        if(userModel is not null)
+
+        if(UserModelData is null)
         {
-            userData = $"{userModel.ID} {userModel.Fullname} ";
+            UserModelData = await GetUserAsync();
+        }
+        if(UserModelData is not null)
+        {
+            userData = $"{UserModelData.ID} {UserModelData.Fullname} ";
         }
         var page = Navigation.Uri.Replace(Navigation.BaseUri, string.Empty);
 
+        if (Title is null)
+        {
+            if (Title is null) Title = "設定なし";
+        }
+
         // 日本語要素の最大桁設定
         var maxCount = 0;
-        var user = userData.Trim();
+        var user = userData.Trim() + "　" + Title;
         var userCount = user.Length;
-        maxCount = 10;
+        maxCount = 20;
         if (userCount < maxCount) user += string.Join("",Enumerable.Repeat("　", maxCount-userCount));
 
         var msg = message.Trim();

@@ -7,9 +7,10 @@
 @inject NavigationManager Navigation
 @inject ILogger<Login> Logger
 
-<PageTitle>ログイン</PageTitle>
+<PageTitle>@Title</PageTitle>
 
-<h1>ログイン</h1>
+<h1>@Title</h1>
+
 @if (errorMessages.Any())
 {
     <div class=" col-md-6 offset-md-3" style="border: 1px red solid; margin-bottom: 1em;color:red;">
@@ -53,10 +54,15 @@
     /// </summary>
     private List<string> errorMessages = new();
 
-
+    /// <summary>
+    /// 初期化処理
+    /// </summary>
     protected override void OnInitialized()
     {
         Model ??= new();
+
+        // タイトル設定
+        Title = "ログイン";
     }
 
     /// <summary>

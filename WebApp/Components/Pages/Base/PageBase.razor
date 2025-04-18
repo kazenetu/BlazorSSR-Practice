@@ -13,8 +13,35 @@
 @inject IPostMasterRepository postMasterRepository
 @inject IJSRuntime JS
 @inject NavigationManager Navigation
+@implements IAsyncDisposable
 
 @code{
+    #region JSモジュール管理
+    /// <summary>
+    /// BasePage用JSモジュール
+    /// </summary>
+    private IJSObjectReference? BaseModule;
+
+    /// <summary>
+    /// JSモジュールの解放処理
+    /// </summary>
+    /// <remarks>ページ遷移時に呼び出される</remarks>
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (BaseModule is not null)
+        {
+            try
+            {
+                await BaseModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException e)
+            {
+                throw e;
+            }
+        }
+    }
+    #endregion
+
     #region セッション管理
     /// <summary>
     /// セッション定数；遷移前URL
@@ -283,7 +310,7 @@
     /// </summary>
     protected async Task InitKanjiToFurigana()
     {
-        await JS.InvokeVoidAsync("import", "./Components/Pages/Base/PageBase.razor.js");
+        BaseModule = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Base/PageBase.razor.js");
     }
 
     /// <summary>
@@ -293,7 +320,8 @@
     /// <param name="furiganaId">フリガナID</param>
     protected async Task KanjiToFurigana(string kanjiId, string furiganaId)
     {
-        await JS.InvokeVoidAsync("kanjiToFurigana", kanjiId, furiganaId);
+        if (BaseModule is null) return;
+        await BaseModule.InvokeVoidAsync("kanjiToFurigana", kanjiId, furiganaId);
     }
     #endregion
 
@@ -303,7 +331,8 @@
     /// </summary>
     protected async Task DisableEnterKey()
     {
-        await JS.InvokeVoidAsync("disableEnterKey");
+        if (BaseModule is null) return;
+        await BaseModule.InvokeVoidAsync("disableEnterKey");
     }
     #endregion
 
@@ -391,7 +420,8 @@
     /// <returns>住所カナ文字列</returns>
     protected async Task<string> GetAddressKanaAsync(string address)
     {
-        return await JS.InvokeAsync<string>("getFurigana", postMasterRepository.GetAddressKana(address));
+        if (BaseModule is null) return string.Empty;
+        return await BaseModule.InvokeAsync<string>("getFurigana", postMasterRepository.GetAddressKana(address));
     }
     #endregion
 

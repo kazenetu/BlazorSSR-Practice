@@ -23,6 +23,11 @@
     private IJSObjectReference? BaseModule;
 
     /// <summary>
+    /// Page用JSモジュール
+    /// </summary>
+    protected IJSObjectReference? PageModule;
+
+    /// <summary>
     /// JSモジュールの解放処理
     /// </summary>
     /// <remarks>ページ遷移時に呼び出される</remarks>
@@ -33,6 +38,18 @@
             try
             {
                 await BaseModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException e)
+            {
+                throw e;
+            }
+        }
+
+        if (PageModule is not null)
+        {
+            try
+            {
+                await PageModule.DisposeAsync();
             }
             catch (JSDisconnectedException e)
             {

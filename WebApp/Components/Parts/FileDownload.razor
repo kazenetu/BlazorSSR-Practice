@@ -2,23 +2,9 @@
 @using WebApp.Models.Parts
 @using WebApp.Components.Providers
 @inject IJSRuntime JS
+@implements IAsyncDisposable
 
 <button class="btn btn-primary" @onclick="Download">@ButtonName</button>
-
-<script>
-    @*ファイルダウンロード*@
-    window.downloadFileFromStream = async (fileName, contentStreamReference) => {
-        const arrayBuffer = await contentStreamReference.arrayBuffer();
-        const blob = new Blob([arrayBuffer]);
-        const url = URL.createObjectURL(blob);
-        const anchorElement = document.createElement('a');
-        anchorElement.href = url;
-        anchorElement.download = fileName ?? '';
-        anchorElement.click();
-        anchorElement.remove();
-        URL.revokeObjectURL(url);
-    }
-</script>
 
 @code {
     #region ダイアログ表示
@@ -71,6 +57,45 @@
     [Parameter]
     public Func<Task<DownLoadModel>>? GetDataFunction { get; set; }
 
+    #region JSモジュール管理
+    /// <summary>
+    /// JSモジュール
+    /// </summary>
+    private IJSObjectReference? Module;
+
+    /// <summary>
+    /// 初期処理
+    /// </summary>
+    /// <param name="firstRender">初回表示か否か</param>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // 専用JSファイルインポート設定
+            Module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Parts/FileDownload.razor.js");
+        }
+    }
+
+    /// <summary>
+    /// JSモジュールの解放処理
+    /// </summary>
+    /// <remarks>ページ遷移時に呼び出される</remarks>
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (Module is not null)
+        {
+            try
+            {
+                await Module.DisposeAsync();
+            }
+            catch (JSDisconnectedException e)
+            {
+                throw e;
+            }
+        }
+    }
+    #endregion
+
     /// <summary>
     /// ファイルダウンロード
     /// </summary>
@@ -117,6 +142,8 @@
     /// <param name="model">出力対象</param>
     private async Task DownloadText(DownLoadModel model)
     {
+        if (Module is null) return;
+
         // ダウンロードの文字コードを指定(デフォルトはUTF8)
         var encoding = System.Text.Encoding.UTF8;
         if (IsShiftJis)
@@ -134,7 +161,7 @@
             memoryStream.Position = 0;
 
             using var streamRef = new DotNetStreamReference(memoryStream);
-            await JS.InvokeVoidAsync("downloadFileFromStream", model!.FileName, streamRef);
+            await Module.InvokeVoidAsync("downloadFileFromStream", model!.FileName, streamRef);
         }
     }
 
@@ -144,11 +171,13 @@
     /// <param name="model">出力対象</param>
     private async Task DownloadBinary(DownLoadModel model)
     {
+        if (Module is null) return;
+
         // データ書き出しとファイル出力JSメソッド呼び出し
         using (var memoryStream = new MemoryStream((byte[])model.Data!))
         {
             using var streamRef = new DotNetStreamReference(memoryStream);
-            await JS.InvokeVoidAsync("downloadFileFromStream", model!.FileName, streamRef);
+            await Module.InvokeVoidAsync("downloadFileFromStream", model!.FileName, streamRef);
         }
     }
 }

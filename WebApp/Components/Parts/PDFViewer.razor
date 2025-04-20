@@ -2,6 +2,7 @@
 @using WebApp.Models.Parts
 @using WebApp.Components.Providers
 @inject IJSRuntime JS
+@implements IAsyncDisposable
 
 <button class="btn btn-primary" @onclick="Preview">@ButtonName</button>
 
@@ -20,43 +21,6 @@
         </button>
     </div>
 </dialog>
-
-<script>
-    @* PDFモーダル表示 *@
-    window.setSource = async (elementId, stream, title) => {
-        const arrayBuffer = stream.buffer;
-        const blob = new Blob([arrayBuffer]);
-        const url = URL.createObjectURL(blob);
-
-        const element = document.getElementById(elementId);
-        const dialog = document.getElementById('PDFViewerDialog');
-        element.setAttribute("src", `/pdfjs/web/viewer_modal.html?file=${url}#fileName=${title}&navpanes=0`);
-        element.title = title;
-
-        @* モーダル表示 *@
-        dialog.showModal();
-
-        @* 閉じる：モーダルを閉じる *@
-        const cancelButton = document.getElementById('PDFViewerCloseButton');
-            cancelButton?.addEventListener('click', () => {
-                URL.revokeObjectURL(url);
-                element.setAttribute("src", "");
-                dialog.close();
-        });
-    }
-
-    @* PDF別ウィンドウ表示(pdf.js使用) *@
-    window.OpenPDFWindow = async (elementId, stream, title) => {
-
-        const arrayBuffer = stream.buffer;
-        const blob = new Blob([arrayBuffer]);
-        const url = URL.createObjectURL(blob);
-
-        const windowFeatures = "popup,width=" + window.screen.width + ",height=" + window.screen.height
-        window.open("/pdfjs/web/viewer.html?file=" + url + "&title=" + title, "_blank", windowFeatures);
-    }
-
-</script>
 
 @code {
     #region ダイアログ表示
@@ -109,11 +73,52 @@
     [Parameter]
     public Func<Task<DownLoadModel>>? GetDataFunction { get; set; }
 
+    #region JSモジュール管理
+    /// <summary>
+    /// JSモジュール
+    /// </summary>
+    private IJSObjectReference? Module;
+
+    /// <summary>
+    /// 初期処理
+    /// </summary>
+    /// <param name="firstRender">初回表示か否か</param>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // 専用JSファイルインポート設定
+            Module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Parts/PDFViewer.razor.js");
+        }
+    }
+
+    /// <summary>
+    /// JSモジュールの解放処理
+    /// </summary>
+    /// <remarks>ページ遷移時に呼び出される</remarks>
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (Module is not null)
+        {
+            try
+            {
+                await Module.DisposeAsync();
+            }
+            catch (JSDisconnectedException e)
+            {
+                throw e;
+            }
+        }
+    }
+    #endregion
+
     /// <summary>
     /// PDFプレビュー
     /// </summary>
     private async Task Preview()
     {
+        if (Module is null) return;
+
         try
         {
             if (GetDataFunction is null)
@@ -135,12 +140,12 @@
             if (IsNewWindow)
             {
                 // データ書き出しとファイル出力JSメソッド呼び出し
-                await JS.InvokeVoidAsync("OpenPDFWindow", "iframe", model.Data, model.FileName, IsPortrait);
+                await Module.InvokeVoidAsync("OpenPDFWindow", "iframe", model.Data, model.FileName, IsPortrait);
             }
             else
             {
                 // JavaScript経由でPDF表示
-                await JS.InvokeVoidAsync("setSource", "iframe", model.Data, model.FileName, IsPortrait);
+                await Module.InvokeVoidAsync("setSource", "iframe", model.Data, model.FileName, IsPortrait);
             }
         }
         catch (Exception ex)

@@ -291,7 +291,7 @@
     /// </summary>
     /// <param name="message">メッセージ本文</param>
     /// <param name="submitFunction">「はい」クリック時のコールバックメソッド</param>
-    public async Task ShowConfirm(string message, Func<Task> submitFunction)
+    protected async Task ShowConfirm(string message, Func<Task> submitFunction)
     {
         if(dialogProvider is null)  return;
 
@@ -302,7 +302,7 @@
     /// 指定ダイアログ表示
     /// </summary>
     /// <param name="tagId">表示対象のid</param>
-    public async Task ShowDialog(string tagId)
+    protected async Task ShowDialog(string tagId)
     {
         if(dialogProvider is null)  return;
 
@@ -313,7 +313,7 @@
     /// 指定ダイアログ非表示
     /// </summary>
     /// <param name="tagId">非表示対象のid</param>
-    public async Task CloseDialog(string tagId)
+    protected async Task CloseDialog(string tagId)
     {
         if(dialogProvider is null)  return;
 

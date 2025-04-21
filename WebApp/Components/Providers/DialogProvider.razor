@@ -1,5 +1,6 @@
 @namespace WebApp.Components.Providers
 @inject IJSRuntime JS
+@implements IAsyncDisposable
 
 <CascadingValue Value="this">
     @ChildContent
@@ -34,61 +35,6 @@
     </div>
 </dialog>
 
-<script>
-    window.showAlert = async (message) => {
-        addMessageTag('alertMessage', message);
-        const dialog = document.getElementById('alertDialog');
-        dialog.showModal();
-
-        // モーダルを閉じる
-        const closeButton = document.getElementById('alertCloseButton');
-        closeButton?.addEventListener('click', () => {
-            document.getElementById('alertOKHiddenButton').click();
-            dialog.close();
-        });
-    }
-
-    window.showConfirm = async (message) => {
-        addMessageTag('confirmMessage', message);
-        const dialog = document.getElementById('confirmDialog');
-        dialog.showModal();
-
-        // YES:隠し送信ボタンクリック後、モーダルを閉じる
-        const yesButton = document.getElementById('confirmYesButton');
-        yesButton?.addEventListener('click', () => {
-            document.getElementById('confirmYesHiddenButton').click();
-            dialog.close();
-        });
-
-        // キャンセル：モーダルを閉じる
-        const cancelButton = document.getElementById('confirmCancelButton');
-        cancelButton?.addEventListener('click', () => {
-            dialog.close();
-        });
-    }
-
-    function addMessageTag(tagName, message) {
-        const element = document.getElementById(tagName);
-        element.innerHTML = "";
-        const messages = message.split('\n');
-
-        for (let msg of messages) {
-            let div = document.createElement("div");
-            div.textContent = msg;
-            element.append(div);
-        }
-    }
-
-    window.showDialog = async (tagId) => {
-        const dialog = document.getElementById(tagId);
-        dialog.showModal();
-    }
-    window.closeDialog = async (tagId) => {
-        const dialog = document.getElementById(tagId);
-        dialog.close();
-    }
-</script>
-
 @code {
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
@@ -98,14 +44,56 @@
     /// </summary>
     private Func<Task>? SubmitFunction { get; set; }
 
+    #region JSモジュール管理
+    /// <summary>
+    /// JSモジュール
+    /// </summary>
+    private IJSObjectReference? Module;
+
+    /// <summary>
+    /// 初期処理
+    /// </summary>
+    /// <param name="firstRender">初回表示か否か</param>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // 専用JSファイルインポート設定
+            Module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Providers/DialogProvider.razor.js");
+        }
+    }
+
+    /// <summary>
+    /// JSモジュールの解放処理
+    /// </summary>
+    /// <remarks>ページ遷移時に呼び出される</remarks>
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (Module is not null)
+        {
+            try
+            {
+                await Module.DisposeAsync();
+            }
+            catch (JSDisconnectedException e)
+            {
+                throw e;
+            }
+        }
+    }
+#endregion
+
     /// <summary>
     /// アラートメッセージ表示
     /// </summary>
     /// <param name="message">メッセージ本文</param>
     /// <param name="submitFunction">「はい」クリック時のコールバックメソッド（呼び出し側のメソッド）</param>
-    public async Task ShowAlert(string message, Func<Task>? submitFunction){
+    public async Task ShowAlert(string message, Func<Task>? submitFunction)
+    {
+        if (Module is null) return;
+
         SubmitFunction = submitFunction;
-        await JS.InvokeVoidAsync("showAlert", message);
+        await Module.InvokeVoidAsync("showAlert", message);
     }
 
     /// <summary>
@@ -125,8 +113,10 @@
     /// <param name="submitFunction">「はい」クリック時のコールバックメソッド（呼び出し側のメソッド）</param>
     public async Task ShowConfirm(string message, Func<Task> submitFunction)
     {
+        if (Module is null) return;
+
         SubmitFunction = submitFunction;
-        await JS.InvokeVoidAsync("showConfirm", message, "ConfirmResult");
+        await Module.InvokeVoidAsync("showConfirm", message, "ConfirmResult");
     }
 
     /// <summary>
@@ -145,7 +135,9 @@
     /// <param name="tagId">表示対象のid</param>
     public async Task ShowDialog(string tagId)
     {
-        await JS.InvokeVoidAsync("showDialog", tagId);
+        if (Module is null) return;
+
+        await Module.InvokeVoidAsync("showDialog", tagId);
     }
 
     /// <summary>
@@ -154,6 +146,8 @@
     /// <param name="tagId">非表示対象のid</param>
     public async Task CloseDialog(string tagId)
     {
-        await JS.InvokeVoidAsync("closeDialog", tagId);
+        if (Module is null) return;
+
+        await Module.InvokeVoidAsync("closeDialog", tagId);
     }
 }

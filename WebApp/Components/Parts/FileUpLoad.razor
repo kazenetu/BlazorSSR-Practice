@@ -1,6 +1,7 @@
 @namespace WebApp.Components.Parts
 @using WebApp.Models.Parts
 @inject IJSRuntime JS
+@implements IAsyncDisposable
 
 <InputFile OnChange="ChangeFile" @ref="filePicker" style="display:none;" />
 <div class="input-group mb-3">
@@ -9,10 +10,6 @@
     </span>
     <span class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">@FileName</span>
 </div>
-
-<script>
-    window.triggerClick = (elt) => elt.click();
-</script>
 
 @code {
     /// <summary>
@@ -53,11 +50,52 @@
     /// </summary>
     private InputFile? filePicker;
 
+    #region JSモジュール管理
+    /// <summary>
+    /// JSモジュール
+    /// </summary>
+    private IJSObjectReference? Module;
+
+    /// <summary>
+    /// 初期処理
+    /// </summary>
+    /// <param name="firstRender">初回表示か否か</param>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // 専用JSファイルインポート設定
+            Module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Parts/FileUpLoad.razor.js");
+        }
+    }
+
+    /// <summary>
+    /// JSモジュールの解放処理
+    /// </summary>
+    /// <remarks>ページ遷移時に呼び出される</remarks>
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (Module is not null)
+        {
+            try
+            {
+                await Module.DisposeAsync();
+            }
+            catch (JSDisconnectedException e)
+            {
+                throw e;
+            }
+        }
+    }
+    #endregion
+
     /// <summary>
     /// ファイル選択ボタンクリックイベント
     /// </summary>
     private async Task OnFileInit()
     {
+        if (Module is null) return;
+
         // 初期化メソッド呼び出し
         await OnInit.InvokeAsync();
 
@@ -65,7 +103,7 @@
         FileName = string.Empty;
 
         // ファイル選択を開く
-        await JS.InvokeAsync<object>("triggerClick", filePicker!.Element);
+        await Module.InvokeAsync<object>("triggerClick", filePicker!.Element);
     }
 
     /// <summary>

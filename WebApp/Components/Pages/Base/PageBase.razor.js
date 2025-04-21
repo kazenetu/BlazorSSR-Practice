@@ -1,23 +1,23 @@
 let tokenizerInstance = undefined;
 
-setTimeout(()=>{
-    kuromoji.builder({ dicPath: "dict" }).build((err, tokenizer)=>{
-        tokenizerInstance = tokenizer; 
+setTimeout(() => {
+    kuromoji.builder({ dicPath: "dict" }).build((err, tokenizer) => {
+        tokenizerInstance = tokenizer;
     });
-} ,100);
+}, 100);
 
-window.kanjiToFurigana = (kanjiID, furiganaID) => {
+export function kanjiToFurigana(kanjiID, furiganaID) {
     const kanji = document.getElementById(kanjiID);
     const furigana = document.getElementById(furiganaID);
 
     furigana.value = getKana(kanji.value);
-};
+}
 
-window.getFurigana = (kanji) => {
+export function getFurigana(kanji) {
     return getKana(kanji);
-};
+}
 
-window.getKana = (kanji) => {
+export function getKana(kanji) {
     let result = '';
     const items = tokenizerInstance.tokenize(kanji);
     for (let i = 0; i < items.length; i++) {
@@ -39,4 +39,4 @@ window.getKana = (kanji) => {
     }
 
     return result;
-};
+}

@@ -11,6 +11,8 @@ export function kanjiToFurigana(kanjiID, furiganaID) {
     const furigana = document.getElementById(furiganaID);
 
     furigana.value = getKana(kanji.value);
+    var event = new Event('change');
+    furigana.dispatchEvent(event);
 }
 
 export function getFurigana(kanji) {

@@ -80,33 +80,46 @@ else
     </EditForm>
 
     <Pagination PageName="/order" CurrentPageNumber="@Page" TotalRecords="@TotalRecords" RecordsPerPage="@Common.PageRecordCount" />
-    <table class="table">
-        <thead>
-            <tr>
-                <th style="width:2rem">No</th>
-                <th style="min-width:15rem">ProductName</th>
-                <th style="width:5rem">UnitPrice</th>
-                <th style="width:3rem">Qty</th>
-                <th style="width:9rem">TotalPrice</th>
-                <th>編集</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if(TotalRecords > 0) {
-                @foreach (var oder in pageRecords)
-                {
-                    <tr>
-                        <td class="text-end">@oder.No</td>
-                        <td>@oder.ProductName</td>
-                        <td class="text-end">@(oder.UnitPrice.ToString("#,#"))</td>
-                        <td class="text-end">@(oder.Qty.ToString("#,#"))</td>
-                        <td class="text-end">@(oder.TotalPrice.ToString("#,#"))</td>
-                        <td><button @onclick="@(() => ToEdit(oder.ProductName))" class="btn btn-outline-success">編集</button></td>
-                    </tr>
+    @if (pageRecords.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width:2rem">No</th>
+                    <th style="min-width:15rem">ProductName</th>
+                    <th style="width:5rem">UnitPrice</th>
+                    <th style="width:3rem">Qty</th>
+                    <th style="width:9rem">TotalPrice</th>
+                    <th>編集</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if(TotalRecords > 0) {
+                    @foreach (var oder in pageRecords)
+                    {
+                        <tr>
+                            <td class="text-end">@oder.No</td>
+                            <td>@oder.ProductName</td>
+                            <td class="text-end">@(oder.UnitPrice.ToString("#,#"))</td>
+                            <td class="text-end">@(oder.Qty.ToString("#,#"))</td>
+                            <td class="text-end">@(oder.TotalPrice.ToString("#,#"))</td>
+                            <td><button @onclick="@(() => ToEdit(oder.ProductName))" class="btn btn-outline-success">編集</button></td>
+                        </tr>
+                    }
                 }
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <span style="color: red;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/>
+            </svg>
+            該当データがありません。
+        </span>
+    }
 }
 
 @code {

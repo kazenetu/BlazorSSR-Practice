@@ -59,27 +59,34 @@ else
     </EditForm>
 
     <Pagination PageName="/weather" CurrentPageNumber="@Page" TotalRecords="@TotalRecords" RecordsPerPage="@Common.PageRecordCount" />
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var forecast in pageForecasts)
-            {
+    @if (pageForecasts.Any())
+    {
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@forecast.TargetDate.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
+                    <th>Date</th>
+                    <th>Temp. (C)</th>
+                    <th>Temp. (F)</th>
+                    <th>Summary</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var forecast in pageForecasts)
+                {
+                    <tr>
+                        <td>@forecast.TargetDate.ToShortDateString()</td>
+                        <td>@forecast.TemperatureC</td>
+                        <td>@forecast.TemperatureF</td>
+                        <td>@forecast.Summary</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <SearchResultZero />
+    }
 }
 
 @code {

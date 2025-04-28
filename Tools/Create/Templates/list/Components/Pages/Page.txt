@@ -76,36 +76,43 @@ else
     <Pagination PageName="/$uri$" CurrentPageNumber="@Page" TotalRecords="@TotalRecords" RecordsPerPage="@PageCount" />
 
     @* 一覧 *@
-    <table class="table">
-        @* 検索条件 実装例 *@
-        @*
-        <thead>
-            <tr>
-                <th style="width:2rem">No</th>
-                <th style="min-width:15rem">ProductName</th>
-                <th style="width:5rem">UnitPrice</th>
-                <th style="width:3rem">Qty</th>
-                <th style="width:9rem">TotalPrice</th>
-                <th>編集</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if(TotalRecords > 0) {
-                @foreach (var pageRecord in PageRecords)
-                {
-                    <tr>
-                        <td class="text-end">@pageRecord.No</td>
-                        <td>@pageRecord.Key</td>
-                        <td class="text-end">@(pageRecord.UnitPrice.ToString("#,#"))</td>
-                        <td class="text-end">@(pageRecord.Qty.ToString("#,#"))</td>
-                        <td class="text-end">@(pageRecord.TotalPrice.ToString("#,#"))</td>
-                        <td><button @onclick="@(() => ToEdit(pageRecord.Key))" class="btn btn-outline-success">編集</button></td>
-                    </tr>
+    @if (PageRecords.Any())
+    {
+        <table class="table">
+            @* 検索条件 実装例 *@
+            @*
+            <thead>
+                <tr>
+                    <th style="width:2rem">No</th>
+                    <th style="min-width:15rem">ProductName</th>
+                    <th style="width:5rem">UnitPrice</th>
+                    <th style="width:3rem">Qty</th>
+                    <th style="width:9rem">TotalPrice</th>
+                    <th>編集</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if(TotalRecords > 0) {
+                    @foreach (var pageRecord in PageRecords)
+                    {
+                        <tr>
+                            <td class="text-end">@pageRecord.No</td>
+                            <td>@pageRecord.Key</td>
+                            <td class="text-end">@(pageRecord.UnitPrice.ToString("#,#"))</td>
+                            <td class="text-end">@(pageRecord.Qty.ToString("#,#"))</td>
+                            <td class="text-end">@(pageRecord.TotalPrice.ToString("#,#"))</td>
+                            <td><button @onclick="@(() => ToEdit(pageRecord.Key))" class="btn btn-outline-success">編集</button></td>
+                        </tr>
+                    }
                 }
-            }
-        </tbody>
-        *@
-    </table>
+            </tbody>
+            *@
+        </table>
+    }
+    else
+    {
+        <SearchResultZero />
+    }
 }
 
 @code {

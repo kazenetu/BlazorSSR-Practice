@@ -366,6 +366,28 @@
         }
         return result.ToString();
     }
+
+    /// <summary>
+    /// カタカナ→ひらがな変換
+    /// </summary>
+    /// <param name="target">カタカナ文字列</param>
+    /// <returns>ひらがな文字列</returns>
+    protected string KatakanaToHiragana(string target)
+    {
+        var result = new StringBuilder();
+        var targetArray = target.ToCharArray();
+
+        for (int i = 0; i < targetArray.Length; i++) 
+        {
+            var c = target[i];
+            if(Regex.IsMatch(c.ToString(), @"^\p{IsKatakana}*$"))
+            {
+                c = (char)(c - 0x0060);  // カタカナ→ひらがな
+            }
+            result.Append(c);
+        }
+        return result.ToString();
+    }
     #endregion
 
 

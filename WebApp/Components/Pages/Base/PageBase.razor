@@ -358,7 +358,7 @@
         for (int i = 0; i < targetArray.Length; i++) 
         {
             var c = target[i];
-            if(Regex.IsMatch(c.ToString(), @"^\p{IsHiragana}*$"))
+            if (Regex.IsMatch(c.ToString(), @"^\p{IsHiragana}*$"))
             {
                 c = (char)(c + 0x0060);  // ひらがな→カタカナ
             }
@@ -380,7 +380,7 @@
         for (int i = 0; i < targetArray.Length; i++) 
         {
             var c = target[i];
-            if(Regex.IsMatch(c.ToString(), @"^\p{IsKatakana}^・*$"))
+            if (Regex.IsMatch(c.ToString(), @"^\p{IsKatakana}^・*$"))
             {
                 c = (char)(c - 0x0060);  // カタカナ→ひらがな
             }

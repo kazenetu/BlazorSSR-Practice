@@ -102,6 +102,30 @@ Welcome to your new app.
     </div>
 </div>
 
+@* ひらがな・カタカナ変換サンプル *@
+<div class="card" style="margin-top:3rem;width:35rem;">
+    <div class="card-body">
+        <div class="card-title">ひらがな・カタカナ変換サンプル</div>
+
+        <div class="row row-margin">
+            <div class="col">
+                <label class="col-md-2" for="HiraganaText">ひらがな</label>
+                <InputText class="col-md-9" id="HiraganaText" @bind-Value="HiraganaText"/>
+            </div>
+        </div>
+        <div class="row">
+            <button class="col-3 offset-md-2 btn btn-primary btn-sm" @onclick="HiraganaToKatakana">↓変換</button>
+            <button class="col-3 offset-md-2 btn btn-primary btn-sm" @onclick="KatakanaToHiragana">↑変換</button>
+        </div>
+        <div class="row row-margin">
+            <div class="col">
+                <label class="col-md-2" for="furigana">カタカナ</label>
+                <InputText class="col-md-9" id="furigana" @bind-Value="KatakanaText" />
+            </div>
+        </div>
+    </div>
+</div>
+
 <div>
     <button class="btn btn-primary" @onclick="ShowDialogTest">ダイアログ表示</button>
 </div>
@@ -204,6 +228,48 @@ Welcome to your new app.
     {
         Katakana = string.Empty;
     }
+
+    #region ひらがな・カタカナ変換サンプル
+    /// <summary>
+    /// ひらがな・カタカナ変換サンプル：ひらがな
+    /// </summary>
+    private string? HiraganaText;
+
+    /// <summary>
+    /// ひらがな・カタカナ変換サンプル：カタカナ
+    /// </summary>
+    private string? KatakanaText;
+
+    /// <summary>
+    /// ひらがな・カタカナ変換サンプル：ひらがな→カタカナ変換
+    /// </summary>
+    private async Task HiraganaToKatakana()
+    {
+        if(HiraganaText is null) return;
+
+        KatakanaText = null;
+        StateHasChanged();
+        
+        await Task.Delay(500);
+
+        KatakanaText = HiraganaToKatakana(HiraganaText);
+    }
+
+    /// <summary>
+    /// ひらがな・カタカナ変換サンプル：カタカナ→ひらがな変換
+    /// </summary>
+    private async Task KatakanaToHiragana()
+    {
+        if(KatakanaText is null) return;
+
+        HiraganaText = null;
+        StateHasChanged();
+
+        await Task.Delay(500);
+
+        HiraganaText = KatakanaToHiragana(KatakanaText);
+    }
+    #endregion
 
     private async Task ShowAlertTest()
     {

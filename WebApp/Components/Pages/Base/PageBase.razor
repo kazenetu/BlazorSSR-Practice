@@ -7,6 +7,8 @@
 @using PdfReport.DataLists
 @using System.Diagnostics
 @using System.IO.Compression
+@using System.Text
+@using System.Text.RegularExpressions;
 @using WebApp.Components.Providers
 @using WebApp.Models
 @using WebApp.Models.Parts
@@ -341,6 +343,53 @@
         await BaseModule.InvokeVoidAsync("kanjiToFurigana", kanjiId, furiganaId);
     }
     #endregion
+
+    #region ひらがな・カタカナ変換
+    /// <summary>
+    /// ひらがな→カタカナ変換
+    /// </summary>
+    /// <param name="target">ひらがな文字列</param>
+    /// <returns>カタカナ文字列</returns>
+    protected string HiraganaToKatakana(string target)
+    {
+        var result = new StringBuilder();
+        var targetArray = target.ToCharArray();
+
+        for (int i = 0; i < targetArray.Length; i++) 
+        {
+            var c = target[i];
+            if (Regex.IsMatch(c.ToString(), @"^\p{IsHiragana}*$"))
+            {
+                c = (char)(c + 0x0060);  // ひらがな→カタカナ
+            }
+            result.Append(c);
+        }
+        return result.ToString();
+    }
+
+    /// <summary>
+    /// カタカナ→ひらがな変換
+    /// </summary>
+    /// <param name="target">カタカナ文字列</param>
+    /// <returns>ひらがな文字列</returns>
+    protected string KatakanaToHiragana(string target)
+    {
+        var result = new StringBuilder();
+        var targetArray = target.ToCharArray();
+
+        for (int i = 0; i < targetArray.Length; i++) 
+        {
+            var c = target[i];
+            if (Regex.IsMatch(c.ToString(), @"^\p{IsKatakana}^・*$"))
+            {
+                c = (char)(c - 0x0060);  // カタカナ→ひらがな
+            }
+            result.Append(c);
+        }
+        return result.ToString();
+    }
+    #endregion
+
 
     #region inputタグのEnterKeyイベント無効化
     /// <summary>

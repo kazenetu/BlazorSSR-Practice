@@ -1,5 +1,7 @@
 @namespace WebApp.Components.Parts
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
+@implements IAsyncDisposable
 
 @if (TotalPages > 1)
 {
@@ -8,10 +10,10 @@
             width: 3em;
         }
 
-        .page-link:focus {
-            box-shadow: var(--bs-pagination-focus-box-shadow);
-            background-color: white;
-        }
+            .page-link:focus {
+                box-shadow: var(--bs-pagination-focus-box-shadow);
+                background-color: white;
+            }
     </style>
     <nav aria-label="Page navigation">
         <ul class="pagination pagination-primary">
@@ -127,18 +129,61 @@
     [Parameter]
     public int TotalRecords { get; set; }
 
+    #region JSモジュール管理
+    /// <summary>
+    /// JSモジュール
+    /// </summary>
+    private IJSObjectReference? Module;
+
+    /// <summary>
+    /// 初期処理
+    /// </summary>
+    /// <param name="firstRender">初回表示か否か</param>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // 専用JSファイルインポート設定
+            Module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Parts/Pagination.razor.js");
+        }
+    }
+
+    /// <summary>
+    /// JSモジュールの解放処理
+    /// </summary>
+    /// <remarks>ページ遷移時に呼び出される</remarks>
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (Module is not null)
+        {
+            try
+            {
+                await Module.DisposeAsync();
+            }
+            catch (JSDisconnectedException e)
+            {
+                throw e;
+            }
+        }
+    }
+    #endregion
+
     /// <summary>
     /// ページ変更イベント
     /// </summary>
     /// <param name="pageNumber">選択されたページ数</param>
     private async Task OnPageChangedAsync(int pageNumber)
     {
-        await Task.Run(() => {
-            if (string.IsNullOrEmpty(PageName)) return;
+        if (Module is null) return;
 
+        // ページトップに移動
+        await Module.InvokeVoidAsync("pageTop");
+
+        await Task.Run(() =>
+        {
             //　URL変更(他ページから復帰用)
             Navigation.NavigateTo($"{PageName}/{pageNumber}");
-        } );
+        });
     }
 
     /// <summary>

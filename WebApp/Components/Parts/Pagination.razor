@@ -96,7 +96,10 @@
             }
         </ul>
     </nav>
-    <div>@DisplayRecordCount()</div>
+    @if (IsShowRecordCount)
+    {
+        <div>@DisplayRecordCount()</div>
+    }
 }
 
 @code {
@@ -128,6 +131,12 @@
     /// </summary>
     [Parameter]
     public int TotalRecords { get; set; }
+
+    /// <summary>
+    /// 総レコード数
+    /// </summary>
+    [Parameter]
+    public bool IsShowRecordCount { get; set; } = true;
 
     #region JSモジュール管理
     /// <summary>

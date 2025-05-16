@@ -187,6 +187,9 @@
     {
         try
         {
+            // 読込中表示
+            await ShowProcessingDialog();
+
             Logger.LogInformation(await GetLogMessage("保存開始"));
 
             // ファイル内容のクリア
@@ -295,6 +298,9 @@
         }
         finally
         {
+            // 読込中非表示
+            await CloseProcessingDialog();
+
             Logger.LogInformation(await GetLogMessage("保存終了"));
         }
 

@@ -180,6 +180,7 @@
     public async Task ShowProcessingDialog(string message = "処理中")
     {
         ProcessingDialogText = message;
+        StateHasChanged();
         await ShowDialog(ProcessingDialogName);
     }
 

@@ -187,6 +187,9 @@
     {
         try
         {
+            // 読込中表示
+            await ShowProcessingDialog();
+
             Logger.LogInformation(await GetLogMessage("保存開始"));
 
             // ファイル内容のクリア
@@ -275,6 +278,9 @@
             //　エラーがある場合はそのまま終了
             if (await IsExistErrorMessage()) return;
 
+            // 重い処理の代わり
+            await Task.Delay(5000);
+
             // 一括登録
             var userModel = await GetUserAsync();
             if (repository.Save(saveItems, userModel!.ID, GetType().Name))
@@ -295,6 +301,9 @@
         }
         finally
         {
+            // 読込中非表示
+            await CloseProcessingDialog();
+
             Logger.LogInformation(await GetLogMessage("保存終了"));
         }
 

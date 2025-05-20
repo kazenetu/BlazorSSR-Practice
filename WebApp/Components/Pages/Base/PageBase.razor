@@ -321,6 +321,27 @@
 
         await dialogProvider.CloseDialog(tagId);
     }
+
+    /// <summary>
+    /// 処理中ダイアログ表示
+    /// </summary>
+    /// <param name="message">表示テキスト</param>
+    protected async Task ShowProcessingDialog(string message = "処理中")
+    {
+        if(dialogProvider is null)  return;
+
+        await dialogProvider.ShowProcessingDialog(message);
+    }
+
+    /// <summary>
+    /// 処理中ダイアログ非表示
+    /// </summary>
+    protected async Task CloseProcessingDialog()
+    {
+        if(dialogProvider is null)  return;
+
+        await dialogProvider.CloseProcessingDialog();
+    }
     #endregion
 
     #region 漢字→フリガナ変換

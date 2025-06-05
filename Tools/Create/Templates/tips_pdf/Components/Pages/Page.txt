@@ -1,9 +1,9 @@
 ﻿@page "/$uri$"
 @namespace WebApp.Components.Pages
 @inherits Base.PageBase
-@using PdfReport;
-@using PdfReport.Interfaces;
-@using PdfReport.DataLists;
+@using PdfReport
+@using PdfReport.Interfaces
+@using PdfReport.DataLists
 @using WebApp.Components.Parts
 @using WebApp.Models
 @using WebApp.Models.Parts

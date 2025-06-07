@@ -126,6 +126,30 @@ Welcome to your new app.
     </div>
 </div>
 
+@* 全角数字・半角英数字変換機能サンプル *@
+<div class="card" style="margin-top:3rem;width:35rem;">
+    <div class="card-body">
+        <div class="card-title">全角数字・半角英数字変換機能サンプル</div>
+
+        <div class="row row-margin">
+            <div class="col">
+                <label class="col-md-2" for="FullWidthNumberText">全角数字<br>ハイフン</label>
+                <InputText class="col-md-9" id="FullWidthNumberText" @bind-Value="FullWidthNumberText"/>
+            </div>
+        </div>
+        <div class="row">
+            <button class="col-3 offset-md-2 btn btn-primary btn-sm" @onclick="OnToHalfWidthNumber">↓変換</button>
+            <button class="col-3 offset-md-2 btn btn-primary btn-sm" @onclick="OnToFullWidthNumber">↑変換</button>
+        </div>
+        <div class="row row-margin">
+            <div class="col">
+                <label class="col-md-2" for="HalfWidthNumberText">半角数字<br>ハイフン</label>
+                <InputText class="col-md-9" id="HalfWidthNumberText" @bind-Value="HalfWidthNumberText" />
+            </div>
+        </div>
+    </div>
+</div>
+
 <div>
     <button class="btn btn-primary" @onclick="ShowDialogTest">ダイアログ表示</button>
 </div>
@@ -186,6 +210,52 @@ Welcome to your new app.
     {
         await ShowAlert("TODO 登録処理実装", CloseDialogTest);
         //await CloseDialogTest();
+    }
+#endregion
+
+#region 全角数字・半角英数字変換機能サンプル
+
+    /// <summary>
+    /// 全角数字テキスト用文字列
+    /// </summary>
+    /// <remarks>サンプル文字列を設定</remarks>
+    private string? FullWidthNumberText = "全角数字１２３－４５６０９";
+
+    /// <summary>
+    /// 半角数字テキスト用文字列
+    /// </summary>
+    private string? HalfWidthNumberText;
+
+    /// <summary>
+    /// 全角数字を半角化ボタン クリックイベント
+    /// </summary>
+    private async Task OnToHalfWidthNumber()
+    {
+        // 未入力は処理なし
+        if (string.IsNullOrEmpty(FullWidthNumberText)) return;
+
+        // 変換が分かるように一時的にクリア・ウェイト
+        HalfWidthNumberText = null;
+        StateHasChanged();
+        await Task.Delay(500);
+
+        HalfWidthNumberText = ToHalfWidthNumber(FullWidthNumberText);
+    }
+
+    /// <summary>
+    /// 半角数字を半角化ボタン クリックイベント
+    /// </summary>
+    private async Task OnToFullWidthNumber()
+    {
+        // 未入力は処理なし
+        if (string.IsNullOrEmpty(HalfWidthNumberText)) return;
+
+        // 変換が分かるように一時的にクリア・ウェイト
+        FullWidthNumberText = null;
+        StateHasChanged();
+        await Task.Delay(500);
+
+        FullWidthNumberText = ToFullWidthNumber(HalfWidthNumberText);
     }
 #endregion
 

@@ -411,6 +411,61 @@
     }
     #endregion
 
+    #region 全角数字・半角英数字変換機能
+    /// <summary>
+    /// 全角数字・ハイフンを半角化
+    /// </summary>
+    /// <param name="fullWidthNumber">全角数字・全角ハイフンを含めた文字列</param>
+    /// <returns>半角数字・半角ハイフンを含めた文字列</returns>
+    protected string ToHalfWidthNumber(string fullWidthNumber)
+    {
+        string pattern = @"[０-９\－]";
+
+        MatchEvaluator evaluator = new MatchEvaluator(HalfWidthNumberScrambler);
+        return Regex.Replace(fullWidthNumber, pattern, evaluator);
+
+        string HalfWidthNumberScrambler(Match match)
+        {
+            int arraySize = match.Value.Length;
+            var sb = new StringBuilder();
+
+            for (int ctr = 0; ctr < match.Value.Length; ctr++)
+            {
+                var result = match.Value[ctr];
+                result -= (char)0xFEE0;
+                sb.Append(result);
+            }
+            return sb.ToString();
+        }
+    }
+
+    /// <summary>
+    /// 半角数字・半角ハイフンを全角化
+    /// </summary>
+    /// <param name="halfWidthNumber">半角数字・半角ハイフンを含めた文字列</param>
+    /// <returns>全角数字・全角ハイフンを含めた文字列</returns>
+    protected string ToFullWidthNumber(string halfWidthNumber)
+    {
+        string pattern = @"[0-9-\-]";
+
+        MatchEvaluator evaluator = new MatchEvaluator(FullWidthNumberScrambler);
+        return Regex.Replace(halfWidthNumber, pattern, evaluator);
+
+        string FullWidthNumberScrambler(Match match)
+        {
+            int arraySize = match.Value.Length;
+            var sb = new StringBuilder();
+
+            for (int ctr = 0; ctr < match.Value.Length; ctr++)
+            {
+                var result = match.Value[ctr];
+                result += (char)0xFEE0;
+                sb.Append(result);
+            }
+            return sb.ToString();
+        }
+    }
+    #endregion
 
     #region inputタグのEnterKeyイベント無効化
     /// <summary>

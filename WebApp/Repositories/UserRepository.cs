@@ -53,12 +53,13 @@ public class UserRepository : RepositoryBase, IUserRepository
             var id = Parse<string>(row["unique_name"]);
             var password = Parse<string>(row["password"]);
             var salt = Parse<string>(row["salt"]);
+            var totpSecrets = Parse<string>(row["totp_secrets"]);
             var fullName = Parse<string>(row["fullname"]);
             var adminRole = Parse<bool>(row["admin_role"]);
-            var disabled = Parse<bool>(row["admin_role"]);
+            var disabled = Parse<bool>(row["disabled"]);
             var version = Parse<int>(row["version"]);
 
-            result = new UserModel(id, password, salt, fullName, adminRole, disabled, version);
+            result = new UserModel(id, password, salt, totpSecrets, fullName, adminRole, disabled, version);
             break;
         }
 

@@ -1,0 +1,160 @@
+@page "/qr"
+@namespace WebApp.Components.Pages
+@using SkiaSharp
+@using SkiaSharp.QrCode.Image
+@using System.Text.Encodings.Web
+@using WebApp.Models
+@using WebApp.Repositories.Interfaces
+@using static System.Net.WebRequestMethods
+@inherits Base.PageBase
+@inject IUserRepository repository
+@inject NavigationManager Navigation
+@inject ILogger<Login> Logger
+@inject IJSRuntime JS
+
+<PageTitle>@Title</PageTitle>
+
+<h1>@Title</h1>
+
+<div style="width: 160px; padding: 15px; margin-left: auto; margin-right: auto">
+    <div>
+        <img id = "qrImage" />
+        <button id = "qrButton" @onclick="SetImageAsync" style="display:none;">
+            Set Image
+        </button>
+    </div>
+</div>
+<script>
+    window.setSource = async (elementId, stream, contentType, title) => {
+        const arrayBuffer = stream;
+        let blobOptions = {};
+        if (contentType) {
+            blobOptions['type'] = contentType;
+        }
+        const blob = new Blob([arrayBuffer], blobOptions);
+        const url = URL.createObjectURL(blob);
+        const element = document.getElementById(elementId);
+        element.title = title;
+        element.onload = () => {
+            URL.revokeObjectURL(url);
+        }
+        element.src = url;
+    }
+
+    setTimeout(() =>{
+        document.getElementById('qrButton').click();
+    },100);
+</script>
+
+@code
+{
+    /// <summary>
+    /// アプリケーション名
+    /// </summary>
+    private const string AppName = "test";
+
+    /// <summary>
+    /// 認証コード用フォーマット文字列
+    /// </summary>
+    private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
+
+    /// <summary>
+    /// 認証コード文字列取得
+    /// </summary>
+    /// <param name="appName">アプリケーション名</param>
+    /// <param name="userName">ユーザID</param>
+    /// <param name="unformattedSecrets">シークレット文字列</param>
+    /// <returns></returns>
+    private string CreateAuthenticationCode(string appName, string userName, string unformattedSecrets)
+    {
+        return string.Format(
+            AuthenticatorUriFormat,
+            HtmlEncoder.Default.Encode(appName),
+            HtmlEncoder.Default.Encode(userName),
+            unformattedSecrets);
+    }
+
+    /// <summary>
+    /// イメージ取得
+    /// </summary>
+    private async Task SetImageAsync()
+    {
+        var user = await GetUserAsync();
+        var uri = CreateAuthenticationCode(AppName, user!.ID, user!.TotpSecrets);
+
+        var imageBuffer = GetQRImage(uri);
+        await JS.InvokeVoidAsync("setSource", "qrImage", imageBuffer, "image/png", "QRCode");
+    }
+
+    /// <summary>
+    /// QRコードイメージを取得
+    /// </summary>
+    /// <param name="uri">QRコードに埋め込むURI</para>
+    /// <returns>QRコードイメージ</returns>
+    private byte[] GetQRImage(string uri)
+    {
+        //QRコード画像の大きさを指定(pixel)
+        int size = 200;
+
+        var qrCode = new QrCode(uri, new Vector2Slim(size, size), SKEncodedImageFormat.Png);
+        using (MemoryStream ms = new MemoryStream())
+        {
+            // QRをメモリ上に展開
+            qrCode.GenerateImage(ms);
+
+            // save to stream as PNG
+            return ms.GetBuffer();
+        }
+    }
+
+    /// <summary>
+    /// 初期化処理
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        // タイトル設定
+        Title = "認証QRコード";
+    }
+
+    /// <summary>
+    /// 初期値設定
+    /// </summary>
+    /// <param name="firstRender">初期表示か否か</param>
+    /// <returns>遅延処理</returns>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                Logger.LogInformation(await GetLogMessage("開始"));
+
+                // 未ログインの場合は即時終了
+                if (!await LoginCheck())
+                {
+                    Logger.LogInformation(await GetLogMessage("ログインチェック失敗"));
+                    return;
+                }
+
+                // ログイン確認完了
+                IsBeforeLoginCheck = false;
+
+                Logger.LogInformation(await GetLogMessage("ログインチェック成功"));
+
+                StateHasChanged();
+
+                // 「入力項目でエンターキー押すと誤送信」を無効化
+                await DisableEnterKey();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, await GetLogError(ex));
+                GotoErrorPage();
+            }
+            finally
+            {
+                Logger.LogInformation(await GetLogMessage("終了"));
+            }
+        }
+    }
+}

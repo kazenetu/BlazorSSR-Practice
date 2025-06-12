@@ -10,5 +10,10 @@ namespace WebApp
         /// </summary>
         /// <remarks>デフォルトはtrue</remarks>
         public bool AllLogin { set; get; } = true;
+
+        /// <summary>
+        /// TOTP認証コードを実施するか
+        /// </summary>
+        public bool RequiredAuthentication { set; get; } = false;
     }
 }

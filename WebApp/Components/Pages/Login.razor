@@ -1,11 +1,15 @@
 @page "/login"
 @namespace WebApp.Components.Pages
+@using OtpNet
 @using WebApp.Models
 @using WebApp.Repositories.Interfaces
+@using static System.Net.WebRequestMethods
 @inherits Base.PageBase
 @inject IUserRepository repository
 @inject NavigationManager Navigation
 @inject ILogger<Login> Logger
+@inject IJSRuntime JS
+@inject Microsoft.Extensions.Options.IOptions<SettingConfigModel> Config
 
 <PageTitle>@Title</PageTitle>
 
@@ -37,6 +41,16 @@
         </div>
     </div>
 
+    @if (Model!.RequiredAuthentication)
+    {
+        <div class="row row-margin">
+            <div class="col col-md-6 offset-md-3">
+                <label class="col-3">認証コード</label>
+                <InputText maxlength="6" @bind-Value="Model!.Authentication" />
+            </div>
+        </div>
+    }
+
     <div class="row row-margin" style="margin-top:1em;">
         <div class="col col-md-5 offset-md-5 text-right">
             <input class="btn btn-primary mb-2 float-right" id="send" type="submit" value="ログイン" />
@@ -60,6 +74,12 @@
     protected override void OnInitialized()
     {
         Model ??= new();
+
+        // 認証コード
+        if (Config.Value.RequiredAuthentication)
+        {
+            Model.RequiredAuthentication = Config.Value.RequiredAuthentication;
+        }
 
         // タイトル設定
         Title = "ログイン";
@@ -138,6 +158,26 @@
             {
                 errorMessages.Add("IDまたはパスワードが間違っています。");
             }
+
+            // 認証コードチェック
+            var userModel = repository.GetUser(loginModel!.ID!);
+            if (loginModel.RequiredAuthentication)
+            {
+                if (string.IsNullOrEmpty(loginModel.Authentication))
+                {
+                    errorMessages.Add("認証コードを入力してください。");
+                }
+                else
+                {
+                    var totp = new Totp(Base32Encoding.ToBytes(userModel!.TotpSecrets), totpSize: 6);
+                    if (!totp.VerifyTotp(loginModel.Authentication, out _, VerificationWindow.RfcSpecifiedNetworkDelay))
+                    {
+                        errorMessages.Add("認証コードが間違っています。");
+                    }
+
+                }
+            }
+
             if (errorMessages.Any())
             {
                 Logger.LogInformation(await GetLogMessage($"ログインチェックエラー ログインID:{loginModel!.ID}"));
@@ -148,7 +188,6 @@
             }
 
             // ログイン成功
-            var userModel = repository.GetUser(loginModel!.ID!);
             await SetAsync(UserModel.SessionFullName, userModel!.Fullname);
             await SetAsync(UserModel.SessionLoggedIn, true);
             await SetAsync(UserModel.SessionAdminRole, userModel!.AdminRole);
@@ -180,5 +219,7 @@
     {
         public string? ID;
         public string? Password;
+        public bool RequiredAuthentication { set; get; }
+        public string? Authentication { set; get; }
     }
 }

@@ -18,13 +18,22 @@
 
 <div style="width: 160px; padding: 15px; margin-left: auto; margin-right: auto">
     <div>
+        <button id = "qrButton" @onclick="SetImageAsync" style="display:none"></button>
+
+        <button class="btn btn-success" @onclick="CreateQR" style="@(EnabledQR?"display:none":"display:block");">
+            認証QR有効化
+        </button>
+    </div>
+    <div>
         <img id = "qrImage" />
-        <button id = "qrButton" @onclick="SetImageAsync" style="display:none;">
-            Set Image
+    </div>
+    <div>
+        <button class="btn btn-danger" @onclick="RemoveQR" style="@(EnabledQR?"display:block":"display:none");">
+            認証QR無効化
         </button>
     </div>
 </div>
-<script>
+<script suppress-error="BL9992">
     window.setSource = async (elementId, stream, contentType, title) => {
         const arrayBuffer = stream;
         let blobOptions = {};
@@ -48,6 +57,11 @@
 
 @code
 {
+    /// <summary>
+    /// QRコード表示
+    /// </summary>
+    private bool EnabledQR = false;
+
     /// <summary>
     /// アプリケーション名
     /// </summary>
@@ -79,9 +93,18 @@
     /// </summary>
     private async Task SetImageAsync()
     {
+        // ユーザー取得
         var user = await GetUserAsync();
+
+        // シークレット文字列なしの場合はQR生成なし
+        if (string.IsNullOrEmpty(user!.TotpSecrets)) return;
+
+        EnabledQR = true;
+
+        // 認証コード文字列取得
         var uri = CreateAuthenticationCode(AppName, user!.ID, user!.TotpSecrets);
 
+        // QRイメージ表示
         var imageBuffer = GetQRImage(uri);
         await JS.InvokeVoidAsync("setSource", "qrImage", imageBuffer, "image/png", "QRCode");
     }
@@ -104,6 +127,90 @@
 
             // save to stream as PNG
             return ms.GetBuffer();
+        }
+    }
+
+    /// <summary>
+    /// QR作成
+    /// </summary>
+    private async Task CreateQR()
+    {
+        try
+        {
+            Logger.LogInformation(await GetLogMessage("開始"));
+
+            // シークレット文字列作成
+            var key = OtpNet.KeyGeneration.GenerateRandomKey();
+            var secrets = OtpNet.Base32Encoding.ToString(key);
+
+            // ユーザー取得
+            var userModel = await GetUserAsync();
+            userModel = repository.GetUser(userModel!.ID);
+            userModel = new
+            (userModel!.ID, userModel.Password, userModel.Salt, secrets, userModel.Fullname, userModel.AdminRole, userModel.Disabled, userModel.Version);
+
+            // DB保存
+            if (!repository.SaveSecrets(userModel, userModel!.ID, GetType().Name))
+            {
+                Logger.LogInformation(await GetLogMessage("ユーザーマスタ登録失敗"));
+                await ShowAlert("QRコードの生成に失敗しました");
+                return;
+            }
+
+            // ユーザーマスタ反映
+            await SetAsync(UserModel.SessionUser, userModel.Serialize());
+
+            // QR表示
+            await SetImageAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, await GetLogError(ex));
+            GotoErrorPage();
+        }
+        finally
+        {
+            Logger.LogInformation(await GetLogMessage("終了"));
+        }
+    }
+    
+    /// <summary>
+    /// QR削除
+    /// </summary>
+    private async Task RemoveQR()
+    {
+        try
+        {
+            Logger.LogInformation(await GetLogMessage("開始"));
+
+            // ユーザー取得
+            var userModel = await GetUserAsync();
+            userModel = repository.GetUser(userModel!.ID);
+            userModel = new
+            (userModel!.ID, userModel.Password, userModel.Salt, string.Empty, userModel.Fullname, userModel.AdminRole, userModel.Disabled, userModel.Version);
+
+            // DB保存
+            if (!repository.SaveSecrets(userModel, userModel!.ID, GetType().Name))
+            {
+                Logger.LogInformation(await GetLogMessage("ユーザーマスタ登録失敗"));
+                await ShowAlert("QRコードの生成に失敗しました");
+                return;
+            }
+
+            // ユーザーマスタ反映
+            await SetAsync(UserModel.SessionUser, userModel.Serialize());
+
+            // 画面再表示
+            Navigation.Refresh(true);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, await GetLogError(ex));
+            GotoErrorPage();
+        }
+        finally
+        {
+            Logger.LogInformation(await GetLogMessage("終了"));
         }
     }
 

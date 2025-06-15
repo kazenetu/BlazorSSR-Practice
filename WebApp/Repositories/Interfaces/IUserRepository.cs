@@ -25,6 +25,15 @@ public interface IUserRepository : IRepositoryBase
     bool Save(UserModel target, string userId, string programId);
 
     /// <summary>
+    /// シークレット文字列設定
+    /// </summary>
+    /// <param name="target">登録対象</param>
+    /// <param name="userId">ユーザーID</param>
+    /// <param name="programId">プログラムID</param>
+    /// <returns>成功/失敗</returns>
+    bool SaveSecrets(UserModel target, string userId, string programId);
+
+    /// <summary>
     /// パスワードチェック
     /// </summary>
     /// <param name="userID">ユーザーID</param>

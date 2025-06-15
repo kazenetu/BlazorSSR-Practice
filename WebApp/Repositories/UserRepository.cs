@@ -233,6 +233,42 @@ public class UserRepository : RepositoryBase, IUserRepository
     }
 
     /// <summary>
+    /// シークレット文字列設定
+    /// </summary>
+    /// <param name="target">登録対象</param>
+    /// <param name="userId">ユーザーID</param>
+    /// <param name="programId">プログラムID</param>
+    /// <returns>成功/失敗</returns>
+    public bool SaveSecrets(UserModel target, string userId, string programId)
+    {
+        var sql = new StringBuilder();
+        sql.AppendLine("UPDATE m_user");
+        sql.AppendLine("SET");
+        sql.AppendLine("totp_secrets=@totp_secrets,");
+        sql.AppendLine("version=version+1");
+        sql.AppendLine("WHERE");
+        sql.AppendLine("  unique_name = @unique_name");
+        sql.AppendLine("  AND version = @version");
+
+        // Param設定
+        db!.ClearParam();
+        db.AddParam("@unique_name", target.ID);
+        if (string.IsNullOrEmpty(target.TotpSecrets))
+            db.AddParam("@totp_secrets", DBNull.Value);
+        else
+            db.AddParam("@totp_secrets", target.TotpSecrets);
+        db.AddParam("@version", target.Version);
+
+        // SQL発行
+        if (db.ExecuteNonQuery(sql.ToString()) == 1)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
     /// パスワード作成
     /// </summary>
     /// <param name="password">パスワード</param>

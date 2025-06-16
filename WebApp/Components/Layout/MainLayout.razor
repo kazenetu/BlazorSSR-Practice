@@ -19,15 +19,13 @@
                     @userName
                 </div>
 
-                @if (!Config.Value.RequiredAuthentication)
-                {
-                    <div class="col">
-                        <NavLink class="btn btn-outline-success" href="qr" >
+                <div class="col text-end">
+                    @if (Config.Value.RequiredAuthentication)
+                    {
+                        <NavLink class="btn btn-outline-success" style="margin-right: 3rem;" href="qr" >
                             <span>認証QRコード</span>
                         </NavLink>
-                    </div>
-                }
-                <div class="col text-end">
+                    }
                     <button @onclick="ChangePasssword" class="btn btn-outline-success @DisablePassrordChange()">パスワード変更</button>
                 </div>
                 <div class="col text-end">

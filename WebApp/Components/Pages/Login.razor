@@ -8,7 +8,6 @@
 @inject IUserRepository repository
 @inject NavigationManager Navigation
 @inject ILogger<Login> Logger
-@inject IJSRuntime JS
 @inject Microsoft.Extensions.Options.IOptions<SettingConfigModel> Config
 
 <PageTitle>@Title</PageTitle>
@@ -27,21 +26,32 @@
     </div>
 }
 <EditForm method="post" Model="Model" OnValidSubmit="SubmitLogin">
-    <div class="row  row-margin">
-        <div class="col col-md-6 offset-md-3">
-            <label class="col-3">ID</label>
-            <InputText @bind-Value="Model!.ID" />
+    @if (!ShowAuthentication)
+    {
+        <div class="row  row-margin">
+            <div class="col col-md-6 offset-md-3">
+                <label class="col-3">ID</label>
+                <InputText @bind-Value="Model!.ID" />
+            </div>
         </div>
-    </div>
 
-    <div class="row row-margin">
-        <div class="col col-md-6 offset-md-3">
-            <label class="col-3">パスワード</label>
-            <InputText type="password" @bind-Value="Model!.Password" />
+        <div class="row row-margin">
+            <div class="col col-md-6 offset-md-3">
+                <label class="col-3">パスワード</label>
+                <InputText type="password" @bind-Value="Model!.Password" />
+            </div>
         </div>
-    </div>
 
-    @if (Model!.RequiredAuthentication)
+        <div class="row row-margin" style="margin-top:1em;">
+            <div class="col col-md-5 offset-md-5 text-right">
+                <input class="btn btn-primary mb-2 float-right" id="send" type="submit" value="ログイン" />
+            </div>
+        </div>
+    }
+</EditForm>
+
+<EditForm method="post" Model="Model" OnValidSubmit="SubmitAuthentication">
+    @if (ShowAuthentication)
     {
         <div class="row row-margin">
             <div class="col col-md-6 offset-md-3">
@@ -49,19 +59,24 @@
                 <InputText maxlength="6" @bind-Value="Model!.Authentication" />
             </div>
         </div>
-    }
 
-    <div class="row row-margin" style="margin-top:1em;">
-        <div class="col col-md-5 offset-md-5 text-right">
-            <input class="btn btn-primary mb-2 float-right" id="send" type="submit" value="ログイン" />
+        <div class="row row-margin" style="margin-top:1em;">
+            <div class="col col-md-5 offset-md-5 text-right">
+                <input class="btn btn-primary mb-2 float-right" id="send" type="submit" value="認証" />
+            </div>
         </div>
-    </div>
+    }
 </EditForm>
 
 @code
 {
     [SupplyParameterFromForm]
     private LoginModel? Model { get; set; }
+
+    /// <summary>
+    /// 認証コード表示するか
+    /// </summary>
+    private bool ShowAuthentication = false;
 
     /// <summary>
     /// エラーメッセージリスト
@@ -159,22 +174,85 @@
                 errorMessages.Add("IDまたはパスワードが間違っています。");
             }
 
+            if (errorMessages.Any())
+            {
+                Logger.LogInformation(await GetLogMessage($"ログインチェックエラー ログインID:{loginModel!.ID}"));
+
+                // 画面反映
+                StateHasChanged();
+                return;
+            }
+
+            var userModel = repository.GetUser(loginModel!.ID!);
+            if (Model!.RequiredAuthentication && !string.IsNullOrEmpty(userModel!.TotpSecrets))
+            {
+                // ユーザーマスタに認証コードが設定されている場合は認証コード入力を促す
+                ShowAuthentication = true;
+                StateHasChanged();
+            }
+            else
+            {
+                // ユーザーマスタに認証コードが設定されていない場合はログイン成功
+                await SetAsync(UserModel.SessionFullName, userModel!.Fullname);
+                await SetAsync(UserModel.SessionLoggedIn, true);
+                await SetAsync(UserModel.SessionAdminRole, userModel!.AdminRole);
+                await SetAsync(UserModel.SessionUser, userModel.Serialize());
+
+                Logger.LogInformation(await GetLogMessage($"ログイン成功"));
+
+                // 画面遷移
+                Navigation.NavigateTo("/");
+                Navigation.Refresh(true);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, await GetLogError(ex));
+            GotoErrorPage();
+        }
+        finally
+        {
+            Logger.LogInformation(await GetLogMessage("終了"));
+        }
+    }
+
+    /// <summary>
+    /// 認証コード確定
+    /// </summary>
+    /// <param name="editContext"></param>
+    private async void SubmitAuthentication(EditContext editContext)
+    {
+        try
+        {
+            Logger.LogInformation(await GetLogMessage("開始"));
+
+            // エラーメッセージクリア
+            errorMessages.Clear();
+
+            // 未入力チェック
+            var loginModel = editContext.Model as LoginModel;
+            if (string.IsNullOrEmpty(loginModel!.Authentication))
+            {
+                errorMessages.Add("認証コードを入力してください。");
+            }
+
+            if (errorMessages.Any())
+            {
+                Logger.LogInformation(await GetLogMessage($"入力エラー ログインID:{loginModel?.ID ?? "なし"}"));
+
+                // 画面反映
+                StateHasChanged();
+                return;
+            }
+
             // 認証コードチェック
             var userModel = repository.GetUser(loginModel!.ID!);
             if (loginModel.RequiredAuthentication)
             {
-                if (string.IsNullOrEmpty(loginModel.Authentication))
+                var totp = new Totp(Base32Encoding.ToBytes(userModel!.TotpSecrets), totpSize: 6);
+                if (!totp.VerifyTotp(loginModel.Authentication, out _, VerificationWindow.RfcSpecifiedNetworkDelay))
                 {
-                    errorMessages.Add("認証コードを入力してください。");
-                }
-                else
-                {
-                    var totp = new Totp(Base32Encoding.ToBytes(userModel!.TotpSecrets), totpSize: 6);
-                    if (!totp.VerifyTotp(loginModel.Authentication, out _, VerificationWindow.RfcSpecifiedNetworkDelay))
-                    {
-                        errorMessages.Add("認証コードが間違っています。");
-                    }
-
+                    errorMessages.Add("認証コードが間違っています。");
                 }
             }
 

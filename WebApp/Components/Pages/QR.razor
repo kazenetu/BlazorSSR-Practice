@@ -16,24 +16,24 @@
 
 <h1>@Title</h1>
 
-    <div style="width: 160px; padding: 15px; margin-left: auto; margin-right: auto">
+    <div style="padding: 15px;">
         <div>
             <button id = "qrButton" @onclick="SetImageAsync" style="display:none"></button>
 
             @if (IsLoaded)
             {
-                <button class="btn btn-success" @onclick="CreateQR" style="@(EnabledQR?"display:none":"display:block");">
+                <button class="btn btn-success" @onclick="CreateQR" style="@(EnabledQR?"display:none":"display:block");margin-left: auto;margin-right: auto;">
                     認証QR有効化
                 </button>
             }
         </div>
-        <div>
+        <div style="text-align:center">
             <img id = "qrImage" />
         </div>
         <div>
             @if (IsLoaded)
             {
-                <button class="btn btn-danger" @onclick="RemoveQR" style="@(EnabledQR?"display:block":"display:none");">
+                <button class="btn btn-danger" @onclick="RemoveQR" style="@(EnabledQR?"display:block":"display:none");margin-left: auto;margin-right: auto;">
                     認証QR無効化
                 </button>
             }

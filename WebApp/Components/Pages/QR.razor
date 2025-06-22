@@ -113,15 +113,13 @@
     /// </summary>
     private async Task SetImageAsync()
     {
-        IsLoaded = true;
-
         // ユーザー取得
         var user = await GetUserAsync();
 
         // シークレット文字列なしの場合はQR生成なし
         if (string.IsNullOrEmpty(user!.TotpSecrets))
         {
-            StateHasChanged();
+            IsLoaded = true;
             return;
         }
 
@@ -133,7 +131,7 @@
         // QRイメージ表示
         var imageBuffer = GetQRImage(uri);
         await JS.InvokeVoidAsync("setSource", "qrImage", imageBuffer, "image/png", "QRCode");
-        StateHasChanged();
+        IsLoaded = true;
     }
 
     /// <summary>

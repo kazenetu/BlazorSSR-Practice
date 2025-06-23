@@ -4,6 +4,10 @@ Blazor静的サーバーレンダリング (SSR) の実装確認
 ## 実行環境
 * .NET8 SDK
 
+##　デバッグ時のID/パスワード
+* aa/aa
+
+
 ## ライセンス
 * [MITライセンス](LICENSE)  
 * 使用パッケージは[THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt)を参照

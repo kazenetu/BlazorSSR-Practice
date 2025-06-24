@@ -4,12 +4,28 @@ Blazor静的サーバーレンダリング (SSR) の実装確認
 ## 実行環境
 * .NET8 SDK
 
+## デバッグ時のID/パスワード
+* aa/aa
+
+
 ## ライセンス
 * [MITライセンス](LICENSE)  
 * 使用パッケージは[THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt)を参照
 
 ## 実行方法
-```dotnet run --project WebApp/WebApp.csproj```
+* ```dotnet run --project WebApp/WebApp.csproj```
+* ワンタイムキー有効
+  * 実行時にパラメータ指定  
+    ```dotnet run --project WebApp/WebApp.csproj -- -p Setting:RequiredAuthentication=true```
+  * appsettings.json設定  
+    ```json
+    {
+        "Setting": {
+            "RequiredAuthentication": "true"
+        }
+    }
+
+    ```
 
 ## 注意
 * レイアウト崩れが発生した場合は```dotnet clean```を試すこと

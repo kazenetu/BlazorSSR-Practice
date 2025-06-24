@@ -1,4 +1,5 @@
 ﻿@namespace WebApp.Components.Layout
+@inject Microsoft.Extensions.Options.IOptions<SettingConfigModel> Config
 @inject NavigationManager Navigation
 @inherits LayoutComponentBase
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
@@ -14,13 +15,20 @@
         <div class="top-row px-4" style="z-index:5">
             @if (loggedIn)
             {
-                <div class="col">
+                <div class="col-4">
                     @userName
                 </div>
-                <div class="col text-end">
+
+                <div class="col text-center">
+                    @if (Config.Value.RequiredAuthentication)
+                    {
+                        <NavLink class="btn btn-outline-success" style="margin-right: 3rem;" href="qr" >
+                            <span>認証QRコード</span>
+                        </NavLink>
+                    }
                     <button @onclick="ChangePasssword" class="btn btn-outline-success @DisablePassrordChange()">パスワード変更</button>
                 </div>
-                <div class="col text-end">
+                <div class="col-2 text-end">
                     <button @onclick="Logout" class="btn btn-outline-success">ログアウト</button>
                 </div>
             }

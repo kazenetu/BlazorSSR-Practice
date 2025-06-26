@@ -489,21 +489,24 @@
     /// <returns>ダウンロード用モデル</returns>
     protected DownLoadModel CompressMultiplePDFsIntoZIP(string zipFileName ,LayoutKinds layoutKind, List<IData> dataList, int pdfFileColumnIndex)
     {
-        // 1件ごとにPDF作成、格納
+        // キーごとに出力用データリストを分ける
+        var dataListGroup = dataList.GroupBy(item => item.GetColumn(pdfFileColumnIndex)).ToList();
+
+        // PDF作成、格納
         var downLoadModels = new List<DownLoadModel>();
-        foreach(var data in dataList)
+        foreach (var data in dataListGroup)
         {
-            var pdfMain = new PdfMain(layoutKind, new List<IData>{data});
+            var pdfMain = new PdfMain(layoutKind, data.Select(item => item).ToList());
             using (MemoryStream ms = new MemoryStream())
             {
                 // PDF作成
                 pdfMain.Create(ms);
 
-                var pdfFileName = data.GetColumn(pdfFileColumnIndex).value.ToString();
+                var pdfFileName = data.First().GetColumn(pdfFileColumnIndex).value.ToString();
                 downLoadModels.Add(new DownLoadModel($"{pdfFileName}.pdf", ms.GetBuffer()));
             }
         }
-        
+
         // ZIP圧縮、ファイル生成
         byte[] contentData;
         using(MemoryStream memoryStream = new MemoryStream())

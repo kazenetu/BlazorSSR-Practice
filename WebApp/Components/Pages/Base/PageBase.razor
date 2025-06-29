@@ -503,7 +503,7 @@
                 pdfMain.Create(ms);
 
                 var pdfFileName = data.First().GetColumn(pdfFileColumnIndex).value.ToString();
-                downLoadModels.Add(new DownLoadModel($"{pdfFileName}.pdf", ms.GetBuffer()));
+                downLoadModels.Add(new DownLoadModel($"{pdfFileName}.pdf", ms.ToArray()));
             }
         }
 

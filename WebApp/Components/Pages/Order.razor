@@ -423,7 +423,7 @@ else
                 var pdfFileName = $"test.pdf"; 
 
                 // 「PDFビューアのファイル保存」時のファイル名とビューア表示用PDFデータを返す
-                return new DownLoadModel(pdfFileName, ms.GetBuffer());
+                return new DownLoadModel(pdfFileName, ms.ToArray());
             }
         }
         catch (Exception ex)

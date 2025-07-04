@@ -36,7 +36,7 @@ public class Program
         
         // Configを専用Modelに設定
         var dbRoot = builder.Configuration.GetSection("DB");
-        var dbSetting = builder.Configuration.GetSection("Setting");
+        var dbSetting = builder.Configuration.GetSection("Settings");
 
         #if DEBUG
             var dbConnectionStrings = dbRoot.GetSection("ConnectionStrings");

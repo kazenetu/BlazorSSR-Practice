@@ -16,11 +16,11 @@ Blazor静的サーバーレンダリング (SSR) の実装確認
 * ```dotnet run --project WebApp/WebApp.csproj```
 * ワンタイムキー有効
   * 実行時にパラメータ指定  
-    ```dotnet run --project WebApp/WebApp.csproj -- -p Setting:RequiredAuthentication=true```
+    ```dotnet run --project WebApp/WebApp.csproj -- -p Settings:RequiredAuthentication=true```
   * appsettings.json設定  
     ```json
     {
-        "Setting": {
+        "Settings": {
             "RequiredAuthentication": "true"
         }
     }

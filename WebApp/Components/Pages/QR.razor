@@ -11,6 +11,7 @@
 @inject NavigationManager Navigation
 @inject ILogger<Login> Logger
 @inject IJSRuntime JS
+@inject Microsoft.Extensions.Options.IOptions<SettingConfigModel> Config
 
 <PageTitle>@Title</PageTitle>
 
@@ -23,7 +24,7 @@
             @if (IsLoaded)
             {
                 <h5 style="@(EnabledQR?"display:none":"display:block");padding:2em;text-align:center;">
-                    有効にするとログイン時にワンタイムパスワードの入力が必須になります。
+                    有効にするとログイン時にワンタイムパスワードの入力が必要になります。
                 </h5>
 
                 <h5 style="@(EnabledQR?"display:block":"display:none");padding:2em;text-align:center;">
@@ -85,7 +86,7 @@
     /// <summary>
     /// アプリケーション名
     /// </summary>
-    private const string AppName = "test";
+    private string AppName = string.Empty;
 
     /// <summary>
     /// 認証コード用フォーマット文字列
@@ -246,6 +247,9 @@
     {
         // タイトル設定
         Title = "認証QRコード";
+
+        // QRアプリケーション名
+        AppName = Config.Value.QRAppName;
     }
 
     /// <summary>

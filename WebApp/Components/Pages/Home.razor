@@ -377,7 +377,11 @@ Welcome to your new app.
         {
             Logger.LogInformation(await GetLogMessage("開始"));
 
-            return CreateExcel("test.xlsx", GetWorkBook(10));
+            var prefixExcelFileName = "test";
+            var dateString = DateTime.UtcNow.ToJstTime().ToString("yyyyMMdd");
+            var excelFileName = $"{prefixExcelFileName}_{dateString}.xlsx";
+
+            return CreateExcel(excelFileName, GetWorkBook(10));
         }
         catch (Exception ex)
         {
@@ -483,7 +487,12 @@ Welcome to your new app.
                 // PDF作成
                 pdfMain.Create(ms);
 
-                return new DownLoadModel("test.pdf", ms.ToArray());
+                //「PDFビューアのファイル保存」時のファイル名指定
+                var prefixPdfFileName = "test";
+                var dateString = DateTime.UtcNow.ToJstTime().ToString("yyyyMMdd");
+                var pdfFileName = $"{prefixPdfFileName}_{dateString}.pdf";
+
+                return new DownLoadModel(pdfFileName, ms.ToArray());
             }
         }
         catch (Exception ex)
@@ -515,8 +524,10 @@ Welcome to your new app.
             pdfDataList.Add(new PdfReport.DataLists.Envelope("123-4567","123456789012345678","１２３４５６７８"));
             pdfDataList.Add(new PdfReport.DataLists.Envelope("123-4567","Ａ県Ｂ市123-4","サンプル太郎"));
 
-            // HACK ZIPファイル名指定
-            var zipFileName = $"test.zip"; 
+            // ZIPファイル名指定
+            var prefixZipFileName = "test";
+            var dateString = DateTime.UtcNow.ToJstTime().ToString("yyyyMMdd");
+            var zipFileName = $"{prefixZipFileName}_{dateString}.zip";
 
             // ZIPファイル作成
             return CompressMultiplePDFsIntoZIP(zipFileName, LayoutKinds.Envelope, pdfDataList, 2);

@@ -301,7 +301,7 @@ public class OrderRepository : RepositoryBase, IOrderRepository
         sql.AppendLine("VALUES (@productName, @unitPrice, @qty, @date, @user, @program, @date, @user, @program, 1) ");
 
         // Param設定
-        var date = DateTime.Now;
+        var date = DateTime.UtcNow.ToJstTime();
         db!.ClearParam();
         db.AddParam("@productName", target.ProductName);
         db.AddParam("@unitPrice", target.UnitPrice);
@@ -342,7 +342,7 @@ public class OrderRepository : RepositoryBase, IOrderRepository
         sql.AppendLine("  productName = @productName");
 
         // Param設定
-        var date = DateTime.Now;
+        var date = DateTime.UtcNow.ToJstTime();
         db!.ClearParam();
         db.AddParam("@productName", target.ProductName);
         db.AddParam("@unitPrice", target.UnitPrice);
@@ -380,7 +380,7 @@ public class OrderRepository : RepositoryBase, IOrderRepository
             sql.AppendLine("(@productName, @unitPrice, @qty, @date, @user, @program, @date, @user, @program, 1) ");
             var sqlString = sql.ToString();
 
-            var date = DateTime.Now;
+            var date = DateTime.UtcNow.ToJstTime();
 
             // 登録処理
             var insertCount = 0;

@@ -135,10 +135,11 @@
                 // PDF作成
                 pdfMain.Create(ms);
 
-                // HACK 「PDFビューアのファイル保存」時のファイル名指定
-                var pdfFileName = $"test.pdf"; 
+                // TODO 「PDFビューアのファイル保存」時のファイル名指定
+                var prefixPdfFileName = "test";
+                var dateString = DateTime.UtcNow.ToJstTime().ToString("yyyyMMdd");
+                var pdfFileName = $"{prefixPdfFileName}_{dateString}.pdf";
 
-                // 「PDFビューアのファイル保存」時のファイル名とビューア表示用PDFデータを返す
                 return new DownLoadModel(pdfFileName, ms.ToArray());
             }
         }

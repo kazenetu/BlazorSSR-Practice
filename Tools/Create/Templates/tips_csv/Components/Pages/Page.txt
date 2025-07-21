@@ -127,8 +127,10 @@
             //     data.AppendLine($"{dbRecord.No},{dbRecord.Key},{dbRecord.UnitPrice},{dbRecord.Qty},{dbRecord.TotalPrice}");
             // }
 
-            // HACK CSVファイル名指定
-            var csvFileName = $"test.csv"; 
+            // CSVファイル名指定
+            var prefixCsvFileName = "test";
+            var dateString = DateTime.UtcNow.ToJstTime().ToString("yyyyMMdd");
+            var csvFileName = $"{prefixCsvFileName}_{dateString}.csv";
 
             // CSVファイル名とCSVデータを返す
             return new DownLoadModel(csvFileName, data);

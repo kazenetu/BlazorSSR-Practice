@@ -62,7 +62,7 @@ public partial class $ReposiotryName$Repository : RepositoryBase, I$ReposiotryNa
             var sqlString = sql.ToString();
 
             //　登録日時取得
-            var date = DateTime.Now;
+            var date = DateTime.UtcNow.ToJstTime();
 
             // 登録処理
             var insertCount = 0;

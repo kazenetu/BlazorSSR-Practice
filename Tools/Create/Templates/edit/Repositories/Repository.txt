@@ -127,7 +127,7 @@ public partial class $ReposiotryName$Repository : RepositoryBase, I$ReposiotryNa
         // sql.AppendLine("VALUES (@productName, @unitPrice, @qty, @date, @user, @program, @date, @user, @program, 1) ");
 
         // TODO Param設定
-        // var date = DateTime.Now;
+        // var date = DateTime.UtcNow.ToJstTime();
         // db!.ClearParam();
         // db.AddParam("@productName", target.Key);
         // db.AddParam("@unitPrice", target.UnitPrice);
@@ -170,7 +170,7 @@ public partial class $ReposiotryName$Repository : RepositoryBase, I$ReposiotryNa
         // sql.AppendLine("  productName = @productName");
 
         // TODO Param設定
-        // var date = DateTime.Now;
+        // var date = DateTime.UtcNow.ToJstTime();
         // db!.ClearParam();
         // db.AddParam("@productName", target.Key);
         // db.AddParam("@unitPrice", target.UnitPrice);

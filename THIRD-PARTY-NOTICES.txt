@@ -33,12 +33,50 @@ licenseUrl:https://licenses.nuget.org/PostgreSQL
 license Type:PostgreSQL
 
 ####################################################################################################
-Package:PDFsharp
-Version:6.1.1
-project URL:https://docs.pdfsharp.net/
-Description:PDFsharp is the Open Source library for creating and modifying PDF documents using .NET. It has an easy-to-use API that allows developers to generate or modify PDF files programmatically. PDFsharp can be used for various applications, including creating reports, invoices, and other types of documents.
-This package does not depend on Windows and can be used on any .NET compatible platform including Linux and macOS.
-See https://docs.pdfsharp.net for details.
+Package:Otp.NET
+Version:1.4.0
+project URL:https://github.com/kspearrin/Otp.NET
+Description:An implementation of TOTP and HOTP which are commonly used for multi factor authentication by using a shared key between the client and the server to generate and verify one time use codes.
+
+For documentation and examples visit the project website on GitHub at https://github.com/kspearrin/Otp.NET
+licenseUrl:https://www.nuget.org/packages/Otp.NET/1.4.0/License
+license Type:LICENSE.txt
+
+####################################################################################################
+Package:SkiaSharp
+Version:3.119.0
+project URL:https://go.microsoft.com/fwlink/?linkid=868515
+Description:SkiaSharp is a cross-platform 2D graphics API for .NET platforms based on Google's Skia Graphics Library.
+It provides a comprehensive 2D API that can be used across mobile, server and desktop models to render images.
+licenseUrl:https://licenses.nuget.org/MIT
+license Type:MIT
+
+####################################################################################################
+Package:SkiaSharp.NativeAssets.Linux.NoDependencies
+Version:3.119.0
+project URL:https://go.microsoft.com/fwlink/?linkid=868515
+Description:SkiaSharp is a cross-platform 2D graphics API for .NET platforms based on Google's Skia Graphics Library.
+It provides a comprehensive 2D API that can be used across mobile, server and desktop models to render images.
+
+This variation of the Linux native assets includes the build of libSkiaSharp.so that does not have any dependencies on third-party libraries.
+
+The complete dependency list is:
+ - libpthread.so.0
+ - libdl.so.2
+ - libm.so.6
+ - libc.so.6
+ - ld-linux-x86-64.so.2
+
+The excluded dependencies are:
+ - Fontconfig
+licenseUrl:https://licenses.nuget.org/MIT
+license Type:MIT
+
+####################################################################################################
+Package:SkiaSharp.QrCode
+Version:0.7.0
+project URL:https://github.com/guitarrapc/Skia.QrCode
+Description:QrCode for .NET Standard with Skia.Sharp. No GDI, no System.Drawing.
 licenseUrl:https://licenses.nuget.org/MIT
 license Type:MIT
 

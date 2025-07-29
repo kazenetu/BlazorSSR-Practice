@@ -22,12 +22,11 @@ namespace PdfReport.Utilites
         /// <returns>フォントデータ</returns>
         public byte[] GetFont(string faceName)
         {
-            switch (faceName)
+            return faceName switch
             {
-                case "GenShinGothic#Medium":
-                    return LoadFontData(GEN_SHIN_GOTHIC_MEDIUM_TTF);
-            }
-            throw new ArgumentException("No faceName with name " + faceName);
+                "GenShinGothic#Medium" => LoadFontData(GEN_SHIN_GOTHIC_MEDIUM_TTF),
+                _ => throw new ArgumentException("No faceName with name " + faceName),
+            };
         }
 
         /// <summary>
@@ -48,10 +47,7 @@ namespace PdfReport.Utilites
             }
 
             // デフォルトのフォント
-            var defaultFont = PlatformFontResolver.ResolveTypeface("Verdana", isBold, isItalic);
-            if (defaultFont is null)
-                throw new ArgumentException("No familyName with name " + familyName);
-
+            var defaultFont = PlatformFontResolver.ResolveTypeface("Verdana", isBold, isItalic) ?? throw new ArgumentException("No familyName with name " + familyName);
             return defaultFont;
         }
 
@@ -64,16 +60,11 @@ namespace PdfReport.Utilites
         {
             var assembly = Assembly.GetExecutingAssembly();
 
-            using (Stream? stream = assembly.GetManifestResourceStream(resourceName))
-            {
-                if (stream is null)
-                    throw new ArgumentException("No resource with name " + resourceName);
-
-                int count = (int)stream.Length;
-                byte[] data = new byte[count];
-                stream.Read(data, 0, count);
-                return data;
-            }
+            using Stream? stream = assembly.GetManifestResourceStream(resourceName) ?? throw new ArgumentException("No resource with name " + resourceName);
+            int count = (int)stream.Length;
+            byte[] data = new byte[count];
+            stream.Read(data, 0, count);
+            return data;
         }
     }
 }

@@ -26,17 +26,17 @@ namespace PdfReport
         /// <summary>
         /// 帳票レイアウト
         /// </summary>
-        private ILayout? _layout = null;
+        private ILayout? Layout = null;
 
         /// <summary>
         /// 出力用データリスト
         /// </summary>
-        private List<IData>? _dataList = null;
+        private List<IData>? DataList = null;
 
         /// <summary>
         /// PDFsharpドキュメントインスタンス
         /// </summary>
-        private PdfDocument? _document = null;
+        private PdfDocument? Document = null;
 
         /// <summary>
         /// コンストラクタ
@@ -76,21 +76,21 @@ namespace PdfReport
         /// <param name="stream">出力用Stream</param>
         public void Create(Stream stream)
         {
-            if (_layout is null)
+            if (Layout is null)
                 throw new Exception("帳票レイアウトが指定されていません。");
 
-            if (_dataList is null || !_dataList.Any())
+            if (DataList is null || !DataList.Any())
                 throw new Exception("出力用データリストが指定されていません。");
 
-            if (_document is null)
+            if (Document is null)
                 throw new Exception("ドキュメントが生成されていません。");
 
             //帳票レイアウト書き込み
-            if (!_layout.Create(_document, _dataList))
+            if (!Layout.Create(Document, DataList))
                 throw new Exception("帳票レイアウト失敗");
 
             // 出力用Streamに出力
-            _document.Save(stream);
+            Document.Save(stream);
         }
 
         /// <summary>
@@ -100,10 +100,10 @@ namespace PdfReport
         /// <param name="dataList">出力用データリスト</param>
         private void SetParams(ILayout? layout, List<IData> dataList)
         {
-            _layout = layout;
-            _dataList = dataList;
+            Layout = layout;
+            DataList = dataList;
 
-            _document = new PdfDocument();
+            Document = new PdfDocument();
         }
     }
 }

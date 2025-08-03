@@ -42,7 +42,6 @@ public class PostMasterRepository : RepositoryBase, IPostMasterRepository
         foreach (DataRow row in sqlResult.Rows)
         {
             // 郵便番号・住所 クラス インスタンス作成
-            var PostCd = postCd;
             var todohukenKana = Parse<string>(row["todohuken_kana"]);
             var shikusonKana = Parse<string>(row["sikuson_kana"]);
             var machiKana = Parse<string>(row["machi_kana"]);
@@ -52,7 +51,7 @@ public class PostMasterRepository : RepositoryBase, IPostMasterRepository
             var dbAddress = Parse<string>(row["address"]);
             var dbAddressKana = Parse<string>(row["address_kana"]);
 
-            return new PostMasterModel(PostCd, todohuken, shikuson, machi, todohukenKana, shikusonKana, machiKana, dbAddress, dbAddressKana);
+            return new PostMasterModel(postCd, todohuken, shikuson, machi, todohukenKana, shikusonKana, machiKana, dbAddress, dbAddressKana);
         }
         return new PostMasterModel(string.Empty, string.Empty, string.Empty, string.Empty);
     }
@@ -66,7 +65,7 @@ public class PostMasterRepository : RepositoryBase, IPostMasterRepository
     public PostMasterModel SearchAddress(string address)
     {
         var sql = new StringBuilder();
-        sql.AppendLine("SELECT post_cd, todohuken_kana, sikuson_kana, machi_kana, todohuken, sikuson, machi FROM post_master ");
+        sql.AppendLine("SELECT post_cd, todohuken_kana, sikuson_kana, machi_kana, todohuken, sikuson, machi, address, address_kana FROM post_master ");
         sql.AppendLine("where @address like todohuken||sikuson||machi||'%'");
 
         // パラメータ初期化
@@ -100,10 +99,10 @@ public class PostMasterRepository : RepositoryBase, IPostMasterRepository
         }
 
         // リストが存在する場合、最小文字数のModelを返す
-        if (postMasterModels.Any())
+        if (postMasterModels.Count != 0)
         {
             return postMasterModels.OrderBy(item => item.mismatchCount).First().model;
-   
+
         }
 
         return new PostMasterModel(string.Empty, string.Empty, string.Empty, string.Empty);
@@ -150,7 +149,7 @@ public class PostMasterRepository : RepositoryBase, IPostMasterRepository
         }
 
         // リストが存在する場合、最小文字数のModelでフリガナを作成して返す
-        if (postMasterModels.Any())
+        if (postMasterModels.Count != 0)
         {
             var target = postMasterModels.OrderBy(item => item.mismatchCount).First().model;
             var addressKanji = $"{target.Todohuken}{target.Shikuson}{target.Machi}";
@@ -160,5 +159,5 @@ public class PostMasterRepository : RepositoryBase, IPostMasterRepository
         }
 
         return string.Empty;
-   }
+    }
 }

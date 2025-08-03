@@ -27,7 +27,6 @@ public class Program
         builder.Host.UseNLog();        
 
         // Add services to the container.
-        //builder.Services.AddRazorComponents();
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
 
@@ -72,7 +71,6 @@ public class Program
             ContentTypeProvider = provider
         });
 
-        //app.MapRazorComponents<App>();
         app.MapRazorComponents<App>()
             .AddInteractiveServerRenderMode();
 

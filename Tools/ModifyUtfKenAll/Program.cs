@@ -194,6 +194,9 @@ class Program
                 // 特別処理：北海道帯広市の「西９９～９９線」はクリア
                 if (!isClear && Regex.IsMatch(remarksKanji[index], @"西([\uff10-\uff19])*(\u301c)*([\uff10-\uff19])*線")) isClear = true;
 
+                // 特別処理：ビルの階層はクリア
+                if (!isClear && Regex.IsMatch(remarksKanji[index], @"([\uff10-\uff19])+階")) isClear = true;
+
                 // 町域名のクリア
                 if (isClear)
                 {

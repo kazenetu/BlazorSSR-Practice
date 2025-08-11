@@ -264,3 +264,42 @@ dotnet run --project Tools/Create/Create.csproj <RunMode>　<uri> [options]
   #スニペット「CSV」ページ生成　ページuri:ex-csv (クラス名:ExCsv) キー型:string タイトル名:スニペット「CSV」 リポジトリ名:Shared
   dotnet run --project Tools/Create/Create.csproj tips_csv ex-csv --edit_key_type string --title "スニペット「CSV」" -rep Shared
  ```
+
+## 郵便番号データ加工ツール
+[日本郵政が配布する郵便番号データ(utf_ken_all.csv)](https://www.post.japanpost.jp/zipcode/dl/utf-zip.html)の加工結果を出力する。
+
+### 生成ファイル
+カレントパスにOutputディレクトリに下記を生成する
+* PostData.csv
+
+### ファイルレイアウト
+
+|カラム名|補足|
+|---|---|
+|郵便番号||
+|都道府県名カナ||
+|市町村名カナ||
+|町域名カナ|未設定の場合あり| 
+|都道府県名||
+|市町村名||
+|町域名|未設定の場合あり| 
+|住所|郵便番号検索時に使用| 
+|住所カナ|郵便番号検索時に使用| 
+
+### コマンド
+```sh
+#ルートパス上で実行
+dotnet run --project Tools\ModifyUtfKenAll/ModifyUtfKenAll.csproj <InputFile>
+```
+
+<h4>○必須パラメータ</h4>  
+
+|パラメータ名|設定値|概要|
+|---|---|---|
+|InputFile|読込むcsvファイルのフルパス|utf_ken_all.csvを指定すること|
+
+
+### 実行例
+  ```sh
+  dotnet run --project Tools\ModifyUtfKenAll/ModifyUtfKenAll.csproj .\ExampleFiles\utf_ken_all_tokyo.csv
+ ```

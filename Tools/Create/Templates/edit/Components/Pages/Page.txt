@@ -99,8 +99,9 @@
 
                 Logger.LogInformation(await GetLogMessage("ログインチェック成功"));
 
-                // 対象データを検索
-                Model = repository.GetEditData(Key ?? string.Empty);
+                // 一覧から遷移した場合、対象データを検索
+                if (Key is not null)
+                    Model = repository.GetEditData(Key.Value);
 
                 StateHasChanged();
 
@@ -164,9 +165,9 @@
             *@
 
             // 楽観的ロック確認
-            if (!string.IsNullOrEmpty(Key) && Model is not null)
+            if (Key is not null && Model is not null)
             {
-                var dbModel = repository.GetEditData(Key);
+                var dbModel = repository.GetEditData(Key.Value);
                 if (Model.Version != dbModel.Version)
                 {
                     Logger.LogInformation(await GetLogMessage($"楽観ロックエラー 取得時:{Model.Version} 最新:{dbModel.Version}"));
@@ -177,13 +178,13 @@
             }
 
             // 新規登録時に「既存データのキー項目を入力」チェック
-            if (string.IsNullOrEmpty(Key) && Model is not null)
+            if (Key is not null && Model is not null)
             {
                 // DB取得
                 var dbResult = repository.GetEditData(Model.Key);
 
                 // データが存在する場合はエラーとする
-                if (!string.IsNullOrEmpty(dbResult.Key))
+                if (dbResult is not null)
                 {
                     Logger.LogInformation(await GetLogMessage($"既存データ登録済エラー 対象データ:{dbResult.Key}"));
 

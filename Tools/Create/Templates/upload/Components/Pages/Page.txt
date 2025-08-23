@@ -272,7 +272,7 @@
                 *@
 
                 // 主キーで既存レコードのインデックスを取得
-                var existRecordIndex = dbKeys.FindIndex(dbKey => dbKey.Key == key);
+                var existRecordIndex = dbKeys.FindIndex(dbKey => dbKey.Key.ToString() == key);
 
                 // 既存レコードがある場合は登録なし
                 if (existRecordIndex >= 0)

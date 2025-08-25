@@ -3,7 +3,7 @@
 @inject IJSRuntime JS
 @implements IAsyncDisposable
 
-<InputFile OnChange="ChangeFile" @ref="filePicker" style="display:none;" />
+<InputFile OnChange="ChangeFile" @ref="filePicker" style="display:none;" accept=@($"\".{Exiextension}\"") />
 <div class="input-group mb-3">
     <span class="input-group-text" id="inputGroup-sizing-default">
         <button type="button" @onclick="() => OnFileInit()" class="btn btn-success btn-sm">ファイル選択</button>

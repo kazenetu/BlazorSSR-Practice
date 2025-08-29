@@ -196,6 +196,7 @@ class Program
 
                 // 特別処理：ビルの階層はクリア
                 if (!isClear && Regex.IsMatch(remarksKanji[index], @"([\uff10-\uff19])+階")) isClear = true;
+                if (!isClear && remarksKanji[index] == "地階・階層不明") isClear = true;
 
                 // 町域名のクリア
                 if (isClear)

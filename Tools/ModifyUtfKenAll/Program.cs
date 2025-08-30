@@ -203,16 +203,9 @@ class Program
                 {
                     remark = string.Empty;
                     remarkKana = string.Empty;
-
-                    //Console.WriteLine($"--------isClear={remark}");
                 }
 
                 result.Add(new PostDataModel(postCd, todohuken, shikuson, beforeParentheses + remark, todohukenKana, shikusonKana, beforeParenthesesKana + remarkKana, address, addressKana));
-
-                if (isClear) continue;
-                if (postCd != "0285233") continue;
-                Console.Write($"  ...{remark} ");
-                Console.WriteLine($"kana={remarkKana}");
             }
         }
         else

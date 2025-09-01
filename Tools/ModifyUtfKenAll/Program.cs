@@ -195,9 +195,16 @@ class Program
                 if (!isClear && Regex.IsMatch(remarksKanji[index], @"西([\uff10-\uff19])*(\u301c)*([\uff10-\uff19])*線")) isClear = true;
 
                 // 特別処理：ビルの階層はクリア
-                if (!isClear && Regex.IsMatch(remarksKanji[index], @"([\uff10-\uff19])+階")) isClear = true;
                 if (!isClear && remarksKanji[index] == "地階・階層不明") isClear = true;
                 if (!isClear && remarksKanji[index] == "次のビルを除く") isClear = true;
+
+                // 特別処理：ビルの階層は残す
+                if (!isClear && remarksKanji[index] == "階")
+                {
+                    remark = remarksKanji[index].Replace("（", string.Empty).Replace("）", string.Empty);
+                    remarkKana = remarksKana[index].Replace("（", string.Empty).Replace("）", string.Empty);
+                    isClear = false;
+                }
 
                 // 町域名のクリア
                 if (isClear)

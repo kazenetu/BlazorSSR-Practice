@@ -289,7 +289,7 @@ dotnet run --project Tools/Create/Create.csproj <RunMode>　<uri> [options]
 ### コマンド
 ```sh
 #ルートパス上で実行
-dotnet run --project Tools\ModifyUtfKenAll/ModifyUtfKenAll.csproj <InputFile>
+dotnet run --project Tools/ModifyUtfKenAll/ModifyUtfKenAll.csproj <InputFile>
 ```
 
 <h4>○必須パラメータ</h4>  
@@ -301,5 +301,5 @@ dotnet run --project Tools\ModifyUtfKenAll/ModifyUtfKenAll.csproj <InputFile>
 
 ### 実行例
   ```sh
-  dotnet run --project Tools\ModifyUtfKenAll/ModifyUtfKenAll.csproj .\ExampleFiles\utf_ken_all_tokyo.csv
+  dotnet run --project Tools/ModifyUtfKenAll/ModifyUtfKenAll.csproj Tools/ModifyUtfKenAll/ExampleFiles/utf_ken_all_tokyo.csv
  ```

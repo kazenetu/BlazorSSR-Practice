@@ -300,6 +300,7 @@ dotnet run --project Tools/ModifyUtfKenAll/ModifyUtfKenAll.csproj <InputFile>
 
 
 ### 実行例
-  ```sh
-  dotnet run --project Tools/ModifyUtfKenAll/ModifyUtfKenAll.csproj Tools/ModifyUtfKenAll/ExampleFiles/utf_ken_all_tokyo.csv
- ```
+```sh
+#ルートパス上で実行
+dotnet run --project Tools/ModifyUtfKenAll/ModifyUtfKenAll.csproj Tools/ModifyUtfKenAll/ExampleFiles/utf_ken_all_tokyo.csv
+```

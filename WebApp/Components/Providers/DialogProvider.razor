@@ -130,7 +130,7 @@
         if (Module is null) return;
 
         SubmitFunction = submitFunction;
-        await Module.InvokeVoidAsync("showConfirm", message, yesText, cancelText, "ConfirmResult");
+        await Module.InvokeVoidAsync("showConfirm", message, yesText, cancelText);
     }
 
     /// <summary>

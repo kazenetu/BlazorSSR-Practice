@@ -293,11 +293,13 @@
     /// </summary>
     /// <param name="message">メッセージ本文</param>
     /// <param name="submitFunction">「はい」クリック時のコールバックメソッド</param>
-    protected async Task ShowConfirm(string message, Func<Task> submitFunction)
+    /// <param name="yesText">「はい」のテキスト(空文字の場合は設定なし)</param>
+    /// <param name="noText">「キャンセル」のテキスト(空文字の場合は設定なし)</param>
+    protected async Task ShowConfirm(string message, Func<Task> submitFunction, string yesText = "", string cancelText = "")
     {
         if(dialogProvider is null)  return;
 
-        await dialogProvider.ShowConfirm(message, submitFunction);
+        await dialogProvider.ShowConfirm(message, submitFunction, yesText, cancelText);
     }
 
     /// <summary>

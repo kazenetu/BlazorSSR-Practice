@@ -37,6 +37,9 @@ Welcome to your new app.
 <div>
     <button class="btn btn-primary" @onclick="ShowConfirmShortTest">確認メッセージ表示(最小)</button>
 </div>
+<div>
+    <button class="btn btn-primary" @onclick="ShowConfirmTextChangedTest">確認メッセージ表示(ボタンテキスト変更)</button>
+</div>
 
 
 <div class="card" style="margin-top:3rem;width:35rem;">
@@ -357,6 +360,10 @@ Welcome to your new app.
     private async Task ShowConfirmShortTest()
     {
         await ShowConfirm("a", ShowConfirmYes);
+    }
+    private async Task ShowConfirmTextChangedTest()
+    {
+        await ShowConfirm("確認メッセージ", ShowConfirmYes, "変更後「はい」", "変更後「キャンセル」");
     }
 
     #region Excel出力

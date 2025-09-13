@@ -123,12 +123,14 @@
     /// </summary>
     /// <param name="message">メッセージ本文</param>
     /// <param name="submitFunction">「はい」クリック時のコールバックメソッド（呼び出し側のメソッド）</param>
-    public async Task ShowConfirm(string message, Func<Task> submitFunction)
+    /// <param name="yesText">「はい」のテキスト(空文字の場合は設定なし)</param>
+    /// <param name="noText">「キャンセル」のテキスト(空文字の場合は設定なし)</param>
+    public async Task ShowConfirm(string message, Func<Task> submitFunction, string yesText = "", string cancelText = "")
     {
         if (Module is null) return;
 
         SubmitFunction = submitFunction;
-        await Module.InvokeVoidAsync("showConfirm", message, "ConfirmResult");
+        await Module.InvokeVoidAsync("showConfirm", message, yesText, cancelText);
     }
 
     /// <summary>

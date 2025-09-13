@@ -15,10 +15,19 @@ export async function showAlert(message) {
     });
 }
 
-export async function showConfirm(message) {
+export async function showConfirm(message, yesText, cancelText) {
     scrollLock(true);
 
     addMessageTag('confirmMessage', message);
+
+    // 「はい」「キャンセル」テキストの設定
+    if (yesText !== '') {
+        addButtonText('confirmYesButton', yesText);
+    }
+    if (cancelText !== '') {
+        addButtonText('confirmCancelButton', cancelText);
+    }
+
     const dialog = document.getElementById('confirmDialog');
     dialog.showModal();
 
@@ -50,6 +59,11 @@ function addMessageTag(tagName, message) {
         div.textContent = msg;
         element.append(div);
     }
+}
+
+function addButtonText(tagName, text) {
+    const element = document.getElementById(tagName);
+    element.textContent = text;
 }
 
 export async function showDialog(tagId) {

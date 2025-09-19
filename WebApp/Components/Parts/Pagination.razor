@@ -3,7 +3,7 @@
 @inject IJSRuntime JS
 @implements IAsyncDisposable
 
-@if (TotalPages > 1)
+@if (TotalPages > 1 && CurrentPageNumber <= TotalPages)
 {
     <style>
         .page-link {
@@ -97,7 +97,7 @@
         </ul>
     </nav>
 }
-@if (IsShowRecordCount)
+@if (IsShowRecordCount && CurrentPageNumber <= TotalPages)
 {
     <div>@DisplayRecordCount()</div>
 }

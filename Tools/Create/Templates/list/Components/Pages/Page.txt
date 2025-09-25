@@ -73,7 +73,7 @@ else
         </div>
     </EditForm>
 
-    <Pagination PageName="/$uri$" CurrentPageNumber="@Page" TotalRecords="@TotalRecords" RecordsPerPage="@PageCount" />
+    <Pagination PageName="/$uri$" CurrentPageNumber="@Page" TotalRecords="@TotalRecords" RecordsPerPage="@Common.PageRecordCount" />
 
     @* 一覧 *@
     @if (PageRecords.Any())

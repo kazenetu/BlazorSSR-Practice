@@ -199,7 +199,7 @@ else
         var zeroBasePageIndex = pageIndex - 1;
 
         // DBから1ページ分のレコード取得
-        PageRecords = repository.GetList(Model, zeroBasePageIndex * PageCount,  PageCount);
+        PageRecords = repository.GetList(Model, zeroBasePageIndex * Common.PageRecordCount,  Common.PageRecordCount);
         StateHasChanged();
     }
     #endregion

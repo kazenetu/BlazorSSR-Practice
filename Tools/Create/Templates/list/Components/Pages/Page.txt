@@ -316,7 +316,7 @@ else
     private async Task ToEdit($EditKeyType$? key = null)
     {
         // HACK 編集ページURL
-        var editPageUrl = "order-edit";
+        var editPageUrl = "$uri$-edit";
 
         // 画面遷移
         if (key is null)

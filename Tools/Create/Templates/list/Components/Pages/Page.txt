@@ -150,11 +150,6 @@ else
     public int TotalRecords { get; set; }
 
     /// <summary>
-    /// 定数：ページング用：1ページのレコード数
-    /// </summary>
-    private const int PageCount = 10;
-
-    /// <summary>
     /// 1ページの表示レコード
     /// </summary>
     private $ClassName$Model[]? PageRecords;

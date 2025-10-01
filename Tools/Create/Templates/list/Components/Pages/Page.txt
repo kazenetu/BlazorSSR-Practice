@@ -73,7 +73,7 @@ else
         </div>
     </EditForm>
 
-    <Pagination PageName="/$uri$" CurrentPageNumber="@Page" TotalRecords="@TotalRecords" RecordsPerPage="@PageCount" />
+    <Pagination PageName="/$uri$" CurrentPageNumber="@Page" TotalRecords="@TotalRecords" RecordsPerPage="@Common.PageRecordCount" />
 
     @* 一覧 *@
     @if (PageRecords.Any())
@@ -108,7 +108,7 @@ else
             </tbody>
             *@
         </table>
-        <Pagination PageName="/order" CurrentPageNumber="@Page" TotalRecords="@TotalRecords" RecordsPerPage="@Common.PageRecordCount" IsShowRecordCount="false"/>
+        <Pagination PageName="/$uri$" CurrentPageNumber="@Page" TotalRecords="@TotalRecords" RecordsPerPage="@Common.PageRecordCount" IsShowRecordCount="false"/>
     }
     else
     {
@@ -148,11 +148,6 @@ else
     /// ページング用：総レコード数
     /// </summary>
     public int TotalRecords { get; set; }
-
-    /// <summary>
-    /// 定数：ページング用：1ページのレコード数
-    /// </summary>
-    private const int PageCount = 10;
 
     /// <summary>
     /// 1ページの表示レコード
@@ -199,7 +194,7 @@ else
         var zeroBasePageIndex = pageIndex - 1;
 
         // DBから1ページ分のレコード取得
-        PageRecords = repository.GetList(Model, zeroBasePageIndex * PageCount,  PageCount);
+        PageRecords = repository.GetList(Model, zeroBasePageIndex * Common.PageRecordCount,  Common.PageRecordCount);
         StateHasChanged();
     }
     #endregion
@@ -316,7 +311,7 @@ else
     private async Task ToEdit($EditKeyType$? key = null)
     {
         // HACK 編集ページURL
-        var editPageUrl = "order-edit";
+        var editPageUrl = "$uri$-edit";
 
         // 画面遷移
         if (key is null)

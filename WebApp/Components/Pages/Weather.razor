@@ -54,7 +54,12 @@ else
                 </div>
 
             </div>
-            <button type="submit" form="search" class="btn btn-outline-success">検索</button>
+
+            <div>
+                <button type="submit" form="search" class="btn btn-outline-success">検索</button>
+                <span style="margin-right: 2em;" />
+                <button @onclick="ClearInput" class="btn btn-outline-success">クリア</button>
+            </div>
         </div>
     </EditForm>
 
@@ -247,6 +252,27 @@ else
         // 検索結果を取得(総レコード数更新)
         ShowPage(Page, true);
         Navigation.NavigateTo("/weather/1");
+    }
+
+    /// <summary>
+    /// 検索クリア
+    /// </summary>
+    private async Task ClearInput()
+    {
+        InputModel.Clear();
+
+        // 1ページ
+        Page = 1;
+
+        // 検索条件の保存
+        await SetAsync(SessionSearch, InputModel);
+
+        // 検索条件に入力条件を設定
+        Model = InputModel.Copy();
+
+        // 検索結果を取得(総レコード数更新)
+        ShowPage(Page, true);
+        Navigation.NavigateTo("/order/1");
     }
 
     /// <summary>

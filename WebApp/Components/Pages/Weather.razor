@@ -31,6 +31,16 @@ else
         <div class="card col-md-8 offset-md-2 mb-5">
             <div class="card-body">
 
+                @* 検索条件クリア *@
+                <div class="text-end">
+                    <button @onclick="ClearInput" class="btn btn-secondary btn-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"></path>
+                        </svg>
+                        検索条件をクリア
+                    </button>
+                </div>
+
                 <div class="row row-margin">
                     <div class="col">
                         <label class="col-md-4" for="StartDate">日付</label>
@@ -52,14 +62,10 @@ else
                         <InputNumber class="col-md-4 text-end" id="EndDate" @bind-Value="InputModel!.EndTemperatureC" />
                     </div>
                 </div>
-
             </div>
 
-            <div>
-                <button type="submit" form="search" class="btn btn-outline-success">検索</button>
-                <span style="margin-right: 2em;" />
-                <button @onclick="ClearInput" class="btn btn-outline-success">クリア</button>
-            </div>
+            @* 検索ボタン *@
+            <button type="submit" form="search" class="btn btn-primary">検索</button>
         </div>
     </EditForm>
 
@@ -259,13 +265,13 @@ else
     /// </summary>
     private async Task ClearInput()
     {
-        InputModel.Clear();
+        InputModel = new();
 
         // 1ページ
         Page = 1;
 
         // 検索条件の保存
-        await SetAsync(SessionSearch, InputModel);
+        await SetAsync(SessionWeatherSearch, InputModel);
 
         // 検索条件に入力条件を設定
         Model = InputModel.Copy();

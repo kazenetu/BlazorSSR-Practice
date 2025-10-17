@@ -1,0 +1,43 @@
+services:
+  nginx:
+    build: 
+      context: .
+      dockerfile: nginx_dockerfile
+    container_name: 'my_nginx'
+    ports:
+    - "80:80"
+
+  blazor_ssr:
+    build: 
+      context: .
+      dockerfile: dotnet_dockerfile
+    volumes:
+      - type: bind
+        source: ./source
+        target: /source
+    container_name: 'blazor_ssr'
+    environment:
+      TZ: "Asia/Tokyo"
+      DB:ConnectionStrings:sqlite: "Resource/Test.db"
+      DB:ConnectionStrings:postgres: "Server=postgresql_server;Port=5432;User Id=test;Password=test;Database=testDB"
+      DB:Target: "postgres"
+      Settings:RequiredAuthentication: "true"
+
+  db:
+    build: 
+      context: .
+      dockerfile: postgresql_dockerfile
+    ports:
+      - 5433:5432
+    environment:
+      TZ: Asia/Tokyo
+      POSTGRES_USER: test
+      POSTGRES_DB: testDB
+      POSTGRES_PASSWORD: test
+    container_name: postgresql_server
+    volumes:
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - postgresql_data_blazor:/var/lib/postgresql/data:rw
+
+volumes:
+  postgresql_data_blazor:

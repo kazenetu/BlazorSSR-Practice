@@ -1,0 +1,18 @@
+FROM ubuntu
+
+RUN apt-get update && apt-get install -y libunwind8 gettext apt-transport-https wget gpg software-properties-common git
+
+# install dotnet8 Runtime
+RUN apt-get install -y aspnetcore-runtime-8.0
+
+WORKDIR /source
+
+# port 5000
+EXPOSE 5000
+
+# set ENV
+ENV ASPNETCORE_ENVIRONMENT=Production
+ENV ASPNETCORE_URLS=http://*:5000
+
+# run app
+ENTRYPOINT  [ "dotnet","WebApp.dll"]

@@ -6,7 +6,8 @@ Blazor静的サーバーレンダリング (SSR) の実装確認
 
 ## デバッグ時のID/パスワード
 * aa/aa
-
+* Docoker利用時
+   * admin/admin
 
 ## ライセンス
 * [MITライセンス](LICENSE)  
@@ -304,3 +305,83 @@ dotnet run --project Tools/ModifyUtfKenAll/ModifyUtfKenAll.csproj <InputFile>
 #ルートパス上で実行
 dotnet run --project Tools/ModifyUtfKenAll/ModifyUtfKenAll.csproj Tools/ModifyUtfKenAll/ExampleFiles/utf_ken_all_tokyo.csv
 ```
+
+### Docker実行方法
+* **事前準備**
+   1. Docker環境構築
+      1. Dockerインストール
+         * OSによってインストールする(例：WindowsならWSL2など)
+
+   1. Dockerコンテナのビルド
+      1. ```cd Docker```を実行
+      1. 初回のみビルドを実行  
+         ```docker compose build```
+
+* **初回デプロイ**
+   1. Webアプリケーションをpublishする
+      1. WebアプリケーションをLinux用にpublishする  
+         ```dotnet publish --runtime linux-x64 --output ./WebApp/bin/Release/source```  
+         ※```WebApp\bin\Release\source```が作成される
+
+   1. publish結果をDockerディレクトリにコピーする  
+      ```WebApp\bin\Release```の「source」ディレクトリを  
+      Dockerディレクトリ直下にコピーする
+
+   1. Docker実行
+         ```sh
+         docker compose up -d
+         ```
+   
+   1. ローカルブラウザでアクセスできるか確認する  
+      ```http://localhost/```
+
+* **再デプロイ**
+   1. Webアプリケーションをpublishする
+      1. **ローカル開発環境**：WebアプリケーションをLinux用にpublishする  
+         ```dotnet publish --runtime linux-x64 --output ./WebApp/bin/Release/source```  
+         ※```WebApp\bin\Release\source```が作成される
+
+   1. publish結果をDockerディレクトリにコピーする  
+      ```WebApp\bin\Release```の「source」ディレクトリを  
+      Dockerディレクトリ直下にコピーする
+
+   1. Docker再起動  
+         ```sh
+         docker compose restart
+         ```
+
+   1. ローカルブラウザでアクセスできるか確認する  
+      ```http://localhost/```
+
+* **利用終了**  
+   利用終了時は下記を実行する
+   1. Dockerコンテナ停止・削除  
+         ```sh
+         docker compose down
+         ```
+
+* 補足1：**PostgeSQLを利用して開発する**  
+   ※Docker実行している前提
+   * VisualStudioCode
+      * 通常通り開発を行える
+      * Webアプリケーションの実行コマンドは下記の通り
+         1. ターミナル上で下記を実行  
+            ```sh
+            dotnet run --project WebApp/WebApp.csproj -- -p Settings:RequiredAuthentication=true - p DB:ConnectionStrings:postgres="Server=localhost;Port=5433;User Id=test;Password=test;Database=testDB" - p DB:Target="postgres"
+            ```  
+            ※DB接続文字列とPostgeSQL選択をパラメータで指定する
+
+* 補足2：**初期データをもう一度入れる場合**
+   1. Dockerコンテナ停止・削除  
+         ```sh
+         docker compose down
+         ```
+
+   1. PostgeSQLのボリュームを削除する  
+         ```sh
+         docker volume rm postgresql_data_blazor
+         ```
+   1. Docker実行
+         ```sh
+         docker compose up -d
+         ```

@@ -1,5 +1,8 @@
 ﻿namespace ResetPassword;
 
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using System.Security.Cryptography;
+
 class Program
 {
     static void Main(string[] args)
@@ -34,5 +37,32 @@ class Program
         }
 
         // TODO 後続処理
+    }
+
+    /// <summary>
+    /// パスワード作成
+    /// </summary>
+    /// <param name="password">パスワード</param>
+    /// <returns>暗号化済パスワードとソルトのタプル</returns>
+    private static (string encryptedPassword, string salt) CreateEncryptedPassword(string password)
+    {
+        // 128ビットのソルトを生成する
+        byte[] salt = new byte[128 / 8];
+        using (var rng = RandomNumberGenerator.Create())
+        {
+            rng.GetBytes(salt);
+        }
+        var saltBase64 = Convert.ToBase64String(salt);
+
+        // 256ビットのサブキーを導出
+        string encryptedPassword = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+            password: password,
+            salt: salt,
+            prf: KeyDerivationPrf.HMACSHA1,
+            iterationCount: 10000,
+            numBytesRequested: 256 / 8));
+
+        // 暗号化済パスワードとソルトを返す
+        return (encryptedPassword, saltBase64);
     }
 }

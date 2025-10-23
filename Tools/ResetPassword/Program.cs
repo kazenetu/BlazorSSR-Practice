@@ -1,6 +1,7 @@
 ﻿namespace ResetPassword;
 
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using System.Text;
 using System.Security.Cryptography;
 
 class Program
@@ -36,7 +37,37 @@ class Program
             return;
         }
 
-        // TODO 後続処理
+        // コンソールに更新用SQL作成
+        Console.WriteLine("--Run This SQL");
+        Console.WriteLine(CreateUpdateSQL(argManager.GetRequiredArg(0)!, argManager.GetRequiredArg(1)!));
+        Console.WriteLine();
+    }
+
+    /// <summary>
+    /// 更新用SQL取得
+    /// </summary>
+    /// <param name="id">PrimaryId</param>
+    /// <param name="resetPassword">平文パスワード</param>
+    /// <param name="programId">プログラムID</param>
+    /// <returns>更新用SQL文</returns>
+    private static string CreateUpdateSQL(string id, string resetPassword)
+    {
+        // 暗号化済パスワードとソルトを取得
+        var passAndSalt = CreateEncryptedPassword(resetPassword);
+        var encryptedPassword = passAndSalt.encryptedPassword;
+        var salt = passAndSalt.salt;
+
+        // 更新用SQL作成
+        var sql = new StringBuilder();
+        sql.Append("UPDATE m_user ");
+        sql.Append("SET ");
+        sql.Append($"password='{encryptedPassword}',");
+        sql.Append($"salt='{salt}' ");
+        sql.Append("WHERE ");
+        sql.Append($"unique_name = '{id}'");
+
+        //SQLを返す
+        return sql.ToString();
     }
 
     /// <summary>

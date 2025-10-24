@@ -86,12 +86,7 @@ class Program
         var saltBase64 = Convert.ToBase64String(salt);
 
         // 256ビットのサブキーを導出
-        string encryptedPassword = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-            password: password,
-            salt: salt,
-            prf: KeyDerivationPrf.HMACSHA1,
-            iterationCount: 10000,
-            numBytesRequested: 256 / 8));
+        var encryptedPassword = Convert.ToBase64String(Rfc2898DeriveBytes.Pbkdf2(password, salt, 10000, HashAlgorithmName.SHA1, 256 / 8));
 
         // 暗号化済パスワードとソルトを返す
         return (encryptedPassword, saltBase64);

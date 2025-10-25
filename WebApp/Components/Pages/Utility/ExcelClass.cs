@@ -46,6 +46,18 @@ public class ExcelClass: IDisposable
     }
 
     /// <summary>
+    /// ワークブックを返す
+    /// </summary>
+    /// <returns>ワークブック</returns>
+    public XLWorkbook GetWorkbook()
+    {
+        if (Workbook is null) 
+            throw new Exception("Workbook is null");
+
+        return Workbook;
+    }
+
+    /// <summary>
     /// ワークブック
     /// </summary>
     private XLWorkbook? Workbook = null;

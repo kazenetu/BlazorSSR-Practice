@@ -16,6 +16,15 @@ public class ExcelClass: IDisposable
     }
 
     /// <summary>
+    /// コンストラクタ：テンプレート読み込み
+    /// </summary>
+    /// <param name="templateFilePath">読み込みテンプレートのパス</param>
+    public ExcelClass(string templateFilePath)
+    {
+        Workbook = new XLWorkbook(templateFilePath);
+    }
+
+    /// <summary>
     /// 破棄
     /// </summary>
     public void Dispose()

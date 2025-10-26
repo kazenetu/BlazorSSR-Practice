@@ -385,7 +385,7 @@ Welcome to your new app.
         {
             Logger.LogInformation(await GetLogMessage("開始"));
 
-            using(var excelClass = new ExcelClass())
+            using(var excelClass = new ExcelClass("assets/excel_temlate/sample.xlsx"))
             {
                 // sheet取得、値設定
                 var worksheet = excelClass.GetWorksheet("Sheet1");
@@ -420,7 +420,7 @@ Welcome to your new app.
     {
         //TODO イメージ追加例 https://github.com/closedxml/closedxml/wiki/How-can-I-insert-an-image
         //Creating the workbook
-        worksheet.FirstCell().SetValue(id);
+        worksheet.Cell("B2").SetValue(id);
     }
     #endregion
 

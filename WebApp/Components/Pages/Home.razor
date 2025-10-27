@@ -415,11 +415,9 @@ Welcome to your new app.
     /// </summary>
     /// <param name="worksheet">WorkSheetオブジェクト</param>
     /// <param name="count">データカウント</param>
-    /// <returns>XLWorkbookインスタンス</returns>
     private void SetWorksheetValues(IXLWorksheet worksheet, int count)
     {
         //TODO イメージ追加例 https://github.com/closedxml/closedxml/wiki/How-can-I-insert-an-image
-        //Creating the workbook
         for(var i=0;i<count;i++)
         {
             var targetIndex = i + 1;

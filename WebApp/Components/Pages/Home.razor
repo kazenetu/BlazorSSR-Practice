@@ -414,16 +414,16 @@ Welcome to your new app.
     /// Excelワークシート設定
     /// </summary>
     /// <param name="worksheet">WorkSheetオブジェクト</param>
-    /// <param name="id">A1セルに設定する値</param>
+    /// <param name="count">データカウント</param>
     /// <returns>XLWorkbookインスタンス</returns>
-    private void SetWorksheetValues(IXLWorksheet worksheet, int id)
+    private void SetWorksheetValues(IXLWorksheet worksheet, int count)
     {
         //TODO イメージ追加例 https://github.com/closedxml/closedxml/wiki/How-can-I-insert-an-image
         //Creating the workbook
-        for(var i=0;i<id;i++)
+        for(var i=0;i<count;i++)
         {
             var targetIndex = i + 1;
-            var data = new object[]{targetIndex, $"名前{targetIndex}", targetIndex*10m, targetIndex*0.1m, targetIndex*1000, targetIndex-id,targetIndex+id};
+            var data = new object[]{targetIndex, $"名前{targetIndex}", targetIndex*10m, targetIndex*0.1m, targetIndex*1000, targetIndex-count,targetIndex+count};
             worksheet.Cell($"A{targetIndex + 1}").InsertData(new Object[][] { data });
         }
     }

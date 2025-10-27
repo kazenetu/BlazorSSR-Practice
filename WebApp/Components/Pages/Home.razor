@@ -420,7 +420,12 @@ Welcome to your new app.
     {
         //TODO イメージ追加例 https://github.com/closedxml/closedxml/wiki/How-can-I-insert-an-image
         //Creating the workbook
-        worksheet.Cell("B2").SetValue(id);
+        for(var i=0;i<id;i++)
+        {
+            var targetIndex = i + 1;
+            var data = new object[]{targetIndex, $"名前{targetIndex}", targetIndex*10m, targetIndex*0.1m, targetIndex*1000, targetIndex-id,targetIndex+id};
+            worksheet.Cell($"A{targetIndex + 1}").InsertData(new Object[][] { data });
+        }
     }
     #endregion
 

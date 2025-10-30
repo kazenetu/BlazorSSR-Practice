@@ -27,6 +27,7 @@ Welcome to your new app.
     <FileDownload ButtonName="封筒印刷PDFダウンロード" GetDataFunction="DownLoadPDF" IsBinary="true"/>
     <FileDownload ButtonName="封筒印刷ZIPダウンロード" GetDataFunction="DownLoadZip" IsBinary="true"/>
     <FileDownload ButtonName="Excelダウンロード" GetDataFunction="OutputExcel" IsBinary="true"/>
+    <FileDownload ButtonName="Excelダウンロード(単票)" GetDataFunction="OutputExcelReport" IsBinary="true"/>
 </div>
 
 <div>
@@ -431,6 +432,95 @@ Welcome to your new app.
                 targetIndex+count};
             worksheet.Cell($"A{targetIndex + 1}").InsertData(new Object[][] { data });
         }
+    }
+
+    /// <summary>
+    /// Excel出力(単票)
+    /// </summary>
+    /// <returns>ダウンロード用モデル</returns>
+    /// <remarks>Dataにはbyte[]配列を設定</remarks>
+    private async Task<DownLoadModel> OutputExcelReport()
+    {
+        cacheLock.EnterWriteLock();
+        try
+        {
+            Logger.LogInformation(await GetLogMessage("開始"));
+
+            using (var excelClass = new ExcelClass("assets/excel_temlate/report_sample.xlsx"))
+            {
+                // sheet取得、値設定
+                var worksheet = excelClass.GetWorksheet("Template");
+                SetWorksheetReportValues(worksheet, 600);
+
+                //　DownLoadModelを返す
+                var prefixExcelFileName = "test_report";
+                var dateString = DateTime.UtcNow.ToJstTime().ToString("yyyyMMdd");
+                var excelFileName = $"{prefixExcelFileName}_{dateString}.xlsx";
+                return CreateExcel(excelFileName, excelClass.GetWorkbook());
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, await GetLogError(ex));
+            return new DownLoadModel(string.Empty, null, "Excel作成に失敗しました。");
+        }
+        finally
+        {
+            cacheLock.ExitWriteLock();
+            Logger.LogInformation(await GetLogMessage("終了"));
+        }
+    }
+
+    /// <summary>
+    /// Excelワークシート設定(単票)
+    /// </summary>
+    /// <param name="worksheet">WorkSheetオブジェクト</param>
+    /// <param name="count">データカウント</param>
+    private void SetWorksheetReportValues(IXLWorksheet worksheet, int count)
+    {
+        var workBook = worksheet.Workbook;
+        if (workBook is null) return;
+
+        for (var i = 0; i < count; i++)
+        {
+            var targetIndex = i + 1;
+
+            // テンプレートからシート追加
+            var targetSheet = worksheet.CopyTo($"名前{targetIndex}");
+
+            // 名前
+            targetSheet.Cell("B2").Value = $"名前{targetIndex}";
+
+            // 住所
+            targetSheet.Cell("B3").Value = $"住所県住所町{targetIndex}-123";
+
+            // 備考
+            var remark = string.Empty;
+            if (i % 2 == 0)
+            {
+                // 偶数は改行あり
+                remark = $"備考あいうえお{Environment.NewLine}かきくけこ{Environment.NewLine}さしすせそ{Environment.NewLine}なにぬねの{Environment.NewLine}";
+            }
+            else
+            {
+                // 奇数は改行なし
+                remark = $"備考あいうえお";
+            }
+            remark = remark.Replace(Environment.NewLine, "\n");
+            targetSheet.Cell("B4").Value = remark;
+
+            // 備考の状況によって高さを設定
+            var rowCount = remark.Count(c => c == '\n');
+            var height = (targetSheet.Cell("B4").Style.Font.FontSize + 5) * rowCount;
+            if (targetSheet.Row(4).Height < height)
+            {
+                targetSheet.Row(4).Height = height;
+                targetSheet.Cell("B4").Style.Alignment.SetVertical(XLAlignmentVerticalValues.Top);
+            }
+        }
+
+        // テンプレートシート削除
+        worksheet.Delete();
     }
     #endregion
 

@@ -572,7 +572,17 @@
     }
     #endregion
 
-    #region Excelファイル作成
+    #region Excelファイル制御
+    /// <summary>
+    /// JavaScript：queryのbuttonをクリックする
+    /// </summary>
+    /// <param name="query"></param>
+    protected async Task JsClick(string query)
+    {
+        if (PageModule is null) return;
+        await PageModule.InvokeVoidAsync("clickQuery", query);
+    }
+
     /// <summary>
     /// Excelファイル作成
     /// </summary>

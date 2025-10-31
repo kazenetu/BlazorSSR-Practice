@@ -8,6 +8,7 @@
 @using WebApp.Components.Parts
 @using WebApp.Models.Parts
 @using WebApp.Components.Pages.Utility
+@inject IJSRuntime JS
 @inject ILogger<Home> Logger
 
 @if (IsBeforeLoginCheck)
@@ -561,6 +562,8 @@ Welcome to your new app.
 
                 // 漢字フリガナ変換の初期化
                 await InitKanjiToFurigana();
+
+                PageModule = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Home.razor.js");
             }
             catch (Exception ex)
             {

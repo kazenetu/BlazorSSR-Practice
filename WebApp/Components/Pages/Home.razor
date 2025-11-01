@@ -29,6 +29,8 @@ Welcome to your new app.
     <FileDownload ButtonName="封筒印刷ZIPダウンロード" GetDataFunction="DownLoadZip" IsBinary="true"/>
     <FileDownload ButtonName="Excelダウンロード" GetDataFunction="OutputExcel" IsBinary="true"/>
     <FileDownload ButtonName="Excelダウンロード(単票)" GetDataFunction="OutputExcelReport" IsBinary="true"/>
+
+    <button class="btn btn-info" @onclick="downloadExcel">Excelダウンロード(JS経由)</button>
 </div>
 
 <div>
@@ -370,6 +372,15 @@ Welcome to your new app.
     }
 
     #region Excel出力
+
+    /// <summary>
+    /// JavaScript経由でダウンロードボタンをクリックするサンプルボタン
+    /// </summary>
+    private async Task downloadExcel()
+    {
+        await JsClick("#excel button");
+    }
+
     /// <summary>
     /// 排他ロックオブジェクト
     /// </summary>

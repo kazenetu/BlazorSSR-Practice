@@ -27,7 +27,9 @@ Welcome to your new app.
     <PDFViewer ButtonName="封筒印刷PDF表示" GetDataFunction="DownLoadPDF" IsPortrait="true" />
     <FileDownload ButtonName="封筒印刷PDFダウンロード" GetDataFunction="DownLoadPDF" IsBinary="true"/>
     <FileDownload ButtonName="封筒印刷ZIPダウンロード" GetDataFunction="DownLoadZip" IsBinary="true"/>
-    <FileDownload ButtonName="Excelダウンロード" GetDataFunction="OutputExcel" IsBinary="true"/>
+    <span id="excel" style="display:none;">
+        <FileDownload ButtonName="Excelダウンロード" GetDataFunction="OutputExcel" IsBinary="true"/>
+    </span>
     <FileDownload ButtonName="Excelダウンロード(単票)" GetDataFunction="OutputExcelReport" IsBinary="true"/>
 
     <button class="btn btn-info" @onclick="downloadExcel">Excelダウンロード(JS経由)</button>

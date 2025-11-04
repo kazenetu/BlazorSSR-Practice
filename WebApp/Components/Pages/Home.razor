@@ -384,18 +384,12 @@ Welcome to your new app.
     }
 
     /// <summary>
-    /// 排他ロックオブジェクト
-    /// </summary>
-    private static ReaderWriterLockSlim cacheLock = new ReaderWriterLockSlim();
-
-    /// <summary>
     /// Excel出力
     /// </summary>
     /// <returns>ダウンロード用モデル</returns>
     /// <remarks>Dataにはbyte[]配列を設定</remarks>
     private async Task<DownLoadModel> OutputExcel()
     {
-        cacheLock.EnterWriteLock();
         try
         {
             Logger.LogInformation(await GetLogMessage("開始"));
@@ -420,7 +414,6 @@ Welcome to your new app.
         }
         finally
         {
-            cacheLock.ExitWriteLock();
             Logger.LogInformation(await GetLogMessage("終了"));
         }
     }
@@ -455,7 +448,6 @@ Welcome to your new app.
     /// <remarks>Dataにはbyte[]配列を設定</remarks>
     private async Task<DownLoadModel> OutputExcelReport()
     {
-        cacheLock.EnterWriteLock();
         try
         {
             Logger.LogInformation(await GetLogMessage("開始"));
@@ -480,7 +472,6 @@ Welcome to your new app.
         }
         finally
         {
-            cacheLock.ExitWriteLock();
             Logger.LogInformation(await GetLogMessage("終了"));
         }
     }

@@ -12,6 +12,9 @@ public class ExcelClass: IDisposable
     /// </summary>
     public ExcelClass()
     {
+        // ClosedXMLは非スレッドセーフのためロック取得
+        cacheLock.EnterWriteLock();
+
         Workbook = new XLWorkbook();
     }
 
@@ -21,6 +24,9 @@ public class ExcelClass: IDisposable
     /// <param name="templateFilePath">読み込みテンプレートのパス</param>
     public ExcelClass(string templateFilePath)
     {
+        // ClosedXMLは非スレッドセーフのためロック取得
+        cacheLock.EnterWriteLock();
+
         Workbook = new XLWorkbook(templateFilePath);
     }
 
@@ -30,6 +36,9 @@ public class ExcelClass: IDisposable
     public void Dispose()
     {
         Workbook?.Dispose();
+
+        // 排他ロック解放
+        cacheLock.ExitWriteLock();
     }
 
     /// <summary>
@@ -70,4 +79,9 @@ public class ExcelClass: IDisposable
     /// ワークブック
     /// </summary>
     private XLWorkbook? Workbook = null;
+
+    /// <summary>
+    /// 排他ロックオブジェクト
+    /// </summary>
+    private static ReaderWriterLockSlim cacheLock = new ReaderWriterLockSlim();
 }

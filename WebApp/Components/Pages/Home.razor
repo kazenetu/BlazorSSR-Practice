@@ -407,6 +407,10 @@ Welcome to your new app.
                 return CreateExcel(excelFileName, excelClass.GetWorkbook());
             }
         }
+        catch (LockRecursionException)
+        {
+            return new DownLoadModel(string.Empty, null, $"Excel作成中です。{Environment.NewLine}時間をおいて実施してください。");
+        }
         catch (Exception ex)
         {
             Logger.LogError(ex, await GetLogError(ex));
@@ -464,6 +468,10 @@ Welcome to your new app.
                 var excelFileName = $"{prefixExcelFileName}_{dateString}.xlsx";
                 return CreateExcel(excelFileName, excelClass.GetWorkbook());
             }
+        }
+        catch (LockRecursionException)
+        {
+            return new DownLoadModel(string.Empty, null, $"Excel作成中です。{Environment.NewLine}時間をおいて実施してください。");
         }
         catch (Exception ex)
         {

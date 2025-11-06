@@ -7,6 +7,8 @@
 @using System.IO.Compression
 @using WebApp.Components.Parts
 @using WebApp.Models.Parts
+@using WebApp.Components.Pages.Utility
+@inject IJSRuntime JS
 @inject ILogger<Home> Logger
 
 @if (IsBeforeLoginCheck)
@@ -25,7 +27,12 @@ Welcome to your new app.
     <PDFViewer ButtonName="封筒印刷PDF表示" GetDataFunction="DownLoadPDF" IsPortrait="true" />
     <FileDownload ButtonName="封筒印刷PDFダウンロード" GetDataFunction="DownLoadPDF" IsBinary="true"/>
     <FileDownload ButtonName="封筒印刷ZIPダウンロード" GetDataFunction="DownLoadZip" IsBinary="true"/>
-    <FileDownload ButtonName="Excelダウンロード" GetDataFunction="OutputExcel" IsBinary="true"/>
+    <span id="excel" style="display:none;">
+        <FileDownload ButtonName="Excelダウンロード" GetDataFunction="OutputExcel" IsBinary="true"/>
+    </span>
+    <FileDownload ButtonName="Excelダウンロード(単票)" GetDataFunction="OutputExcelReport" IsBinary="true"/>
+
+    <button class="btn btn-info" @onclick="downloadExcel">Excelダウンロード(JS経由)</button>
 </div>
 
 <div>
@@ -191,10 +198,10 @@ Welcome to your new app.
 </dialog>
 
 @code {
-#region ダイアログ表示サンプル：登録系
+    #region ダイアログ表示サンプル：登録系
     [SupplyParameterFromForm]
-    private WebApp.Models.OrderModel OrderEditModel { get; set; } = new (0, string.Empty, 0, 0, 0);
-    
+    private WebApp.Models.OrderModel OrderEditModel { get; set; } = new(0, string.Empty, 0, 0, 0);
+
     private async Task ShowDialogTest()
     {
         await ShowDialog("saveDialog");
@@ -214,9 +221,9 @@ Welcome to your new app.
         await ShowAlert("TODO 登録処理実装", CloseDialogTest);
         //await CloseDialogTest();
     }
-#endregion
+    #endregion
 
-#region 全角数字・半角英数字変換機能サンプル
+    #region 全角数字・半角英数字変換機能サンプル
 
     /// <summary>
     /// 全角数字テキスト用文字列
@@ -260,7 +267,7 @@ Welcome to your new app.
 
         FullWidthNumberText = ToFullWidthNumber(HalfWidthNumberText);
     }
-#endregion
+    #endregion
 
     /// <summary>
     /// 漢字テキスト用文字列
@@ -318,11 +325,11 @@ Welcome to your new app.
     /// </summary>
     private async Task HiraganaToKatakana()
     {
-        if(HiraganaText is null) return;
+        if (HiraganaText is null) return;
 
         KatakanaText = null;
         StateHasChanged();
-        
+
         await Task.Delay(500);
 
         KatakanaText = HiraganaToKatakana(HiraganaText);
@@ -333,7 +340,7 @@ Welcome to your new app.
     /// </summary>
     private async Task KatakanaToHiragana()
     {
-        if(KatakanaText is null) return;
+        if (KatakanaText is null) return;
 
         HiraganaText = null;
         StateHasChanged();
@@ -367,10 +374,14 @@ Welcome to your new app.
     }
 
     #region Excel出力
+
     /// <summary>
-    /// 排他ロックオブジェクト
+    /// JavaScript経由でダウンロードボタンをクリックするサンプルボタン
     /// </summary>
-    private static ReaderWriterLockSlim cacheLock = new ReaderWriterLockSlim();
+    private async Task downloadExcel()
+    {
+        await JsClick("#excel button");
+    }
 
     /// <summary>
     /// Excel出力
@@ -379,16 +390,26 @@ Welcome to your new app.
     /// <remarks>Dataにはbyte[]配列を設定</remarks>
     private async Task<DownLoadModel> OutputExcel()
     {
-        cacheLock.EnterWriteLock();
         try
         {
             Logger.LogInformation(await GetLogMessage("開始"));
 
-            var prefixExcelFileName = "test";
-            var dateString = DateTime.UtcNow.ToJstTime().ToString("yyyyMMdd");
-            var excelFileName = $"{prefixExcelFileName}_{dateString}.xlsx";
+            using (var excelClass = new ExcelClass("assets/excel_template/sample.xlsx"))
+            {
+                // sheet取得、値設定
+                var worksheet = excelClass.GetWorksheet("Sheet1");
+                SetWorksheetValues(worksheet, 10);
 
-            return CreateExcel(excelFileName, GetWorkBook(10));
+                //　DownLoadModelを返す
+                var prefixExcelFileName = "test";
+                var dateString = DateTime.UtcNow.ToJstTime().ToString("yyyyMMdd");
+                var excelFileName = $"{prefixExcelFileName}_{dateString}.xlsx";
+                return CreateExcel(excelFileName, excelClass.GetWorkbook());
+            }
+        }
+        catch (LockRecursionException)
+        {
+            return new DownLoadModel(string.Empty, null, $"Excel作成中です。{Environment.NewLine}時間をおいて実施してください。");
         }
         catch (Exception ex)
         {
@@ -397,24 +418,122 @@ Welcome to your new app.
         }
         finally
         {
-            cacheLock.ExitWriteLock();
             Logger.LogInformation(await GetLogMessage("終了"));
         }
     }
 
     /// <summary>
-    /// Excelワークブック作成
+    /// Excelワークシート設定
     /// </summary>
-    /// <param name="id">A1セルに設定する値</param>
-    /// <returns>XLWorkbookインスタンス</returns>
-    private XLWorkbook GetWorkBook(int id)
+    /// <param name="worksheet">WorkSheetオブジェクト</param>
+    /// <param name="count">データカウント</param>
+    private void SetWorksheetValues(IXLWorksheet worksheet, int count)
     {
         //TODO イメージ追加例 https://github.com/closedxml/closedxml/wiki/How-can-I-insert-an-image
-        //Creating the workbook
-        var wb = new XLWorkbook();
-        var ws = wb.AddWorksheet("Sheet1");
-        ws.FirstCell().SetValue(id);
-        return wb;
+        for (var i = 0; i < count; i++)
+        {
+            var targetIndex = i + 1;
+            var data = new object[]{
+                targetIndex,
+                $"名前{targetIndex}",
+                targetIndex*10m,
+                targetIndex*0.1m,
+                targetIndex*1000,
+                targetIndex-count,
+                targetIndex+count};
+            worksheet.Cell($"A{targetIndex + 1}").InsertData(new Object[][] { data });
+        }
+    }
+
+    /// <summary>
+    /// Excel出力(単票)
+    /// </summary>
+    /// <returns>ダウンロード用モデル</returns>
+    /// <remarks>Dataにはbyte[]配列を設定</remarks>
+    private async Task<DownLoadModel> OutputExcelReport()
+    {
+        try
+        {
+            Logger.LogInformation(await GetLogMessage("開始"));
+
+            using (var excelClass = new ExcelClass("assets/excel_template/report_sample.xlsx"))
+            {
+                // sheet取得、値設定
+                var worksheet = excelClass.GetWorksheet("Template");
+                SetWorksheetReportValues(worksheet, 600);
+
+                //　DownLoadModelを返す
+                var prefixExcelFileName = "test_report";
+                var dateString = DateTime.UtcNow.ToJstTime().ToString("yyyyMMdd");
+                var excelFileName = $"{prefixExcelFileName}_{dateString}.xlsx";
+                return CreateExcel(excelFileName, excelClass.GetWorkbook());
+            }
+        }
+        catch (LockRecursionException)
+        {
+            return new DownLoadModel(string.Empty, null, $"Excel作成中です。{Environment.NewLine}時間をおいて実施してください。");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, await GetLogError(ex));
+            return new DownLoadModel(string.Empty, null, "Excel作成に失敗しました。");
+        }
+        finally
+        {
+            Logger.LogInformation(await GetLogMessage("終了"));
+        }
+    }
+
+    /// <summary>
+    /// Excelワークシート設定(単票)
+    /// </summary>
+    /// <param name="worksheet">WorkSheetオブジェクト</param>
+    /// <param name="count">データカウント</param>
+    private void SetWorksheetReportValues(IXLWorksheet worksheet, int count)
+    {
+        var workBook = worksheet.Workbook;
+        if (workBook is null) return;
+
+        for (var i = 0; i < count; i++)
+        {
+            var targetIndex = i + 1;
+
+            // テンプレートからシート追加
+            var targetSheet = worksheet.CopyTo($"名前{targetIndex}");
+
+            // 名前
+            targetSheet.Cell("B2").Value = $"名前{targetIndex}";
+
+            // 住所
+            targetSheet.Cell("B3").Value = $"住所県住所町{targetIndex}-123";
+
+            // 備考
+            var remark = string.Empty;
+            if (i % 2 == 0)
+            {
+                // 偶数は改行あり
+                remark = $"備考あいうえお{Environment.NewLine}かきくけこ{Environment.NewLine}さしすせそ{Environment.NewLine}なにぬねの{Environment.NewLine}";
+            }
+            else
+            {
+                // 奇数は改行なし
+                remark = $"備考あいうえお";
+            }
+            remark = remark.Replace(Environment.NewLine, "\n");
+            targetSheet.Cell("B4").Value = remark;
+
+            // 備考の状況によって高さを設定
+            var rowCount = remark.Count(c => c == '\n');
+            var height = (targetSheet.Cell("B4").Style.Font.FontSize + 5) * rowCount;
+            if (targetSheet.Row(4).Height < height)
+            {
+                targetSheet.Row(4).Height = height;
+                targetSheet.Cell("B4").Style.Alignment.SetVertical(XLAlignmentVerticalValues.Top);
+            }
+        }
+
+        // テンプレートシート削除
+        worksheet.Delete();
     }
     #endregion
 
@@ -428,7 +547,7 @@ Welcome to your new app.
         StateHasChanged();
     }
 
-   /// <summary>
+    /// <summary>
     /// 初期処理
     /// </summary>
     /// <param name="firstRender">初回表示か否か</param>
@@ -455,6 +574,8 @@ Welcome to your new app.
 
                 // 漢字フリガナ変換の初期化
                 await InitKanjiToFurigana();
+
+                PageModule = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Home.razor.js");
             }
             catch (Exception ex)
             {
@@ -483,8 +604,8 @@ Welcome to your new app.
             var pdfDataList = new List<IData>();
 
             // TODO DBから取得したデータを格納
-            pdfDataList.Add(new PdfReport.DataLists.Envelope("123-4567","123456789012345678","１２３４５６７８"));
-            pdfDataList.Add(new PdfReport.DataLists.Envelope("123-4567","Ａ県Ｂ市123-4","サンプル太郎"));
+            pdfDataList.Add(new PdfReport.DataLists.Envelope("123-4567", "123456789012345678", "１２３４５６７８"));
+            pdfDataList.Add(new PdfReport.DataLists.Envelope("123-4567", "Ａ県Ｂ市123-4", "サンプル太郎"));
 
 
             var pdfMain = new PdfMain(LayoutKinds.Envelope, pdfDataList);
@@ -528,8 +649,8 @@ Welcome to your new app.
             var pdfDataList = new List<IData>();
 
             // TODO DBから取得したデータを格納
-            pdfDataList.Add(new PdfReport.DataLists.Envelope("123-4567","123456789012345678","１２３４５６７８"));
-            pdfDataList.Add(new PdfReport.DataLists.Envelope("123-4567","Ａ県Ｂ市123-4","サンプル太郎"));
+            pdfDataList.Add(new PdfReport.DataLists.Envelope("123-4567", "123456789012345678", "１２３４５６７８"));
+            pdfDataList.Add(new PdfReport.DataLists.Envelope("123-4567", "Ａ県Ｂ市123-4", "サンプル太郎"));
 
             // ZIPファイル名指定
             var prefixZipFileName = "test";
@@ -577,7 +698,7 @@ Welcome to your new app.
         if (string.IsNullOrEmpty(result.PostCd))
         {
             addressKanji = "取得できませんでした";
-            addressKana  = "取得できませんでした";
+            addressKana = "取得できませんでした";
         }
         else
         {
@@ -597,7 +718,7 @@ Welcome to your new app.
         if (string.IsNullOrEmpty(result.PostCd))
             postCd = "取得できませんでした";
         else
-            postCd = $"{result.PostCd.Substring(0,3)}-{result.PostCd.Substring(3)}";
+            postCd = $"{result.PostCd.Substring(0, 3)}-{result.PostCd.Substring(3)}";
     }
 
     /// <summary>

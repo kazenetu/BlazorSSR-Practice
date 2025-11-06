@@ -26,6 +26,12 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="assets/excel_template/*.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
   <ItemGroup Condition=" '$(Configuration)' == 'Debug'">
     <None Update="assets\Test.db">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

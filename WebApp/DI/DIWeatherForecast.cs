@@ -9,6 +9,6 @@ public partial class DIClass
 {
     public void SetWeatherForecastRepository(IServiceCollection services)
     {
-        services.AddTransient<IWeatherForecastRepository, WeatherForecastRepository>();
+        services.AddScoped<IWeatherForecastRepository, WeatherForecastRepository>();
     }
 }

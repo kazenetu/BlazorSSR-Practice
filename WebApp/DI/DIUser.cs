@@ -9,6 +9,6 @@ public partial class DIClass
 {
     public void SetUserRepository(IServiceCollection services)
     {
-        services.AddTransient<IUserRepository, UserRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
     }
 }

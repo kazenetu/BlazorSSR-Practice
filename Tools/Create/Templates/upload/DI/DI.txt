@@ -9,6 +9,6 @@ public partial class DIClass
 {
     public void Set$ReposiotryName$Repository(IServiceCollection services)
     {
-        services.AddTransient<I$ReposiotryName$Repository, $ReposiotryName$Repository>();
+        services.AddScoped<I$ReposiotryName$Repository, $ReposiotryName$Repository>();
     }
 }

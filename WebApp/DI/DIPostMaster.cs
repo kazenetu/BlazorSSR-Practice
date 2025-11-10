@@ -9,6 +9,6 @@ public partial class DIClass
 {
     public void SetPostMasterRepository(IServiceCollection services)
     {
-        services.AddTransient<IPostMasterRepository, PostMasterRepository>();
+        services.AddScoped<IPostMasterRepository, PostMasterRepository>();
     }
 }

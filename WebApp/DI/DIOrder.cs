@@ -9,6 +9,6 @@ public partial class DIClass
 {
     public void SetOrderRepository(IServiceCollection services)
     {
-        services.AddTransient<IOrderRepository, OrderRepository>();
+        services.AddScoped<IOrderRepository, OrderRepository>();
     }
 }

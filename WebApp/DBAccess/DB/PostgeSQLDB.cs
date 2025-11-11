@@ -17,6 +17,11 @@ public class PostgreSQLDB : IDatabase
     #region プライベートフィールド
 
     /// <summary>
+    /// 接続文字列
+    /// </summary>
+    private string ConnectionString = "";
+
+    /// <summary>
     /// コネクションインスタンス
     /// </summary>
     private NpgsqlConnection? conn = null;
@@ -65,6 +70,7 @@ public class PostgreSQLDB : IDatabase
     /// <param name="connectionString">接続文字列</param>
     public PostgreSQLDB(string connectionString)
     {
+        this.ConnectionString = connectionString;
         try
         {
             this.conn = this.GetConnection(connectionString);

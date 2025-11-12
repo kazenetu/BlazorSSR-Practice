@@ -290,6 +290,42 @@ public class PostgreSQLDB : IDatabase
     #region プライベートメソッド
 
     /// <summary>
+    /// コネクション取得・オープン
+    /// オープン済なら処理なし
+    /// </summary>
+    private void OpenConnection()
+    {
+        try
+        {
+            if(this.conn is not null)
+                return;
+
+            this.conn = this.GetConnection(ConnectionString);
+            this.conn?.Open();
+        }
+        catch (PostgresException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"「{ConnectionString}」への接続失敗", ex);
+        }
+    }
+
+    /// <summary>
+    /// トランザクション中でない場合はコネクション削除
+    /// </summary>
+    private void CloseConnection()
+    {
+        if (this.isTran) return;
+
+        // 解放
+        this.conn?.Close();
+        this.conn = null;
+    }
+
+    /// <summary>
     /// コネクション生成
     /// </summary>
     /// <param name="connectionString">接続文字列</param>

@@ -137,17 +137,28 @@ public class PostgreSQLDB : IDatabase
             return 0;
         }
 
-        // SQL発行
-        using (NpgsqlCommand command = conn!.CreateCommand())
+        try
         {
-            command.CommandText = sql;
+            // コネクション未生成ならコネクション作成
+            OpenConnection();
 
-            foreach (var key in this.param.Keys)
+            // SQL発行
+            using (NpgsqlCommand command = conn!.CreateCommand())
             {
-                command.Parameters.AddWithValue(key, this.param[key]);
-            }
+                command.CommandText = sql;
 
-            return command.ExecuteNonQuery();
+                foreach (var key in this.param.Keys)
+                {
+                    command.Parameters.AddWithValue(key, this.param[key]);
+                }
+
+                return command.ExecuteNonQuery();
+            }
+        }
+        finally
+        {
+            // トランザクション中でなければコネクション削除
+            CloseConnection();
         }
     }
 
@@ -164,35 +175,46 @@ public class PostgreSQLDB : IDatabase
             return new DataTable();
         }
 
-        // SQL発行
-        using (NpgsqlCommand command = conn!.CreateCommand())
+        try
         {
-            command.CommandText = sql;
+            // コネクション未生成ならコネクション作成
+            OpenConnection();
 
-            foreach (var key in this.param.Keys)
+            // SQL発行
+            using (NpgsqlCommand command = conn!.CreateCommand())
             {
-                command.Parameters.AddWithValue(key, this.param[key]);
-            }
+                command.CommandText = sql;
 
-            using (NpgsqlDataReader reader = command.ExecuteReader())
-            {
-                //スキーマ取得
-                var result = this.GetShcema(reader);
-
-                while (reader.Read())
+                foreach (var key in this.param.Keys)
                 {
-                    var addRow = result.NewRow();
-
-                    foreach (DataColumn col in result.Columns)
-                    {
-                        addRow[col.ColumnName] = reader[col.ColumnName];
-                    }
-
-                    result.Rows.Add(addRow);
+                    command.Parameters.AddWithValue(key, this.param[key]);
                 }
 
-                return result;
+                using (NpgsqlDataReader reader = command.ExecuteReader())
+                {
+                    //スキーマ取得
+                    var result = this.GetShcema(reader);
+
+                    while (reader.Read())
+                    {
+                        var addRow = result.NewRow();
+
+                        foreach (DataColumn col in result.Columns)
+                        {
+                            addRow[col.ColumnName] = reader[col.ColumnName];
+                        }
+
+                        result.Rows.Add(addRow);
+                    }
+
+                    return result;
+                }
             }
+        }
+        finally
+        {
+            // トランザクション中でなければコネクション削除
+            CloseConnection();
         }
     }
 

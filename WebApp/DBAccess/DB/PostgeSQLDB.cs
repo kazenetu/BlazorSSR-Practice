@@ -71,21 +71,7 @@ public class PostgreSQLDB : IDatabase
     public PostgreSQLDB(string connectionString)
     {
         this.ConnectionString = connectionString;
-        try
-        {
-            this.conn = this.GetConnection(connectionString);
-            this.conn.Open();
-
-            this.param = new Dictionary<string, object>();
-        }
-        catch (PostgresException)
-        {
-            throw;
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"「{connectionString}」への接続失敗", ex);
-        }
+        this.param = new Dictionary<string, object>();
     }
 
     /// <summary>

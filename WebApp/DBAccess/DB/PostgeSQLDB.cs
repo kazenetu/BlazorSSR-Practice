@@ -221,6 +221,9 @@ public class PostgreSQLDB : IDatabase
         }
         else
         {
+            // コネクション未生成ならコネクション作成
+            OpenConnection();
+
             this.tran = this.conn!.BeginTransaction();
             this.isTran = true;
         }
@@ -245,8 +248,14 @@ public class PostgreSQLDB : IDatabase
         {
             this.tran!.Commit();
             this.isTran = false;
-        }
 
+            // 解放
+            this.tran.Dispose();
+            this.tran = null;
+
+            // トランザクション中でなければコネクション削除
+            CloseConnection();
+        }
     }
 
     /// <summary>
@@ -268,6 +277,13 @@ public class PostgreSQLDB : IDatabase
         {
             this.tran!.Rollback();
             this.isTran = false;
+
+            // 解放
+            this.tran.Dispose();
+            this.tran = null;
+
+            // トランザクション中でなければコネクション削除
+            CloseConnection();
         }
     }
 

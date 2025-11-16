@@ -305,8 +305,10 @@ public class PostgreSQLDB : IDatabase
         {
             this.tran.Dispose();
         }
-        this.conn?.Close();
-        this.conn?.Dispose();
+        this.isTran = false;
+
+        // トランザクション中でなければコネクション削除
+        CloseConnection();
     }
 
     #endregion

@@ -17,6 +17,11 @@ public class PostgreSQLDB : IDatabase
     #region プライベートフィールド
 
     /// <summary>
+    /// 接続文字列
+    /// </summary>
+    private string ConnectionString = "";
+
+    /// <summary>
     /// コネクションインスタンス
     /// </summary>
     private NpgsqlConnection? conn = null;
@@ -65,21 +70,8 @@ public class PostgreSQLDB : IDatabase
     /// <param name="connectionString">接続文字列</param>
     public PostgreSQLDB(string connectionString)
     {
-        try
-        {
-            this.conn = this.GetConnection(connectionString);
-            this.conn.Open();
-
-            this.param = new Dictionary<string, object>();
-        }
-        catch (PostgresException)
-        {
-            throw;
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"「{connectionString}」への接続失敗", ex);
-        }
+        this.ConnectionString = connectionString;
+        this.param = new Dictionary<string, object>();
     }
 
     /// <summary>
@@ -131,17 +123,28 @@ public class PostgreSQLDB : IDatabase
             return 0;
         }
 
-        // SQL発行
-        using (NpgsqlCommand command = conn!.CreateCommand())
+        try
         {
-            command.CommandText = sql;
+            // コネクション未生成ならコネクション作成
+            OpenConnection();
 
-            foreach (var key in this.param.Keys)
+            // SQL発行
+            using (NpgsqlCommand command = conn!.CreateCommand())
             {
-                command.Parameters.AddWithValue(key, this.param[key]);
-            }
+                command.CommandText = sql;
 
-            return command.ExecuteNonQuery();
+                foreach (var key in this.param.Keys)
+                {
+                    command.Parameters.AddWithValue(key, this.param[key]);
+                }
+
+                return command.ExecuteNonQuery();
+            }
+        }
+        finally
+        {
+            // トランザクション中でなければコネクション削除
+            CloseConnection();
         }
     }
 
@@ -158,35 +161,46 @@ public class PostgreSQLDB : IDatabase
             return new DataTable();
         }
 
-        // SQL発行
-        using (NpgsqlCommand command = conn!.CreateCommand())
+        try
         {
-            command.CommandText = sql;
+            // コネクション未生成ならコネクション作成
+            OpenConnection();
 
-            foreach (var key in this.param.Keys)
+            // SQL発行
+            using (NpgsqlCommand command = conn!.CreateCommand())
             {
-                command.Parameters.AddWithValue(key, this.param[key]);
-            }
+                command.CommandText = sql;
 
-            using (NpgsqlDataReader reader = command.ExecuteReader())
-            {
-                //スキーマ取得
-                var result = this.GetShcema(reader);
-
-                while (reader.Read())
+                foreach (var key in this.param.Keys)
                 {
-                    var addRow = result.NewRow();
-
-                    foreach (DataColumn col in result.Columns)
-                    {
-                        addRow[col.ColumnName] = reader[col.ColumnName];
-                    }
-
-                    result.Rows.Add(addRow);
+                    command.Parameters.AddWithValue(key, this.param[key]);
                 }
 
-                return result;
+                using (NpgsqlDataReader reader = command.ExecuteReader())
+                {
+                    //スキーマ取得
+                    var result = this.GetShcema(reader);
+
+                    while (reader.Read())
+                    {
+                        var addRow = result.NewRow();
+
+                        foreach (DataColumn col in result.Columns)
+                        {
+                            addRow[col.ColumnName] = reader[col.ColumnName];
+                        }
+
+                        result.Rows.Add(addRow);
+                    }
+
+                    return result;
+                }
             }
+        }
+        finally
+        {
+            // トランザクション中でなければコネクション削除
+            CloseConnection();
         }
     }
 
@@ -207,6 +221,9 @@ public class PostgreSQLDB : IDatabase
         }
         else
         {
+            // コネクション未生成ならコネクション作成
+            OpenConnection();
+
             this.tran = this.conn!.BeginTransaction();
             this.isTran = true;
         }
@@ -231,8 +248,14 @@ public class PostgreSQLDB : IDatabase
         {
             this.tran!.Commit();
             this.isTran = false;
-        }
 
+            // 解放
+            this.tran.Dispose();
+            this.tran = null;
+
+            // トランザクション中でなければコネクション削除
+            CloseConnection();
+        }
     }
 
     /// <summary>
@@ -254,6 +277,13 @@ public class PostgreSQLDB : IDatabase
         {
             this.tran!.Rollback();
             this.isTran = false;
+
+            // 解放
+            this.tran.Dispose();
+            this.tran = null;
+
+            // トランザクション中でなければコネクション削除
+            CloseConnection();
         }
     }
 
@@ -275,13 +305,51 @@ public class PostgreSQLDB : IDatabase
         {
             this.tran.Dispose();
         }
-        this.conn?.Close();
-        this.conn?.Dispose();
+        this.isTran = false;
+
+        // トランザクション中でなければコネクション削除
+        CloseConnection();
     }
 
     #endregion
 
     #region プライベートメソッド
+
+    /// <summary>
+    /// コネクション取得・オープン
+    /// オープン済なら処理なし
+    /// </summary>
+    private void OpenConnection()
+    {
+        try
+        {
+            if(this.conn is not null)
+                return;
+
+            this.conn = this.GetConnection(ConnectionString);
+            this.conn?.Open();
+        }
+        catch (PostgresException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"「{ConnectionString}」への接続失敗", ex);
+        }
+    }
+
+    /// <summary>
+    /// トランザクション中でない場合はコネクション削除
+    /// </summary>
+    private void CloseConnection()
+    {
+        if (this.isTran) return;
+
+        // 解放
+        this.conn?.Close();
+        this.conn = null;
+    }
 
     /// <summary>
     /// コネクション生成

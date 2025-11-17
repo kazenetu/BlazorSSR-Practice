@@ -320,7 +320,7 @@ dotnet run --project Tools/ModifyUtfKenAll/ModifyUtfKenAll.csproj Tools/ModifyUt
 * **初回デプロイ**
    1. Webアプリケーションをpublishする
       1. WebアプリケーションをLinux用にpublishする  
-         ```dotnet publish --runtime linux-x64 --output ./WebApp/bin/Release/source```  
+         ```dotnet publish --runtime linux-x64 --property:PublishDir="./bin/Release/source"```  
          ※```WebApp\bin\Release\source```が作成される
 
    1. publish結果をDockerディレクトリにコピーする  
@@ -338,7 +338,7 @@ dotnet run --project Tools/ModifyUtfKenAll/ModifyUtfKenAll.csproj Tools/ModifyUt
 * **再デプロイ**
    1. Webアプリケーションをpublishする
       1. **ローカル開発環境**：WebアプリケーションをLinux用にpublishする  
-         ```dotnet publish --runtime linux-x64 --output ./WebApp/bin/Release/source```  
+         ```dotnet publish --runtime linux-x64 --property:PublishDir="./bin/Release/source"```  
          ※```WebApp\bin\Release\source```が作成される
 
    1. publish結果をDockerディレクトリにコピーする  

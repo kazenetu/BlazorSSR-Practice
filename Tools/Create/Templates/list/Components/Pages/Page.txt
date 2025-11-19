@@ -85,7 +85,7 @@ else
         </div>
     </EditForm>
 
-    <Pagination PageName="/$uri$" CurrentPageNumber="@Page" TotalRecords="@TotalRecords" RecordsPerPage="@Common.PageRecordCount" />
+    <Pagination PageName="/$uri$" CurrentPageNumber="@Page" TotalRecords="@TotalRecords"   RecordsPerPage="@PageRecordCount" OnPerRec="OnPagePerRecordChange"/>
 
     @* 一覧 *@
     @if (PageRecords.Any())
@@ -120,7 +120,7 @@ else
             </tbody>
             *@
         </table>
-        <Pagination PageName="/$uri$" CurrentPageNumber="@Page" TotalRecords="@TotalRecords" RecordsPerPage="@Common.PageRecordCount" IsShowRecordCount="false"/>
+        <Pagination PageName="/$uri$" CurrentPageNumber="@Page" TotalRecords="@TotalRecords" RecordsPerPage="@PageRecordCount" IsShowRecordCount="false"/>
     }
     else
     {
@@ -157,6 +157,11 @@ else
     public int Page { get; set; }
 
     /// <summary>
+    /// ページング用：表示件数
+    /// </summary>
+    public int PageRecordCount { get; set; } = Common.PageRecordCount;
+
+    /// <summary>
     /// ページング用：総レコード数
     /// </summary>
     public int TotalRecords { get; set; }
@@ -165,6 +170,22 @@ else
     /// 1ページの表示レコード
     /// </summary>
     private $ClassName$Model[]? PageRecords;
+
+
+    /// <summary>
+    /// 表示件数 変更イベント
+    /// </summary>
+    /// <param name="pageCount">変更済み表示件数</param>
+    protected async Task OnPagePerRecordChange(int pageCount)
+    {
+        PageRecordCount = pageCount;
+
+        // LocalStrageに表示件数を格納
+        await SetPageRecordCountAsync(PageRecordCount);
+
+        Navigation.NavigateTo("/$uri$/1");
+        ShowPage(1);
+    }
 
     /// <summary>
     /// ページ変更イベント
@@ -206,7 +227,7 @@ else
         var zeroBasePageIndex = pageIndex - 1;
 
         // DBから1ページ分のレコード取得
-        PageRecords = repository.GetList(Model, zeroBasePageIndex * Common.PageRecordCount,  Common.PageRecordCount);
+        PageRecords = repository.GetList(Model, zeroBasePageIndex * PageRecordCount,  PageRecordCount);
         StateHasChanged();
     }
     #endregion
@@ -259,6 +280,9 @@ else
 
                 // 検索条件に入力条件を設定
                 Model = InputModel.Copy();
+
+                // LocalStrageから表示件数を取得
+                PageRecordCount = await GetPageRecordCountAsync();
 
                 // 検索結果を取得(総レコード数更新)
                 ShowPage(Page, true);

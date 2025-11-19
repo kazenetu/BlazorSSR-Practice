@@ -64,6 +64,19 @@ public class ExcelClass: IDisposable
     }
 
     /// <summary>
+    /// ファイルのプロパティ設定
+    /// </summary>
+    /// <param name="properties">ファイルプロパティクラスインスタンス</param>
+    public void SetProperties(XLWorkbookProperties properties)
+    {
+        if (Workbook is null) 
+            throw new Exception("Workbook is null");
+
+        Workbook.Author = properties.Author;
+        Workbook.Properties = properties;
+    }
+
+    /// <summary>
     /// ワークブックを返す
     /// </summary>
     /// <returns>ワークブック</returns>

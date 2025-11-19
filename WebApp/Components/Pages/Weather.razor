@@ -69,7 +69,7 @@ else
         </div>
     </EditForm>
 
-    <Pagination PageName="/weather" CurrentPageNumber="@Page" TotalRecords="@TotalRecords" RecordsPerPage="@Common.PageRecordCount" />
+    <Pagination PageName="/weather" CurrentPageNumber="@Page" TotalRecords="@TotalRecords" RecordsPerPage="@PageRecordCount" OnPerRec="OnPagePerRecordChange"/>
     @if (pageForecasts.Any())
     {
         <table class="table">
@@ -93,7 +93,7 @@ else
                 }
             </tbody>
         </table>
-        <Pagination PageName="/weather" CurrentPageNumber="@Page" TotalRecords="@TotalRecords" RecordsPerPage="@Common.PageRecordCount" IsShowRecordCount="false"/>
+        <Pagination PageName="/weather" CurrentPageNumber="@Page" TotalRecords="@TotalRecords" RecordsPerPage="@PageRecordCount" IsShowRecordCount="false"/>
     }
     else
     {
@@ -127,6 +127,11 @@ else
     /// </summary>
     [Parameter]
     public int Page { get; set; }
+
+    /// <summary>
+    /// ページング用：表示件数
+    /// </summary>
+    public int PageRecordCount { get; set; } = Common.PageRecordCount;
 
     /// <summary>
     /// ページング用：総レコード数
@@ -187,6 +192,9 @@ else
                 // 検索条件に入力条件を設定
                 Model = InputModel.Copy();
 
+                // LocalStrageから表示件数を取得
+                PageRecordCount = await GetPageRecordCountAsync();
+
                 // 検索結果を取得(総レコード数更新)
                 ShowPage(Page, true);
 
@@ -220,6 +228,21 @@ else
             TotalRecords = repository.GetTotalRecord(Model);
             Navigation.NavigateTo("/weather/1");
         }
+    }
+
+    /// <summary>
+    /// 表示件数 変更イベント
+    /// </summary>
+    /// <param name="pageCount">変更済み表示件数</param>
+    protected async Task OnPagePerRecordChange(int pageCount)
+    {
+        PageRecordCount = pageCount;
+
+        // LocalStrageに表示件数を格納
+        await SetPageRecordCountAsync(PageRecordCount);
+
+        Navigation.NavigateTo("/weather/1");
+        ShowPage(1);
     }
 
     /// <summary>
@@ -298,7 +321,7 @@ else
         var zeroBasePageIndex = pageIndex - 1;
 
         // DBから1ページ分のレコード取得
-        pageForecasts = repository.GetList(Model, zeroBasePageIndex * Common.PageRecordCount,  Common.PageRecordCount);
+        pageForecasts = repository.GetList(Model, zeroBasePageIndex * PageRecordCount,  PageRecordCount);
         StateHasChanged();
     }
 

@@ -100,6 +100,17 @@
 @if (IsShowRecordCount && CurrentPageNumber <= TotalPages)
 {
     <div>@DisplayRecordCount()</div>
+
+    @* 表示件数 *@
+    <div class="text-end" style="margin-top:-1.5em;">
+        <label for="pageSelect">表示件数：</label>
+        <InputSelect id="pageSelect" Value="@RecordsPerPage" ValueExpression="@(() => RecordsPerPage)" ValueChanged="@((int id) => OnPagePerRecordChange(id))">
+            @foreach (var count in GetPageRecordCounts())
+            {
+                <option value="@count">@($"{count}行")</option>
+            }
+        </InputSelect>
+    </div>
 }
 
 @code {
@@ -107,6 +118,15 @@
     /// ページアイコン数
     /// </summary>
     private const int MaxIPageCount = 5;
+
+    /// <summary>
+    /// 1ページのレコード選択リスト取得
+    /// </summary>
+    /// <returns>レコード数リスト</returns>
+    private int[] GetPageRecordCounts()
+    {
+        return [10, 20, 50];
+    }
 
     /// <summary>
     ///　1ページに表示するレコード数
@@ -137,6 +157,13 @@
     /// </summary>
     [Parameter]
     public bool IsShowRecordCount { get; set; } = true;
+
+    /// <summary>
+    /// 表示件数変更イベント
+    /// </summary>
+    /// <param name="int">変更後の表示件数</param>
+    [Parameter]
+    public EventCallback<int> OnPerRec { get; set; }
 
     #region JSモジュール管理
     /// <summary>
@@ -193,6 +220,16 @@
             //　URL変更(他ページから復帰用)
             Navigation.NavigateTo($"{PageName}/{pageNumber}");
         });
+    }
+
+    /// <summary>
+    /// 表示件数変更イベント
+    /// </summary>
+    /// <param name="chanedValue">変更済の表示件数</param>
+    private async Task OnPagePerRecordChange(int chanedValue)
+    {
+        // 呼び出し元のメソッド呼び出し
+        await OnPerRec.InvokeAsync(chanedValue);
     }
 
     /// <summary>

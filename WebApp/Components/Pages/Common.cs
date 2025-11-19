@@ -9,4 +9,9 @@ public static class Common
     /// 定数：ページング用：1ページのレコード数
     /// </summary>
     public const int PageRecordCount = 10;
+
+    /// <summary>
+    /// ファイルプロパティ「作成者名」
+    /// </summary>
+    public static readonly string AuthorName = "テスト作者";
 }

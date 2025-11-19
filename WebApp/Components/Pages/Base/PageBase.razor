@@ -15,6 +15,7 @@
 @inject IPostMasterRepository postMasterRepository
 @inject IJSRuntime JS
 @inject NavigationManager Navigation
+@inject ProtectedLocalStorage localStorage
 @implements IAsyncDisposable
 
 @code{
@@ -597,6 +598,41 @@
             ms.Seek(0, SeekOrigin.Begin);
             return new DownLoadModel(fileName, ms.ToArray());
         }
+    }
+    #endregion
+
+    #region 1ページのレコード選択
+    /// <summary>
+    /// 定数：LocalStorage用キー
+    /// </summary>
+    private const string PageRecordCount = "PageRecordCount";
+
+    /// <summary>
+    /// 1ページのレコード選択リスト取得
+    /// </summary>
+    /// <returns>レコード数リスト</returns>
+    protected int[] GetPageRecordCounts()
+    {
+        return [10, 20, 50];
+    }
+
+    /// <summary>
+    /// 1ページのレコード数取得：ローカルセッション経由
+    /// </summary>
+    /// <returns>レコード数</returns>
+    protected async Task<int> GetPageRecordCountAsync()
+    {
+        var result = await localStorage.GetAsync<int>(PageRecordCount);
+        return result.Success ? result.Value : Common.PageRecordCount;
+    }
+
+    /// <summary>
+    /// 1ページのレコード数設定：ローカルセッション経由
+    /// </summary>
+    /// <param name="value">値</param>
+    protected async Task SetPageRecordCountAsync(int value)
+    {
+        await localStorage.SetAsync(PageRecordCount, value);
     }
     #endregion
 }

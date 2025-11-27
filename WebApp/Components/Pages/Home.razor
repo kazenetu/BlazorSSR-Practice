@@ -33,6 +33,8 @@ Welcome to your new app.
     <FileDownload ButtonName="Excelダウンロード(単票)" GetDataFunction="OutputExcelReport" IsBinary="true"/>
 
     <button class="btn btn-info" @onclick="downloadExcel">Excelダウンロード(JS経由)</button>
+
+    <FileDownload ButtonName="Wordダウンロード" GetDataFunction="OutputWord" IsBinary="true"/>
 </div>
 
 <div>
@@ -394,21 +396,11 @@ Welcome to your new app.
         {
             Logger.LogInformation(await GetLogMessage("開始"));
 
-            using (var excelClass = new ExcelClass("assets/excel_template/sample.xlsx"))
+            using (var excelClass = new ExcelClass("assets/excel_temlate/sample.xlsx"))
             {
                 // sheet取得、値設定
                 var worksheet = excelClass.GetWorksheet("Sheet1");
                 SetWorksheetValues(worksheet, 10);
-
-                // プロパティ設定
-                var today = DateTime.Now;
-                var properties = new XLWorkbookProperties();
-                properties.Author = Common.AuthorName;
-                properties.Created = today;
-                properties.LastModifiedBy = null;
-                properties.Modified = today;
-                properties.Company = string.Empty;
-                excelClass.SetProperties(properties);
 
                 //　DownLoadModelを返す
                 var prefixExcelFileName = "test";
@@ -466,21 +458,11 @@ Welcome to your new app.
         {
             Logger.LogInformation(await GetLogMessage("開始"));
 
-            using (var excelClass = new ExcelClass("assets/excel_template/report_sample.xlsx"))
+            using (var excelClass = new ExcelClass("assets/excel_temlate/report_sample.xlsx"))
             {
                 // sheet取得、値設定
                 var worksheet = excelClass.GetWorksheet("Template");
                 SetWorksheetReportValues(worksheet, 600);
-
-                // プロパティ設定
-                var today = DateTime.Now;
-                var properties = new XLWorkbookProperties();
-                properties.Author = Common.AuthorName;
-                properties.Created = today;
-                properties.LastModifiedBy = null;
-                properties.Modified = today;
-                properties.Company = string.Empty;
-                excelClass.SetProperties(properties);
 
                 //　DownLoadModelを返す
                 var prefixExcelFileName = "test_report";
@@ -554,6 +536,53 @@ Welcome to your new app.
 
         // テンプレートシート削除
         worksheet.Delete();
+    }
+    #endregion
+
+    #region Word出力
+    /// <summary>
+    /// 排他ロックオブジェクト
+    /// </summary>
+    private static ReaderWriterLockSlim cacheLock = new ReaderWriterLockSlim();
+
+    /// <summary>
+    /// Word出力
+    /// </summary>
+    /// <returns>ダウンロード用モデル</returns>
+    /// <remarks>Dataにはbyte[]配列を設定</remarks>
+    private async Task<DownLoadModel> OutputWord()
+    {
+        cacheLock.EnterWriteLock();
+        try
+        {
+            Logger.LogInformation(await GetLogMessage("開始"));
+
+            var temlatePath = "assets/word_template/sample.docx";
+
+            var prefixWordFileName = "test";
+            var dateString = DateTime.UtcNow.ToJstTime().ToString("yyyyMMdd");
+            var wordFileName = $"{prefixWordFileName}_{dateString}.docx";
+
+            var replaceList = new List<(string targetText, string replacementText)>
+            {
+                new ("{text1}", "テキスト1"),
+                new ("{text2}", "テキスト2"),
+                new ("{holidayFrom}", "休暇開始"),
+                new ("{holidayTo}", "休暇終了"),
+            };
+
+            return new WordClass().ReplaceText(temlatePath, replaceList, wordFileName);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, await GetLogError(ex));
+            return new DownLoadModel(string.Empty, null, "Word作成に失敗しました。");
+        }
+        finally
+        {
+            cacheLock.ExitWriteLock();
+            Logger.LogInformation(await GetLogMessage("終了"));
+        }
     }
     #endregion
 

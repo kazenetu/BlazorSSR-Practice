@@ -541,18 +541,12 @@ Welcome to your new app.
 
     #region Word出力
     /// <summary>
-    /// 排他ロックオブジェクト
-    /// </summary>
-    private static ReaderWriterLockSlim cacheLock = new ReaderWriterLockSlim();
-
-    /// <summary>
     /// Word出力
     /// </summary>
     /// <returns>ダウンロード用モデル</returns>
     /// <remarks>Dataにはbyte[]配列を設定</remarks>
     private async Task<DownLoadModel> OutputWord()
     {
-        cacheLock.EnterWriteLock();
         try
         {
             Logger.LogInformation(await GetLogMessage("開始"));
@@ -571,7 +565,10 @@ Welcome to your new app.
                 new ("{holidayTo}", "休暇終了"),
             };
 
-            return new WordClass().ReplaceText(temlatePath, replaceList, wordFileName);
+            using (var wordClass = new WordClass())
+            {
+                return wordClass.ReplaceText(temlatePath, replaceList, wordFileName);
+            }
         }
         catch (Exception ex)
         {
@@ -580,7 +577,6 @@ Welcome to your new app.
         }
         finally
         {
-            cacheLock.ExitWriteLock();
             Logger.LogInformation(await GetLogMessage("終了"));
         }
     }

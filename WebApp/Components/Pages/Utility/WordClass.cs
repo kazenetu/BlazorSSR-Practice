@@ -8,8 +8,26 @@ using WebApp.Models.Parts;
 /// <summary>
 /// Word管理クラス
 /// </summary>
-public class WordClass
+public class WordClass : IDisposable
 {
+    /// <summary>
+    /// コンストラクタ：新規作成
+    /// </summary>
+    public WordClass()
+    {
+        // ClosedXMLは非スレッドセーフのためロック取得
+        cacheLock.EnterWriteLock();
+    }
+
+    /// <summary>
+    /// 破棄
+    /// </summary>
+    public void Dispose()
+    {
+        // 排他ロック解放
+        cacheLock.ExitWriteLock();
+    }
+
     /// <summary>
     /// テンプレートファイルをベースにテキスト置換済ファイルデータを返す
     /// </summary>
@@ -35,7 +53,7 @@ public class WordClass
 
 
                 // ドキュメントルート要素を取得
-                Document documentRoot = mainDocumentPart.Document; 
+                Document documentRoot = mainDocumentPart.Document;
 
                 // Body要素を取得
                 var bodyElements = documentRoot.Elements<Body>();
@@ -74,6 +92,10 @@ public class WordClass
 
             }
         }
-
     }
+
+    /// <summary>
+    /// 排他ロックオブジェクト
+    /// </summary>
+    private static ReaderWriterLockSlim cacheLock = new ReaderWriterLockSlim();
 }

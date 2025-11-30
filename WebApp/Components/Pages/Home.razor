@@ -557,18 +557,30 @@ Welcome to your new app.
             var dateString = DateTime.UtcNow.ToJstTime().ToString("yyyyMMdd");
             var wordFileName = $"{prefixWordFileName}_{dateString}.docx";
 
-            var replaceList = new List<(string targetText, string replacementText)>
+            var replaceList = new List<Replacements>
             {
-                new ("{text1}", "テキスト1"),
-                new ("{text2}", "テキスト2"),
-                new ("{holidayFrom}", "休暇開始"),
-                new ("{holidayTo}", "休暇終了"),
+                new Replacements(
+                    new List<ReplacementItem>
+                    {
+                        new ReplacementItem("{text1}", "1件目テキスト1"),
+                        new ReplacementItem("{text2}", "1件目テキスト2"),
+                        new ReplacementItem("{holidayFrom}", "1件目休暇開始"),
+                        new ReplacementItem("{holidayTo}", "1件目休暇終了"),
+                    }),
+                new Replacements(
+                    new List<ReplacementItem>
+                    {
+                        new ReplacementItem("{text1}", "2件目テキスト1"),
+                        new ReplacementItem("{text2}", "2件目テキスト2"),
+                        new ReplacementItem("{holidayFrom}", "2件目休暇開始"),
+                        new ReplacementItem("{holidayTo}", "2件目休暇終了"),
+                    }),
             };
-
             using (var wordClass = new WordClass())
             {
-                return wordClass.ReplaceText(temlatePath, replaceList, wordFileName);
+                return wordClass.Create(temlatePath, replaceList, wordFileName);
             }
+
         }
         catch (Exception ex)
         {

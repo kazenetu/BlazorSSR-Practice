@@ -108,7 +108,6 @@ public class WordClass : IDisposable
     /// <param name="templateFilePath">テンプレートファイルパス</param>
     /// <param name="replacements">置換リスト</param>
     /// <returns>ドキュメントのバイト配列</returns>
-    /// <exception cref="Exception"></exception>
     private byte[] CreateDocument(string templateFilePath, Replacements replacements)
     {
         using (var stream = new MemoryStream())
@@ -133,7 +132,7 @@ public class WordClass : IDisposable
                 if (body is not null)
                 {
                     // Body要素以下のテキストを置換え
-                    LoopParagraph(body.ChildElements, replacements);
+                    ReplaceText(body.ChildElements, replacements);
                 }
                 wordprocessingDocument.Save();
 
@@ -148,11 +147,11 @@ public class WordClass : IDisposable
     /// </summary>
     /// <param name="targets">対象要素</param>
     /// <param name="replaceList">置換リスト</param>
-    private void LoopParagraph(OpenXmlElementList targets, Replacements replaceList)
+    private void ReplaceText(OpenXmlElementList targets, Replacements replaceList)
     {
         foreach (var target in targets)
         {
-            if (target.HasChildren) LoopParagraph(target.ChildElements, replaceList);
+            if (target.HasChildren) ReplaceText(target.ChildElements, replaceList);
             else if (target.GetType() == typeof(Text))
             {
                 var text = target.InnerText;

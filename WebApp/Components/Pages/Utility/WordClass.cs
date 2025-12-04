@@ -34,8 +34,9 @@ public class WordClass : IDisposable
     /// <param name="templateFilePath">テンプレートファイルパス</param>
     /// <param name="replaceList">置換リスト</param>
     /// <param name="outputFileName">ファイル名</param>
+    /// <param name="pageBreak">改ページをするか</param>
     /// <returns>ファイルデータModel</returns>
-    public DownLoadModel Create(string templateFilePath, List<Replacements> replaceList, string outputFileName)
+    public DownLoadModel Create(string templateFilePath, List<Replacements> replaceList, string outputFileName, bool pageBreak = true)
     {
         // テンプレートファイルのバイト配列を取得
         TemplateBytes = File.ReadAllBytes(templateFilePath);
@@ -52,7 +53,7 @@ public class WordClass : IDisposable
             else
             {
                 var destDocBytes = CreateDocument(templateFilePath, item);
-                srcDocBytes = MergeDocuments(srcDocBytes, destDocBytes);
+                srcDocBytes = MergeDocuments(srcDocBytes, destDocBytes, pageBreak);
             }
         }
         return new DownLoadModel(outputFileName, srcDocBytes);
@@ -62,9 +63,10 @@ public class WordClass : IDisposable
     /// ソースドキュメントにドキュメントをマージする(改ページ)
     /// </summary>
     /// <param name="srcBytes">ソースドキュメント</param>
+    /// <param name="pageBreak">改ページをするか</param>
     /// <param name="combinedBytes">マージされるドキュメント</param>
     /// <returns>ドキュメントのバイト配列</returns>
-    private byte[] MergeDocuments(byte[] srcBytes, byte[] combinedBytes)
+    private byte[] MergeDocuments(byte[] srcBytes, byte[] combinedBytes, bool pageBreak)
     {
         using (var srcStream = new MemoryStream())
         {
@@ -84,9 +86,12 @@ public class WordClass : IDisposable
                 // 結合元の本文を取得
                 Body combinedBody = destDoc!.MainDocumentPart!.Document.Body!;
 
-                // 改行を追加
-                Paragraph PageBreakParagraph = new Paragraph(new Run(new Break() { Type = BreakValues.Page }));
-                sourceBody.Append(PageBreakParagraph);
+                if (pageBreak)
+                {
+                    // 改行を追加
+                    Paragraph PageBreakParagraph = new Paragraph(new Run(new Break() { Type = BreakValues.Page }));
+                    sourceBody.Append(PageBreakParagraph);
+                }
 
                 // 結合元の本文の子要素をすべて結合先にコピー
                 foreach (var element in combinedBody.Elements().Where(e => !(e is SectionProperties)))
@@ -176,14 +181,14 @@ public class WordClass : IDisposable
 }
 
 /// <summary>
-/// 置換アイテム
+/// テキスト置換アイテム
 /// </summary>
 /// <param name="Keyword">キーワードテキスト</param>
 /// <param name="ReplacementText">置換文字列</param>
 public record ReplacementItem(string Keyword, string ReplacementText);
 
 /// <summary>
-/// 置換リスト
+/// テキスト置換リスト
 /// </summary>
 /// <param name="Items">置換アイテム</param>
 public record Replacements(List<ReplacementItem> Items);

@@ -27,7 +27,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="assets/excel_template/*.xlsx">
+    <None Update="assets/excel_temlate/*.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="assets/word_template/*.docx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

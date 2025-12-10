@@ -36,7 +36,7 @@ public class WordClass : IDisposable
     /// <param name="outputFileName">ファイル名</param>
     /// <param name="pageBreak">改ページをするか</param>
     /// <param name="propertyAuthorName">ファイルのプロパティ「作者名」</param>
-    /// /// <returns>ファイルデータModel</returns>
+    /// <returns>ファイルデータModel</returns>
     public DownLoadModel Create(string templateFilePath, List<Replacements> replaceList, string outputFileName, bool pageBreak = true, string propertyAuthorName = "")
     {
         // テンプレートファイルのバイト配列を取得
@@ -122,6 +122,24 @@ public class WordClass : IDisposable
             stream.Write(TemplateBytes, 0, (int)TemplateBytes.Length);
             using (var wordprocessingDocument = WordprocessingDocument.Open(stream, true))
             {
+                // プロパティ設定
+                if (!string.IsNullOrEmpty(propertyAuthorName))
+                {
+                    var properties = wordprocessingDocument.PackageProperties;
+                    properties.Creator = propertyAuthorName;
+                    properties.Created = DateTime.Now;
+                    properties.LastModifiedBy = null;
+                    properties.Modified = null;
+                    properties.LastPrinted = null;
+                    properties.Revision = null;
+
+                    var extendPropties = wordprocessingDocument.ExtendedFilePropertiesPart?.Properties;
+                    if (extendPropties is not null)
+                    {
+                        extendPropties.TotalTime = null;
+                    }
+                }
+
                 // ドキュメント メインパーツを取得
                 var mainDocumentPart = wordprocessingDocument.MainDocumentPart;
 

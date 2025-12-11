@@ -578,7 +578,7 @@ Welcome to your new app.
             };
             using (var wordClass = new WordClass())
             {
-                return wordClass.Create(temlatePath, replaceList, wordFileName);
+                return wordClass.Create(temlatePath, replaceList, wordFileName, true, Common.AuthorName);
             }
 
         }

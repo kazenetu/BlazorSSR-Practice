@@ -35,8 +35,9 @@ public class WordClass : IDisposable
     /// <param name="replaceList">置換リスト</param>
     /// <param name="outputFileName">ファイル名</param>
     /// <param name="pageBreak">改ページをするか</param>
+    /// <param name="propertyAuthorName">ファイルのプロパティ「作者名」</param>
     /// <returns>ファイルデータModel</returns>
-    public DownLoadModel Create(string templateFilePath, List<Replacements> replaceList, string outputFileName, bool pageBreak = true)
+    public DownLoadModel Create(string templateFilePath, List<Replacements> replaceList, string outputFileName, bool pageBreak = true, string propertyAuthorName = "")
     {
         // テンプレートファイルのバイト配列を取得
         TemplateBytes = File.ReadAllBytes(templateFilePath);
@@ -112,14 +113,33 @@ public class WordClass : IDisposable
     /// </summary>
     /// <param name="templateFilePath">テンプレートファイルパス</param>
     /// <param name="replacements">置換リスト</param>
+    /// <param name="propertyAuthorName">ファイルのプロパティ「作者名」</param>
     /// <returns>ドキュメントのバイト配列</returns>
-    private byte[] CreateDocument(string templateFilePath, Replacements replacements)
+    private byte[] CreateDocument(string templateFilePath, Replacements replacements, string propertyAuthorName = "")
     {
         using (var stream = new MemoryStream())
         {
             stream.Write(TemplateBytes, 0, (int)TemplateBytes.Length);
             using (var wordprocessingDocument = WordprocessingDocument.Open(stream, true))
             {
+                // プロパティ設定
+                if (!string.IsNullOrEmpty(propertyAuthorName))
+                {
+                    var properties = wordprocessingDocument.PackageProperties;
+                    properties.Creator = propertyAuthorName;
+                    properties.Created = DateTime.Now;
+                    properties.LastModifiedBy = null;
+                    properties.Modified = null;
+                    properties.LastPrinted = null;
+                    properties.Revision = null;
+
+                    var extendPropties = wordprocessingDocument.ExtendedFilePropertiesPart?.Properties;
+                    if (extendPropties is not null)
+                    {
+                        extendPropties.TotalTime = null;
+                    }
+                }
+
                 // ドキュメント メインパーツを取得
                 var mainDocumentPart = wordprocessingDocument.MainDocumentPart;
 

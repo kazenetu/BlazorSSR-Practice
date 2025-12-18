@@ -98,7 +98,7 @@ public class SQLiteDB : IDB
                         var name = lineElements[0];
                         var type = CreateTableParsedColumn.GetType(lineElements[1]);
                         var option = string.Join(string.Empty, lineElements[2..]);
-                        createTableParsedList.Add(new CreateTableParsedColumn(name, type, option));
+                        createTableParsedList.Add(new CreateTableParsedColumn(name, type, option.ToLower()));
                     }
                 }
 
@@ -109,8 +109,9 @@ public class SQLiteDB : IDB
                     if (constraintKeys.Contains(createTableParsed.ColumnName))
                         temp.Unique = true;
 
-                    if (!createTableParsed.Option.Contains("notnull"))
+                    if (createTableParsed.Option.Contains("notnull"))
                         temp.AllowDBNull = false;
+                    else temp.AllowDBNull = true;
 
                     if (createTableParsed.Option.Contains("default"))
                         temp.DefaultValue = createTableParsed.Option.Replace("default", string.Empty);

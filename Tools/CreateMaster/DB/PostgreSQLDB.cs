@@ -121,7 +121,7 @@ public class PostgeSQLDB : IDB
                 {
                     // DBカラムスキーマ取得
                     var name = reader["column_name"].ToString()??string.Empty;
-                    var type = CreateTableParsedColumn.GetType(reader["column_name"].ToString()??string.Empty);
+                    var type = CreateTableParsedColumn.GetType(reader["data_type"].ToString()??string.Empty);
                     var isNull = (reader["is_nullable"].ToString()??string.Empty).ToUpper();
                     var defaultValue = reader["column_default"].ToString()??string.Empty;
 

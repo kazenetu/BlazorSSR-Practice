@@ -114,7 +114,15 @@ public class SQLiteDB : IDB
                     else temp.AllowDBNull = true;
 
                     if (createTableParsed.Option.Contains("default"))
-                        temp.DefaultValue = createTableParsed.Option.Replace("default", string.Empty);
+                    {
+                        var value = createTableParsed.Option.Replace("default", string.Empty);
+                        if (createTableParsed.ColumnType == typeof(bool) && int.TryParse(value, out var intVal))
+                        {
+                            temp.DefaultValue = intVal == 1;
+                        }
+                        else
+                            temp.DefaultValue = value;
+                    }
 
                     result.Columns.Add(temp);
                 }

@@ -1,0 +1,242 @@
+using Microsoft.Extensions.Options;
+using System.Data;
+using System.Text;
+using WebApp.Models;
+using WebApp.Repositories.Interfaces;
+using WebApp.DBAccess;
+
+namespace WebApp.Repositories;
+
+public partial class $ReposiotryName$Repository : RepositoryBase, I$ReposiotryName$Repository
+{
+    /// <summary>
+    /// コンストラクタ
+    /// </summary>
+    public $ReposiotryName$Repository(IOptions<DatabaseConfigModel> config) : base(config)
+    {
+    }
+
+    #region 検索
+    /// <summary>
+    /// レコード数を返す
+    /// </summary>
+    /// <returns>対象レコード数</returns>
+    public int GetTotalRecord()
+    {
+        var result = 0;
+
+        // パラメータ初期化
+        db!.ClearParam();
+
+        var sql = new StringBuilder();
+
+        // 発行SQL作成
+        sql.AppendLine("SELECT count(*) AS cnt FROM $tabeleName$");
+
+        // SQL発行
+        var sqlResult = db.Fill(sql.ToString());
+        foreach (DataRow row in sqlResult.Rows)
+        {
+            result = Parse<int>(row["cnt"]);
+            break;
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// 対象レコード配列を返す
+    /// </summary>
+    /// <param name="startIndex">取得開始レコードインデックス</param>
+    /// <param name="recordCount">取得レコード数</param>
+    /// <returns>指定範囲のレコード配列</returns>
+    public $ClassName$Model[] GetList(int startIndex, int recordCount)
+    {
+        var result = new List<$ClassName$Model>();
+
+        // パラメータ初期化
+        db!.ClearParam();
+
+        var sql = new StringBuilder();
+
+        // 発行SQL作成
+        sql.AppendLine("SELECT * FROM $tabeleName$");
+        sql.AppendLine("ORDER BY $SelectOrder$");
+        sql.AppendLine(db!.GetLimitSQL(recordCount, startIndex));
+
+        // SQL発行
+        var sqlResult = db.Fill(sql.ToString());
+        foreach (DataRow row in sqlResult.Rows)
+        {
+            // モデルに変換、追加
+            var tempModel = new $ClassName$Model()
+            {
+$SetDBParams$
+            };
+
+            result.Add(tempModel);
+        }
+        return [.. result];
+    }
+    #endregion
+
+    #region 登録
+    /// <summary>
+    /// 編集項目を取得
+    /// </summary>
+    /// <returns>編集モデル</returns>
+    public $ClassName$Model GetEditData($Keys$)
+    {
+        var dbResult = Find($KeyParams$);
+        if (dbResult is not null)
+        {
+            // 編集
+            return dbResult;
+        }
+
+        // 新規登録
+        return new $ClassName$Model()
+        {
+$NewItems$
+        };
+    }
+
+    /// <summary>
+    /// 編集項目を取得：メイン部分
+    /// </summary>
+    /// <returns>編集モデル(存在しない場合はnull)</returns>
+    /// <remarks>メイン処理</remarks>
+    private $ClassName$Model? Find($Keys$)
+    {
+        // パラメータ初期化
+        db!.ClearParam();
+
+        var sql = new StringBuilder();
+
+        // SQL作成
+        sql.AppendLine("select * from $tabeleName$");
+        sql.AppendLine("WHERE");
+        sql.AppendLine("$FindWhere$");
+
+        // Param設定
+$FindWhereParams$
+
+        // SQL発行
+        var sqlResult = db.Fill(sql.ToString());
+        foreach (DataRow row in sqlResult.Rows)
+        {
+            // 1件だけ返す
+            return new $ClassName$Model()
+            {
+$SetDBParams$
+            };
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// 注文情報の登録
+    /// </summary>
+    /// <param name="target">登録対象</param>
+    /// <param name="userId">ユーザーID</param>
+    /// <param name="programId">プログラムID</param>
+    /// <returns>成功/失敗</returns>
+    public bool Save($ClassName$Model target, string userId, string programId)
+    {
+        var result = false;
+        try
+        {
+            // トランザクション開始
+            BeginTransaction();
+
+            // DB存在確認
+            var dbResult = Find($SaveTargetKeys$);
+            if (dbResult is not null)
+            {
+                result = Update(target, userId ?? string.Empty, programId);
+            }
+            else
+            {
+                result = Insert(target, userId ?? string.Empty, programId);
+            }
+
+            // 登録・更新結果でコミット・ロールバック
+            if (result)
+            {
+                Commit();
+            }
+            else
+            {
+                Rollback();
+            }
+
+        }
+        catch (Exception)
+        {
+            Rollback();
+            throw;
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// 登録
+    /// </summary>
+    /// <param name="target">登録対象</param>
+    /// <param name="userId">ユーザーID</param>
+    /// <param name="programId">プログラムID</param>
+    /// <returns>登録結果成功/失敗</returns>
+    private bool Insert($ClassName$Model target, string userId, string programId)
+    {
+        var sql = new StringBuilder();
+
+        // SQL作成
+        sql.AppendLine("INSERT ");
+        sql.AppendLine("INTO $tabeleName$($InsertParams$) ");
+        sql.AppendLine("VALUES ($InsertValues$) ");
+
+        // Param設定
+        db!.ClearParam();
+$DBParams$
+
+        // SQL発行
+        if (db!.ExecuteNonQuery(sql.ToString()) == 1)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// 更新
+    /// </summary>
+    /// <param name="target">更新対象</param>
+    /// <param name="userId">ユーザーID</param>
+    /// <param name="programId">プログラムID</param>
+    /// <returns>更新結果成功/失敗</returns>
+    private bool Update($ClassName$Model target, string userId, string programId)
+    {
+        var sql = new StringBuilder();
+
+        // SQL作成
+        sql.AppendLine("UPDATE $tabeleName$");
+        sql.AppendLine("SET");
+        sql.AppendLine("$UpdateValues$");
+        sql.AppendLine("WHERE");
+        sql.AppendLine("$FindWhere$");
+
+        // Param設定
+        db!.ClearParam();
+$DBParams$
+
+        // SQL発行
+        if (db!.ExecuteNonQuery(sql.ToString()) == 1)
+        {
+            return true;
+        }
+
+        return false;
+    }
+    #endregion
+}

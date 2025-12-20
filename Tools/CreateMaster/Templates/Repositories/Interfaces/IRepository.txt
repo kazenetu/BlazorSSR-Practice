@@ -1,0 +1,35 @@
+using WebApp.Models;
+
+namespace WebApp.Repositories.Interfaces;
+
+public partial interface I$ReposiotryName$Repository : IRepositoryBase
+{
+    /// <summary>
+    /// レコード数を返す
+    /// </summary>
+    /// <returns>対象レコード数</returns>
+    int GetTotalRecord();
+
+    /// <summary>
+    /// 対象レコード配列を返す
+    /// </summary>
+    /// <param name="startIndex">取得開始レコードインデックス</param>
+    /// <param name="recordCount">取得レコード数</param>
+    /// <returns>指定範囲のレコード配列</returns>
+    $ClassName$Model[] GetList(int startIndex, int recordCount);
+
+    /// <summary>
+    /// 編集項目を取得
+    /// </summary>
+    /// <returns>編集モデル</returns>
+    $ClassName$Model GetEditData($Keys$);
+
+    /// <summary>
+    /// 編集項目の登録
+    /// </summary>
+    /// <param name="target">登録対象</param>
+    /// <param name="userId">ユーザーID</param>
+    /// <param name="programId">プログラムID</param>
+    /// <returns>成功/失敗</returns>
+    bool Save($ClassName$Model target, string userId, string programId);
+}

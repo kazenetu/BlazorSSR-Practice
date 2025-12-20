@@ -296,7 +296,7 @@ dotnet run --project Tools/CreateMaster/CreateMaster.csproj <DBモード>　<接
 ### 実行例
   ```sh
    #SQLite　WebApp/assets/Test.db(相対パス)　対象テーブル m_user(ユーザーマスタ)
-   dotnet run --project Tools/Create/Create.csproj list order-list 
+   dotnet run --project Tools/CreateMaster/CreateMaster.csproj  SQLite "WebApp/assets/Test.db" m_user
 
 
    #PostgreSQL　Docker立ち上げ必須　対象テーブル m_user(ユーザーマスタ)

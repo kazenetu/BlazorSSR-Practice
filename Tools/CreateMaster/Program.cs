@@ -1,6 +1,7 @@
 ﻿// 引数チェック
 using System.Data;
 using DB;
+using Create;
 
 if (args.Length < 3)
 {
@@ -21,8 +22,8 @@ IDB db = dbMode switch
 // スキーマ取得
 var schemaTable = db.GetSchema(args[1], args[2]);
 
-// HACK スケルトンコード作成
-foreach(DataColumn col in schemaTable.Columns)
-{
-    Console.WriteLine($"{col.DataType} {col} \tnotnull:{col.AllowDBNull} \tdef:{col.DefaultValue}");
-}
+// スケルトンコード作成
+var outputPath = Environment.CurrentDirectory+"/Output";
+var createFiles = new CreateFils(outputPath, schemaTable.Columns, args[2]);
+createFiles.Create();
+

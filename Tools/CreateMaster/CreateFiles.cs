@@ -74,7 +74,7 @@ public class CreateFils
     private void CreateModel(string rootPath)
     {
         // プロパティ定義
-        var modelProp = Columns.Select(col => $"    public {col.DataType.Name}{Nullable(col)} {ToCsharpName(col.ColumnName)} {{ set; get; }}{SetDefaultValue(col)}");
+        var modelProp = Columns.Select(col => $"    public {ToCShrpType(col.DataType)}{Nullable(col)} {ToCsharpName(col.ColumnName)} {{ set; get; }}{SetDefaultValue(col)}");
         CreateFile(rootPath, "Models", "Model.txt", $"{ClassName}Model.cs", new Dictionary<string, string>
         {
             {"$Properties$", string.Join(Environment.NewLine, modelProp)}
@@ -113,7 +113,7 @@ public class CreateFils
         var selectOrder = Columns.Where(col => col.Unique).Select(col => $"{col.ColumnName}");
         var findWhere = Columns.Where(col => col.Unique).Select(col => $"{col.ColumnName} = @{col.ColumnName}");
         var findWhereParams = Columns.Where(col => col.Unique).Select(col => $"        db.AddParam(\"@{col.ColumnName}\", {ToCsharpName(col.ColumnName, true)}!);");
-        var setDBParams = Columns.Select(col => $"                {ToCsharpName(col.ColumnName)} = Parse<{col.DataType.Name}>(row[\"{col.ColumnName}\"]),");
+        var setDBParams = Columns.Select(col => $"                {ToCsharpName(col.ColumnName)} = Parse<{ToCShrpType(col.DataType)}>(row[\"{col.ColumnName}\"]),");
         var saveTargetKeys = Columns.Where(col => col.Unique).Select(col => $"target.{ToCsharpName(col.ColumnName)}!");
         var insertParams = Columns.Select(col => $"{col.ColumnName}");
         var insertValues = Columns.Select(col => $"@{col.ColumnName}");
@@ -345,6 +345,30 @@ public class CreateFils
             result = result.Substring(0, 1).ToLower() + result[1..];
 
         return result;
+    }
+
+    /// <summary>
+    /// DataColumnの型をC#の型に変換する
+    /// </summary>
+    /// <param name="targetColumnType">DataColumnの型</param>
+    /// <returns>C#の型</returns>
+    private string ToCShrpType(Type targetColumnType)
+    {
+        if (targetColumnType == typeof(string))
+            return "string";
+        if (targetColumnType == typeof(bool))
+            return "bool";
+        if (targetColumnType == typeof(int))
+            return "int";
+        if (targetColumnType == typeof(decimal))
+            return "decimal";
+        if (targetColumnType == typeof(long))
+            return "long";
+        if (targetColumnType == typeof(float))
+            return "float";
+        if (targetColumnType == typeof(double))
+            return "double";
+        return targetColumnType.Name;
     }
 
     /// <summary>

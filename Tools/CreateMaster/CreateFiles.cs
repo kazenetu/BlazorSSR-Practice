@@ -326,11 +326,11 @@ public class CreateFils
     }
 
     /// <summary>
-    /// DB型をC#型に変換
+    /// DBカラム名をC#コード体系(クラス名やプロパティ名)に変換
     /// </summary>
-    /// <param name="dbName">DB型</param>
+    /// <param name="dbName">DBカラム名</param>
     /// <param name="firstLower">1文字目を小文字にする</param>
-    /// <returns>C#型</returns>
+    /// <returns>C#コード体系(クラス名やプロパティ名)</returns>
     private string ToCsharpName(string dbName, bool firstLower = false)
     {
         var words = dbName.Split("_");

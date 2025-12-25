@@ -32,7 +32,7 @@ public class CreateFils
     /// <remarks>ページのuriから自動生成</remarks> 
     private string ClassName;
 
-    public CreateFils(string rootPath, DataColumnCollection columns, string tableName)
+    public CreateFils(string rootPath, DataColumnCollection columns, string tableName, string? urlBase = null)
     {
         RootPath = rootPath;
         TableName = tableName;

@@ -32,6 +32,14 @@ public class CreateFils
     /// <remarks>ページのuriから自動生成</remarks> 
     private string ClassName;
 
+    /// <summary>
+    /// コンストラクタ
+    /// </summary>
+    /// <param name="rootPath">ファイル生成のルートパス</param>
+    /// <param name="columns">DB対象テーブルのカラムコレクション</param>
+    /// <param name="tableName">DB対象テーブル名</param>
+    /// <param name="urlBase">ページの@pageにプレフィックスurl(nullの場合はクラス名の小文字)</param>
+    /// <param name="urlUseHyphen">編集ページの@pageを[urlBase]-editとするか否か(falsの場合は[urlBase]_edit)</param>
     public CreateFils(string rootPath, DataColumnCollection columns, string tableName, string? urlBase = null, bool urlUseHyphen=true)
     {
         RootPath = rootPath;

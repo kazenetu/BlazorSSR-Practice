@@ -1,4 +1,4 @@
-﻿@page "/$uri$-edit/{key?}"
+﻿@page "/$uri$/{key?}"
 @namespace WebApp.Components.Pages
 @using WebApp.Models
 @using WebApp.Repositories.Interfaces

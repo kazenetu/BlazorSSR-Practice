@@ -33,6 +33,16 @@ public class CreateFils
     private string ClassName;
 
     /// <summary>
+    /// ページの@pageのプレフィックスurl
+    /// </summary>
+    private string UrlBase;
+
+    /// <summary>
+    /// 編集ページの@pageを[urlBase]-editとするか否か(falsの場合は[urlBase]_edit)
+    /// </summary>
+    private bool UrlUseHyphen;
+
+    /// <summary>
     /// コンストラクタ
     /// </summary>
     /// <param name="rootPath">ファイル生成のルートパス</param>
@@ -40,10 +50,11 @@ public class CreateFils
     /// <param name="tableName">DB対象テーブル名</param>
     /// <param name="urlBase">ページの@pageにプレフィックスurl(nullの場合はクラス名の小文字)</param>
     /// <param name="urlUseHyphen">編集ページの@pageを[urlBase]-editとするか否か(falsの場合は[urlBase]_edit)</param>
-    public CreateFils(string rootPath, DataColumnCollection columns, string tableName, string? urlBase = null, bool urlUseHyphen=true)
+    public CreateFils(string rootPath, DataColumnCollection columns, string tableName, string? urlBase = null, bool urlUseHyphen = true)
     {
         RootPath = rootPath;
         TableName = tableName;
+        UrlUseHyphen = urlUseHyphen;
 
         foreach (DataColumn col in columns)
         {
@@ -57,6 +68,11 @@ public class CreateFils
             ClassName += word.Substring(0, 1).ToUpper();
             ClassName += word.Substring(1).ToLower();
         }
+
+        if (string.IsNullOrEmpty(urlBase))
+            UrlBase = ClassName.ToLower();
+        else
+            UrlBase = urlBase;
 
         // リポジトリ名はクラス名を設定
         EditReposiotry = ClassName;
@@ -222,7 +238,7 @@ public class CreateFils
 
         CreateFile(rootPath,  "Components/Pages", "PageList.txt", $"{ClassName}List.razor", new Dictionary<string, string>
         {
-            {"$uri$", ClassName.ToLower()},
+            {"$uri$", UrlBase},
             {"$ResultHeader$", resultHeader.ToString()},
             {"$ResultBody$", resultBody.ToString()},
             {"$EditKeys$", string.Join(",", editKeys)},
@@ -261,9 +277,16 @@ public class CreateFils
             }
         }
 
+        var editUrl = UrlBase;
+        if (UrlUseHyphen)
+            editUrl += "-";
+        else
+            editUrl += "_";
+        editUrl += "edit";
+
         CreateFile(rootPath,  "Components/Pages", "PageEdit.txt", $"{ClassName}Edit.razor", new Dictionary<string, string>
         {
-            {"$uri$", ClassName.ToLower()},
+            {"$uri$", editUrl},
             {"$EditInput$", editInput.ToString()},
             {"$InputCheck$", inputCheck.ToString()},
             {"$ModelKey$", string.Join(",", editKeys)},

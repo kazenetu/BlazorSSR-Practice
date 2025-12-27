@@ -5,8 +5,10 @@ using Create;
 
 if (args.Length < 3)
 {
-    Console.WriteLine("dotnet run DBモード 接続文字列 テーブル名");
+    Console.WriteLine("dotnet run DBモード 接続文字列 テーブル名 [ベースURL] [ハイフンモード]");
     Console.WriteLine("　DBモード：SQLite/DB/PostgreSQL");
+    Console.WriteLine("　[ベースURL]：一覧URL");
+    Console.WriteLine("　[ハイフンモード]：true/false");
     return;
 }
 

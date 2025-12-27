@@ -24,8 +24,22 @@ IDB db = dbMode switch
 // スキーマ取得
 var schemaTable = db.GetSchema(args[1], args[2]);
 
+//　オプション：ベースURL
+string? baseURL = null;
+if (args.Length >= 4)
+{
+    baseURL = args[3];
+}
+
+//　オプション：ベースURL
+bool urlUseHyphen = true;
+if (args.Length >= 5 && bool.TryParse(args[4].ToLower(), out var useHyphen))
+{
+    urlUseHyphen = useHyphen;
+}
+
 // スケルトンコード作成
 var outputPath = Environment.CurrentDirectory+"/Output";
-var createFiles = new CreateFils(outputPath, schemaTable.Columns, args[2]);
+var createFiles = new CreateFils(outputPath, schemaTable.Columns, args[2], baseURL, urlUseHyphen);
 createFiles.Create();
 

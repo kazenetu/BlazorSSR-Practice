@@ -35,10 +35,10 @@ public class CreateFils
     /// <summary>
     /// ページの@pageのプレフィックスurl
     /// </summary>
-    private string UrlBase;
+    private string UrlPrefix;
 
     /// <summary>
-    /// 編集ページの@pageを[urlBase]-editとするか否か(falsの場合は[urlBase]_edit)
+    /// 編集ページの@pageを[UrlPrefix]-editとするか否か(falsの場合は[UrlPrefix]_edit)
     /// </summary>
     private bool UrlUseHyphen;
 
@@ -48,9 +48,9 @@ public class CreateFils
     /// <param name="rootPath">ファイル生成のルートパス</param>
     /// <param name="columns">DB対象テーブルのカラムコレクション</param>
     /// <param name="tableName">DB対象テーブル名</param>
-    /// <param name="urlBase">ページの@pageにプレフィックスurl(nullの場合はクラス名の小文字)</param>
-    /// <param name="urlUseHyphen">編集ページの@pageを[urlBase]-editとするか否か(falsの場合は[urlBase]_edit)</param>
-    public CreateFils(string rootPath, DataColumnCollection columns, string tableName, string? urlBase = null, bool urlUseHyphen = true)
+    /// <param name="urlPrefix">ページの@pageにプレフィックスurl(nullの場合はクラス名の小文字)</param>
+    /// <param name="urlUseHyphen">編集ページの@pageを[urlPrefix]-editとするか否か(falsの場合は[urlPrefix]_edit)</param>
+    public CreateFils(string rootPath, DataColumnCollection columns, string tableName, string? urlPrefix = null, bool urlUseHyphen = true)
     {
         RootPath = rootPath;
         TableName = tableName;
@@ -69,10 +69,10 @@ public class CreateFils
             ClassName += word.Substring(1).ToLower();
         }
 
-        if (string.IsNullOrEmpty(urlBase))
-            UrlBase = ClassName.ToLower();
+        if (string.IsNullOrEmpty(urlPrefix))
+            UrlPrefix = ClassName.ToLower();
         else
-            UrlBase = urlBase;
+            UrlPrefix = urlPrefix;
 
         // リポジトリ名はクラス名を設定
         EditReposiotry = ClassName;
@@ -238,7 +238,7 @@ public class CreateFils
 
         CreateFile(rootPath,  "Components/Pages", "PageList.txt", $"{ClassName}List.razor", new Dictionary<string, string>
         {
-            {"$uri$", UrlBase},
+            {"$uri$", UrlPrefix},
             {"$ResultHeader$", resultHeader.ToString()},
             {"$ResultBody$", resultBody.ToString()},
             {"$EditKeys$", string.Join(",", editKeys)},
@@ -277,7 +277,7 @@ public class CreateFils
             }
         }
 
-        var editUrl = UrlBase;
+        var editUrl = UrlPrefix;
         if (UrlUseHyphen)
             editUrl += "-";
         else

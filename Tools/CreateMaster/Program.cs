@@ -25,10 +25,10 @@ IDB db = dbMode switch
 var schemaTable = db.GetSchema(args[1], args[2]);
 
 //　オプション：ベースURL
-string? baseURL = null;
+string? urlPrefix = null;
 if (args.Length >= 4)
 {
-    baseURL = args[3];
+    urlPrefix = args[3];
 }
 
 //　オプション：ベースURL
@@ -40,6 +40,6 @@ if (args.Length >= 5 && bool.TryParse(args[4].ToLower(), out var useHyphen))
 
 // スケルトンコード作成
 var outputPath = Environment.CurrentDirectory+"/Output";
-var createFiles = new CreateFils(outputPath, schemaTable.Columns, args[2], baseURL, urlUseHyphen);
+var createFiles = new CreateFils(outputPath, schemaTable.Columns, args[2], urlPrefix, urlUseHyphen);
 createFiles.Create();
 

@@ -10,10 +10,22 @@ var argManager = new ArgManagers(args);
 // ヘルプモードの確認
 if (argManager.GetRequiredArgCount() < 3)
 {
-    Console.WriteLine("dotnet run DBモード 接続文字列 テーブル名 [ベースURL] [ハイフンモード]");
-    Console.WriteLine("　DBモード：SQLite/DB/PostgreSQL");
-    Console.WriteLine("　[ベースURL]：一覧URL");
-    Console.WriteLine("　[ハイフンモード]：true/false");
+    Console.WriteLine();
+    Console.WriteLine("dotnet run DBモード 接続文字列 テーブル名");
+    Console.WriteLine();
+    Console.WriteLine("[必須]");
+    Console.WriteLine("・DBモード：SQLite/PostgreSQL");
+    Console.WriteLine("・接続文字列");
+    Console.WriteLine("　　SQLite:ファイルパスを指定");
+    Console.WriteLine("　　PostgreSQL:Server=<サーバー>;Port=<ポート番号>;User Id=<ユーザID>;Password=<パスワード>;Database=<DB名>");
+    Console.WriteLine("・テーブル名：出力対象の物理テーブル名");
+    Console.WriteLine();
+    Console.WriteLine("[オプション]");
+    Console.WriteLine("--url_prefix -u <urlPrefix> @pageに設定するURLのプレフィックス(省略時:クラス名)");
+    Console.WriteLine("--use_hyphen -useHyp <useHyphen> @urlの値を作成する際、ハイフンかアンダーバーか設定(省略時:true)");
+    Console.WriteLine("　　　　　　　　　　　　　　　　　　true:ハイフン(-)");
+    Console.WriteLine("　　　　　　　　　　　　　　　　　　false:アンダーバー(_)");
+    Console.WriteLine();
     return;
 }
 

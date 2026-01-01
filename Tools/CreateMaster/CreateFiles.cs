@@ -236,9 +236,16 @@ public class CreateFils
             }
         }
 
+        var listUrl = UrlPrefix;
+        if (UrlUseHyphen)
+            listUrl += "-";
+        else
+            listUrl += "_";
+        listUrl += "list";
+
         CreateFile(rootPath,  "Components/Pages", "PageList.txt", $"{ClassName}List.razor", new Dictionary<string, string>
         {
-            {"$uri$", UrlPrefix},
+            {"$uri$", listUrl},
             {"$ResultHeader$", resultHeader.ToString()},
             {"$ResultBody$", resultBody.ToString()},
             {"$EditKeys$", string.Join(",", editKeys)},

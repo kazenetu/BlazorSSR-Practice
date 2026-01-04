@@ -1,0 +1,9 @@
+namespace WebApp.Models;
+
+/// <summary>
+/// $ClassName$Model 新規登録・編集
+/// </summary>
+public class $ClassName$Model
+{
+$Properties$
+}

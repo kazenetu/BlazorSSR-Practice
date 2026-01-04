@@ -1,0 +1,242 @@
+﻿@page "/$uri$"
+@page "/$uri$/{page:int}"
+@namespace WebApp.Components.Pages
+@using WebApp.Components.Parts
+@using WebApp.Models
+@using WebApp.Repositories.Interfaces
+@inherits Base.PageBase
+@inject ILogger<$ClassName$List> Logger
+@inject I$ReposiotryName$Repository repository
+@inject NavigationManager Navigation
+
+@if (IsBeforeLoginCheck)
+{
+    // ログイン確認前は表示なし
+    return;
+}
+
+<PageTitle>@Title</PageTitle>
+
+<h1>@Title</h1>
+
+@if (PageRecords == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row page-header">
+        <div class="col">
+            <button @onclick="@(() => ToEdit())" class="btn btn-outline-success">新規作成</button>
+        </div>
+    </div>
+
+
+    <Pagination PageName="/$uri$" CurrentPageNumber="@Page" TotalRecords="@TotalRecords"   RecordsPerPage="@PageRecordCount" OnPerRec="OnPagePerRecordChange"/>
+
+    @* 一覧 *@
+    @if (PageRecords.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+$ResultHeader$
+                    <th>編集</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if(TotalRecords > 0) {
+                    @foreach (var pageRecord in PageRecords)
+                    {
+                        <tr>
+$ResultBody$
+                            <td><button @onclick="@(() => ToEdit($EditKeys$))" class="btn btn-outline-success">編集</button></td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+        <Pagination PageName="/$uri$" CurrentPageNumber="@Page" TotalRecords="@TotalRecords" RecordsPerPage="@PageRecordCount" IsShowRecordCount="false"/>
+    }
+    else
+    {
+        <SearchResultZero />
+    }
+}
+
+@code {
+    /// <summary>
+    /// InputタグのEnterKeyを無効に設定したか？
+    /// </summary>
+    private bool DisabledEnterKey = false;
+
+    #region ページング用
+    /// <summary>
+    /// ページング用：現在のページ数
+    /// </summary>
+    [Parameter]
+    public int Page { get; set; }
+
+    /// <summary>
+    /// ページング用：表示件数
+    /// </summary>
+    public int PageRecordCount { get; set; } = Common.PageRecordCount;
+
+    /// <summary>
+    /// ページング用：総レコード数
+    /// </summary>
+    public int TotalRecords { get; set; }
+
+    /// <summary>
+    /// 1ページの表示レコード
+    /// </summary>
+    private $ClassName$Model[]? PageRecords;
+
+
+    /// <summary>
+    /// 表示件数 変更イベント
+    /// </summary>
+    /// <param name="pageCount">変更済み表示件数</param>
+    protected async Task OnPagePerRecordChange(int pageCount)
+    {
+        PageRecordCount = pageCount;
+
+        // LocalStrageに表示件数を格納
+        await SetPageRecordCountAsync(PageRecordCount);
+
+        Navigation.NavigateTo("/$uri$/1");
+        ShowPage(1);
+    }
+
+    /// <summary>
+    /// ページ変更イベント
+    /// </summary>
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+        DisabledEnterKey = false;
+
+        // 検索結果を取得
+        ShowPage(Page);
+    }
+
+    /// <summary>
+    /// 指定ページのレコード表示
+    /// </summary>
+    /// <param name="pageIndex">指定ページ(1ベース)</param>
+    /// <param name="isRefreshTotalRecords">総レコード数を更新するか否か</param>
+    private void ShowPage(int pageIndex, bool isRefreshTotalRecords = false)
+    {
+        // ページ数がマイナスの場合は終了
+        if (pageIndex <= 0)
+            return;
+
+        if (isRefreshTotalRecords)
+        {
+            // 総レコード数更新
+            TotalRecords = repository.GetTotalRecord();
+        }
+
+        // ゼロベースのページ数を設定
+        var zeroBasePageIndex = pageIndex - 1;
+
+        // DBから1ページ分のレコード取得
+        PageRecords = repository.GetList(zeroBasePageIndex * PageRecordCount,  PageRecordCount);
+        StateHasChanged();
+    }
+    #endregion
+
+    /// <summary>
+    /// 初期化処理
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        // タイトル設定
+        Title = "$Title$";
+    }
+
+    /// <summary>
+    /// 初期処理
+    /// </summary>
+    /// <param name="firstRender">初回表示か否か</param>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var oldPage = Page;
+        if (firstRender)
+        {
+            try
+            {
+                Logger.LogInformation(await GetLogMessage("開始"));
+
+                // 未ログインの場合は即時終了
+                if (!await LoginCheck())
+                {
+                    Logger.LogInformation(await GetLogMessage("ログインチェック失敗"));
+                    return;
+                }
+
+                // ログイン確認完了
+                IsBeforeLoginCheck = false;
+                StateHasChanged();
+
+                Logger.LogInformation(await GetLogMessage("ログインチェック成功"));
+
+                // ページ指定なしの場合は1ページ
+                if (Page == 0)
+                {
+                    Page = 1;
+                }
+
+                // LocalStrageから表示件数を取得
+                PageRecordCount = await GetPageRecordCountAsync();
+
+                // 検索結果を取得(総レコード数更新)
+                ShowPage(Page, true);
+
+                Logger.LogInformation(await GetLogMessage($"検索結果:{repository.GetTotalRecord()}件"));
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, await GetLogError(ex));
+                GotoErrorPage();
+            }
+            finally
+            {
+                Logger.LogInformation(await GetLogMessage("終了"));
+            }
+        }
+
+        // IntputタグのEnterKey無効が実施されていない場合は設定
+        if (Page > 0 && !DisabledEnterKey)
+        {
+            // 「入力項目でエンターキー押すと誤送信」を無効化
+            await DisableEnterKey();
+            DisabledEnterKey = true;
+        }
+
+        // メニューから遷移した場合
+        if (oldPage <= 0)
+        {
+            DisabledEnterKey = false;
+            TotalRecords = repository.GetTotalRecord();
+            Navigation.NavigateTo("/$uri$/1");
+        }
+    }
+
+    /// <summary>
+    /// 新規・編集
+    /// </summary>
+    /// <param name="key">主キー</param>
+    private async Task ToEdit($EditKeyType$? key = null)
+    {
+        // 編集ページURL
+        var editPageUrl = "$uri$-edit";
+
+        // 画面遷移
+        if (key is null)
+            await GotoPageAsync($"/{editPageUrl}");
+        else        
+            await GotoPageAsync($"/{editPageUrl}/{key}");
+    }
+
+}

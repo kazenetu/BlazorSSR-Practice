@@ -402,6 +402,16 @@ Welcome to your new app.
                 var worksheet = excelClass.GetWorksheet("Sheet1");
                 SetWorksheetValues(worksheet, 10);
 
+                // プロパティ設定
+                var today = DateTime.Now;
+                var properties = new XLWorkbookProperties();
+                properties.Author = Common.AuthorName;
+                properties.Created = today;
+                properties.LastModifiedBy = null;
+                properties.Modified = today;
+                properties.Company = string.Empty;
+                excelClass.SetProperties(properties);
+
                 //　DownLoadModelを返す
                 var prefixExcelFileName = "test";
                 var dateString = DateTime.UtcNow.ToJstTime().ToString("yyyyMMdd");
@@ -463,6 +473,16 @@ Welcome to your new app.
                 // sheet取得、値設定
                 var worksheet = excelClass.GetWorksheet("Template");
                 SetWorksheetReportValues(worksheet, 600);
+
+                // プロパティ設定
+                var today = DateTime.Now;
+                var properties = new XLWorkbookProperties();
+                properties.Author = Common.AuthorName;
+                properties.Created = today;
+                properties.LastModifiedBy = null;
+                properties.Modified = today;
+                properties.Company = string.Empty;
+                excelClass.SetProperties(properties);
 
                 //　DownLoadModelを返す
                 var prefixExcelFileName = "test_report";

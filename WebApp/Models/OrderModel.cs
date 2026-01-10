@@ -28,6 +28,11 @@ public class OrderModel
     public decimal TotalPrice { set; get; }
 
     /// <summary>
+    /// 有効フラグ
+    /// </summary>
+    public bool Enabled { set; get; }
+
+    /// <summary>
     /// バージョン番号(楽観ロック用)
     /// </summary>
     public int Version { set; get; }
@@ -41,13 +46,14 @@ public class OrderModel
     /// <param name="qty">数量</param>
     /// <param name="totalPrice">合計金額</param>
     /// <param name="version">バージョン番号(楽観ロック用)</param>
-    public OrderModel(int no, string productName, decimal unitPrice, decimal qty, decimal totalPrice, int version = 0)
+    public OrderModel(int no, string productName, decimal unitPrice, decimal qty, decimal totalPrice, bool enabled = false, int version = 0)
     {
         No = no;
         ProductName = productName;
         UnitPrice = unitPrice;
         Qty = qty;
         TotalPrice = totalPrice;
+        Enabled = enabled;
         Version = version;
     }
 }

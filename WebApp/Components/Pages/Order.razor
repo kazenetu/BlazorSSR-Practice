@@ -109,7 +109,17 @@ else
                     @foreach (var oder in pageRecords)
                     {
                         <tr>
-                            <td class="text-end">@oder.No</td>
+                            <td class="text-end">
+                                @oder.No<br>
+                                @if(oder.Enabled)
+                                {
+                                    <p class="badge bg-success">有効</p>
+                                }
+                                else
+                                {
+                                    <p class="badge bg-danger">無効</p>
+                                }
+                            </td>
                             <td>@oder.ProductName</td>
                             <td class="text-end">@(oder.UnitPrice.ToString("#,#"))</td>
                             <td class="text-end">@(oder.Qty.ToString("#,#"))</td>

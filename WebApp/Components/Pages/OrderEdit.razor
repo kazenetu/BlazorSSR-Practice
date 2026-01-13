@@ -31,6 +31,19 @@
         <div class="card-body">
             <div class="row row-margin">
                 <div class="col">
+                    <label class="col-md-4" for="ProductName">有効/無効</label>
+                    <InputRadioGroup @bind-Value="Model.Enabled">
+                        <label>
+                            <InputRadio Value=true />有効
+                        </label>
+                        <label>
+                            <InputRadio Value=false />無効
+                        </label>
+                    </InputRadioGroup>
+                </div>
+            </div>
+            <div class="row row-margin">
+                <div class="col">
                     <label class="col-md-4" for="ProductName">商品名</label>
                     <InputText class="col-md-5" id="ProductName" @bind-Value="Model!.ProductName" />
                 </div>

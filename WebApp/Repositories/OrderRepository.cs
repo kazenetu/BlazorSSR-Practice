@@ -381,8 +381,8 @@ public class OrderRepository : RepositoryBase, IOrderRepository
 
             // SQL作成
             var sql = new StringBuilder();
-            sql.AppendLine("INSERT INTO t_order(productName, unitPrice, qty, createDate,createUserId, createProgramId, updateDate, updateUserId, updateProgramId, version) VALUES ");
-            sql.AppendLine("(@productName, @unitPrice, @qty, @date, @user, @program, @date, @user, @program, 1) ");
+            sql.AppendLine("INSERT INTO t_order(productName, unitPrice, qty, createDate,createUserId, createProgramId, updateDate, updateUserId, updateProgramId, enabled, version) VALUES ");
+            sql.AppendLine("(@productName, @unitPrice, @qty, @date, @user, @program, @date, @user, @program, true, 1) ");
             var sqlString = sql.ToString();
 
             var date = DateTime.UtcNow.ToJstTime();

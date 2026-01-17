@@ -102,6 +102,9 @@ public class RepositoryBase : IRepositoryBase, IDisposable
             defaultValue = false;
             if (bool.TryParse(value.ToString(), out bool parseResult))
                 result = parseResult;
+            
+            // SQLite用
+            if (result is null && value is string) result = Parse<int>(value) == 1;
         }
         if (typeof(T) == typeof(int))
         {

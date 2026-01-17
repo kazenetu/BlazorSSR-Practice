@@ -52,7 +52,7 @@ public class OrderRepository : RepositoryBase, IOrderRepository
             // 注文キー情報
             var product = Parse<string>(row["productName"]);
             var totalPrice = Parse<decimal>(row["Total"]);
-            result.Add(new OrderModel(0, product, 0, 0, totalPrice, 0));
+            result.Add(new OrderModel(0, product, 0, 0, totalPrice));
         }
         return result;
     }
@@ -105,12 +105,13 @@ public class OrderRepository : RepositoryBase, IOrderRepository
         {
             // 注文
             var no = Parse<int>(row["NoId"]);
+            var enabled = Parse<bool>(row["enabled"]);
             var product = Parse<string>(row["productName"]);
             var unitPrice = Parse<decimal>(row["unitPrice"]);
             var qty = Parse<decimal>(row["qty"]);
             var totalPrice = unitPrice * qty;
             var version = Parse<int>(row["version"]);
-            result.Add(new OrderModel(no, product, unitPrice, qty, totalPrice, version));
+            result.Add(new OrderModel(no, product, unitPrice, qty, totalPrice, enabled, version));
         }
         return result;
     }
@@ -159,7 +160,7 @@ public class OrderRepository : RepositoryBase, IOrderRepository
 
         var sql = new StringBuilder();
 
-        sql.AppendLine("SELECT productName, unitPrice, qty,unitPrice*qty AS totalPrice FROM t_order");
+        sql.AppendLine("SELECT productName, unitPrice, qty,unitPrice*qty AS totalPrice, enabled FROM t_order");
         sql.Append(GetWhere(inputModel));
         sql.AppendLine("ORDER BY productName");
         sql.AppendLine(db!.GetLimitSQL(recordCount, startIndex));
@@ -174,7 +175,8 @@ public class OrderRepository : RepositoryBase, IOrderRepository
             var unitPrice = Parse<decimal>(row["unitPrice"]);
             var qty = Parse<decimal>(row["qty"]);
             var totalPrice = unitPrice * qty;
-            result.Add(new OrderModel(no, product, unitPrice, qty, totalPrice, 1));
+            var enabled = Parse<bool>(row["enabled"]);
+            result.Add(new OrderModel(no, product, unitPrice, qty, totalPrice, enabled, 1));
 
             noIndex++;
 
@@ -298,8 +300,8 @@ public class OrderRepository : RepositoryBase, IOrderRepository
     {
         var sql = new StringBuilder();
         sql.AppendLine("INSERT ");
-        sql.AppendLine("INTO t_order(productName, unitPrice, qty, createDate,createUserId, createProgramId, updateDate, updateUserId, updateProgramId, version) ");
-        sql.AppendLine("VALUES (@productName, @unitPrice, @qty, @date, @user, @program, @date, @user, @program, 1) ");
+        sql.AppendLine("INTO t_order(productName, unitPrice, qty, createDate,createUserId, createProgramId, updateDate, updateUserId, updateProgramId, enabled, version) ");
+        sql.AppendLine("VALUES (@productName, @unitPrice, @qty, @date, @user, @program, @date, @user, @program, true, 1) ");
 
         // Param設定
         var date = DateTime.UtcNow.ToJstTime();
@@ -338,6 +340,7 @@ public class OrderRepository : RepositoryBase, IOrderRepository
         sql.AppendLine("updateDate=@date,");
         sql.AppendLine("updateUserId=@user,");
         sql.AppendLine("updateProgramId=@program,");
+        sql.AppendLine("enabled=@enabled,");
         sql.AppendLine("version=version+1");
         sql.AppendLine("WHERE");
         sql.AppendLine("  productName = @productName");
@@ -351,6 +354,7 @@ public class OrderRepository : RepositoryBase, IOrderRepository
         db.AddParam("@date", date.ToString());
         db.AddParam("@user", userId);
         db.AddParam("@program", programId);
+        db.AddParam("@enabled", target.Enabled);
 
         // SQL発行
         if (db.ExecuteNonQuery(sql.ToString()) == 1)
@@ -377,8 +381,8 @@ public class OrderRepository : RepositoryBase, IOrderRepository
 
             // SQL作成
             var sql = new StringBuilder();
-            sql.AppendLine("INSERT INTO t_order(productName, unitPrice, qty, createDate,createUserId, createProgramId, updateDate, updateUserId, updateProgramId, version) VALUES ");
-            sql.AppendLine("(@productName, @unitPrice, @qty, @date, @user, @program, @date, @user, @program, 1) ");
+            sql.AppendLine("INSERT INTO t_order(productName, unitPrice, qty, createDate,createUserId, createProgramId, updateDate, updateUserId, updateProgramId, enabled, version) VALUES ");
+            sql.AppendLine("(@productName, @unitPrice, @qty, @date, @user, @program, @date, @user, @program, true, 1) ");
             var sqlString = sql.ToString();
 
             var date = DateTime.UtcNow.ToJstTime();

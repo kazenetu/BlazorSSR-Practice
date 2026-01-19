@@ -76,3 +76,10 @@ table.fiexed-header thead{
 {
     margin-right: 0.5em;
 }
+
+/* Pagination：page-link：4桁以上表示拡張 */
+.page-link-ex {
+    padding-left: 0rem !important;
+    padding-right: 0rem !important;
+    width: 3.5rem !important;
+}

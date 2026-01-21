@@ -77,6 +77,12 @@ table.fiexed-header thead{
     margin-right: 0.5em;
 }
 
+/* Pagination：page-link：ブラウザのアクティブ時の枠表示を抑制 */
+.page-link:focus {
+    box-shadow: var(--bs-pagination-focus-box-shadow);
+    background-color: white;
+}
+
 /* Pagination：page-link：4桁以上表示拡張 */
 .page-link-ex {
     padding-left: 0rem !important;

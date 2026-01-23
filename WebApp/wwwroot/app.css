@@ -87,5 +87,5 @@ table.fiexed-header thead{
 .page-link-ex {
     padding-left: 0rem !important;
     padding-right: 0rem !important;
-    width: 3.5rem !important;
+    width: 3.5rem;
 }

@@ -5,23 +5,13 @@
 
 @if (TotalPages > 1 && CurrentPageNumber <= TotalPages)
 {
-    <style>
-        .page-link {
-            width: 3em;
-        }
-
-            .page-link:focus {
-                box-shadow: var(--bs-pagination-focus-box-shadow);
-                background-color: white;
-            }
-    </style>
     <nav aria-label="Page navigation">
         <ul class="pagination pagination-primary">
 
             @if (CurrentPageNumber > 1)
             {
                 <li class="page-item">
-                    <button type="button" class="page-link" @onclick="async () => await OnPageChangedAsync(1)">
+                    <button type="button" class="page-link page-link-ex" @onclick="async () => await OnPageChangedAsync(1)">
                         <span aria-hidden="true">&laquo;</span>
                     </button>
                 </li>
@@ -29,7 +19,7 @@
             else
             {
                 <li class="page-item disabled">
-                    <button type="button" class="page-link">
+                    <button type="button" class="page-link page-link-ex">
                         <span aria-hidden="true">&laquo;</span>
                     </button>
                 </li>
@@ -40,14 +30,14 @@
                 @if (CurrentPageNumber > 1)
                 {
                     <li class="page-item">
-                        <button type="button" class="page-link"
+                        <button type="button" class="page-link page-link-ex"
                             @onclick="async () => await OnPageChangedAsync(CurrentPageNumber-1)">&lt;</button>
                     </li>
                 }
                 else
                 {
                     <li class="page-item disabled">
-                        <button type="button" class="page-link">&lt;</button>
+                        <button type="button" class="page-link page-link-ex">&lt;</button>
                     </li>
                 }
 
@@ -58,7 +48,7 @@
                     string disabledClass = CurrentPageNumber == i ? "disabled" : string.Empty;
 
                     <li class="page-item @subClass">
-                        <button type="button" class="page-link"
+                        <button type="button" class="page-link page-link-ex"
                             @onclick="async () => await OnPageChangedAsync(pageNumber)">@i</button>
                     </li>
                 }
@@ -66,14 +56,14 @@
                 @if (CurrentPageNumber < TotalPages)
                 {
                     <li class="page-item">
-                        <button type="button" class="page-link"
+                        <button type="button" class="page-link page-link-ex"
                             @onclick="async () => await OnPageChangedAsync(CurrentPageNumber+1)">&gt;</button>
                     </li>
                 }
                 else
                 {
                     <li class="page-item disabled">
-                        <button type="button" class="page-link">&gt;</button>
+                        <button type="button" class="page-link page-link-ex">&gt;</button>
                     </li>
                 }
             }
@@ -81,7 +71,7 @@
             @if (CurrentPageNumber < TotalPages)
             {
                 <li class="page-item">
-                    <button class="page-link" @onclick="async () => await OnPageChangedAsync(TotalPages)">
+                    <button class="page-link page-link-ex" @onclick="async () => await OnPageChangedAsync(TotalPages)">
                         <span aria-hidden="true">&raquo;</span>
                     </button>
                 </li>
@@ -89,7 +79,7 @@
             else
             {
                 <li class="page-item disabled">
-                    <button class="page-link">
+                    <button class="page-link page-link-ex">
                         <span aria-hidden="true">&raquo;</span>
                     </button>
                 </li>

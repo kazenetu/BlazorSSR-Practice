@@ -1,8 +1,10 @@
-html, body {
+html,
+body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-a, .btn-link {
+a,
+.btn-link {
     color: #006bb7;
 }
 
@@ -12,8 +14,12 @@ a, .btn-link {
     border-color: #1861ac;
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: none;
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: none;
 }
 
 .content {
@@ -38,41 +44,50 @@ h1:focus {
     color: white;
 }
 
-    .blazor-error-boundary::after {
-        content: "An error has occurred."
-    }
+.blazor-error-boundary::after {
+    content: "An error has occurred."
+}
 
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
 
-table.fiexed-header thead{
+table.fiexed-header thead {
     position: sticky;
     top: 3.4rem;
     background-color: wheat;
 }
 
-.page-header
-{
-    padding-bottom:1rem;
+.page-header {
+    padding-bottom: 1rem;
 }
 
-.nav-menu-multi-line
-{
+.nav-menu-multi-line {
     line-height: 1.5em;
 }
 
-.row-margin
-{
+.row-margin {
     margin-top: 1rem;
     margin-bottom: 1rem;
 }
 
-.input-group-radio
-{
+.input-group-radio {
     width: auto;
 }
-.input-group-radio .form-check-input
-{
+
+.input-group-radio .form-check-input {
     margin-right: 0.5em;
+}
+
+/* Pagination：page-link：ブラウザのアクティブ時の枠表示を抑制 */
+.page-link:focus {
+    box-shadow: var(--bs-pagination-focus-box-shadow);
+    background-color: white;
+}
+
+/* Pagination：page-link：4桁以上表示拡張 */
+.page-link-ex {
+    padding-left: 0rem !important;
+    padding-right: 0rem !important;
+    width: 3.5rem;
 }

@@ -1,5 +1,4 @@
-﻿// 引数チェック
-using System.Data;
+﻿using System.Data;
 using DB;
 using Create;
 using Common;
@@ -7,7 +6,7 @@ using Common;
 // パラメータ取得
 var argManager = new ArgManagers(args);
 
-// ヘルプモードの確認
+//引数チェック
 if (argManager.GetRequiredArgCount() < 3)
 {
     Console.WriteLine();

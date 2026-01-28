@@ -9,6 +9,7 @@ var argManager = new ArgManagers(args);
 //引数チェック
 if (argManager.GetRequiredArgCount() < 3)
 {
+    // ヘルプモード表示
     Console.WriteLine();
     Console.WriteLine("dotnet run DBモード 接続文字列 テーブル名");
     Console.WriteLine();

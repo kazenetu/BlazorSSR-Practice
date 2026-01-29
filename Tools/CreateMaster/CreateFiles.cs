@@ -14,7 +14,7 @@ public class CreateFils
     /// </summary>
     private string RootPath;
 
-    List<DataColumn> Columns = [];
+    private List<DataColumn> Columns = [];
 
     /// <summary>
     /// オプション：リポジトリ名

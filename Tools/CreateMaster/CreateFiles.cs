@@ -14,6 +14,9 @@ public class CreateFils
     /// </summary>
     private string RootPath;
 
+    /// <summary>
+    /// DB対象テーブルのカラムリスト
+    /// </summary>
     private List<DataColumn> Columns = [];
 
     /// <summary>

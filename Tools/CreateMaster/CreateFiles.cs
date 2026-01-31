@@ -1,4 +1,4 @@
-namespace Create;
+namespace CreateMaster.Create;
 
 using System.Data;
 using System.IO;

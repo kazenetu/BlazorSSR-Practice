@@ -1,6 +1,6 @@
 ﻿using System.Data;
 using DB;
-using Create;
+using CreateMaster.Create;
 using Common;
 
 // パラメータ取得

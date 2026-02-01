@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using DB;
 using CreateMaster.Create;
-using Common;
+using CreateMaster.Common;
 
 // パラメータ取得
 var argManager = new ArgManagers(args);

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Common;
+namespace CreateMaster.Common;
 
 /// <summary>
 /// パラメータ管理クラス

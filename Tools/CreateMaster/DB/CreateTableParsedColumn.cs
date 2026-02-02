@@ -1,4 +1,4 @@
-namespace DB;
+namespace CreateMaster.DB;
 
 /// <summary>
 /// CREATETABLEパース済みカラム情報

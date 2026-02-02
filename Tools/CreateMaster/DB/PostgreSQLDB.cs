@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Npgsql;
 
-namespace DB;
+namespace CreateMaster.DB;
 
 public class PostgeSQLDB : IDB
 {

@@ -2,7 +2,7 @@ using System.Data;
 using System.Text.RegularExpressions;
 using Microsoft.Data.Sqlite;
 
-namespace DB;
+namespace CreateMaster.DB;
 
 public class SQLiteDB : IDB
 {

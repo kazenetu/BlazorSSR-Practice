@@ -3,6 +3,8 @@ using CreateMaster.DB;
 using CreateMaster.Create;
 using CreateMaster.Common;
 
+namespace CreateMaster;
+
 class Program
 {
     static void Main(string[] args)

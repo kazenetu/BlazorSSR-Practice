@@ -1,5 +1,4 @@
-﻿using System.Data;
-using CreateMaster.DB;
+﻿using CreateMaster.DB;
 using CreateMaster.Create;
 using CreateMaster.Common;
 

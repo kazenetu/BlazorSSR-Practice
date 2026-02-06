@@ -1,8 +1,8 @@
-namespace CreateMaster.Create;
-
 using System.Data;
 using System.IO;
 using System.Text;
+
+namespace CreateMaster.Create;
 
 /// <summary>
 /// ファイル作成クラス

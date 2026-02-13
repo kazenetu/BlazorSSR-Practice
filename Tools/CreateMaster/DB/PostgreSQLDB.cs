@@ -63,7 +63,7 @@ public class PostgeSQLDB : IDB
             command.CommandText = sql.ToString();
 
             using NpgsqlDataReader reader = command.ExecuteReader();
-            
+
             // 主キーを取得
             while (reader.Read())
             {
@@ -87,7 +87,7 @@ public class PostgeSQLDB : IDB
         var result = new DataTable();
 
         // 主キーリスト
-        var constraintKeys = GetConstraintKeys(conn ,tableName);
+        var constraintKeys = GetConstraintKeys(conn, tableName);
 
         // SQL発行
         using (NpgsqlCommand command = conn.CreateCommand())
@@ -113,7 +113,7 @@ public class PostgeSQLDB : IDB
             command.CommandText = sql.ToString();
 
             using NpgsqlDataReader reader = command.ExecuteReader();
-            
+
             // カラム登録
             while (reader.Read())
             {

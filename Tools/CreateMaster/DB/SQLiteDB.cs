@@ -51,83 +51,80 @@ public class SQLiteDB : IDB
             // SQL作成
             command.CommandText = $"SELECT sql FROM sqlite_master WHERE type='table' AND name='{tableName}'";
 
-            using (SqliteDataReader reader = command.ExecuteReader())
+            using SqliteDataReader reader = command.ExecuteReader();
+            
+            // CREATE TABLE文解析、登録プロパティリスト、主キーリストに格納
+            while (reader.Read())
             {
-                // CREATE TABLE文解析、登録プロパティリスト、主キーリストに格納
-                while (reader.Read())
+                // CREATE TABLE取得
+                var sql = reader["sql"].ToString();
+
+                // 改行単位の配列作成
+                var sqlLines = (sql ?? "").Split(Environment.NewLine);
+                for (int i = 0; i < sqlLines?.Length; i++)
                 {
-                    // CREATE TABLE取得
-                    var sql = reader["sql"].ToString();
+                    // CREATE TABLEと最後は対象外
+                    if (i == 0 || i == sqlLines.Length - 1) continue;
 
-                    // 改行単位の配列作成
-                    var sqlLines = (sql ?? "").Split(Environment.NewLine);
-                    for (int i = 0; i < sqlLines?.Length; i++)
+                    var line = sqlLines[i];
+
+                    // 主キーチェック
+                    if (line.Contains("constraint"))
                     {
-                        // CREATE TABLEと最後は対象外
-                        if (i == 0 || i == sqlLines.Length - 1) continue;
+                        // ()の中身を文字列取得
+                        var pattern = @"\(([^)]*)\)";
 
-                        var line = sqlLines[i];
-
-                        // 主キーチェック
-                        if (line.Contains("constraint"))
+                        var matches = Regex.Matches(line, pattern);
+                        foreach (Match match in matches)
                         {
-                            // ()の中身を文字列取得
-                            var pattern = @"\(([^)]*)\)";
-
-                            var matches = Regex.Matches(line, pattern);
-                            foreach (Match match in matches)
-                            {
-                                var keys = match.Groups[1].Value.Split(",");
-                                constraintKeys.AddRange(keys);
-                            }
-                            continue;
+                            var keys = match.Groups[1].Value.Split(",");
+                            constraintKeys.AddRange(keys);
                         }
-
-                        // プロパティ
-                        // 行をスペースで配列作成
-                        var cells = line.Split(' ');
-
-                        // 行の要素を取得、再生成
-                        var lineElements = new List<string>();
-                        for (int j = 0; j < cells.Length; j++)
-                        {
-                            var cell = cells[j];
-                            if (cell != "," && !string.IsNullOrEmpty(cell))
-                                lineElements.Add(cell);
-                        }
-                        var name = lineElements[0];
-                        var type = CreateTableParsedColumn.GetType(lineElements[1]);
-                        var option = string.Join(string.Empty, lineElements[2..]);
-                        createTableParsedList.Add(new CreateTableParsedColumn(name, type, option.ToLower()));
-                    }
-                }
-
-                // Tabeleカラムを作成
-                foreach (var createTableParsed in createTableParsedList)
-                {
-                    var temp = new DataColumn(createTableParsed.ColumnName, createTableParsed.ColumnType);
-                    if (constraintKeys.Contains(createTableParsed.ColumnName))
-                        temp.Unique = true;
-
-                    if (createTableParsed.Option.Contains("notnull"))
-                        temp.AllowDBNull = false;
-                    else temp.AllowDBNull = true;
-
-                    if (createTableParsed.Option.Contains("default"))
-                    {
-                        var value = createTableParsed.Option.Replace("default", string.Empty);
-                        if (createTableParsed.ColumnType == typeof(bool) && int.TryParse(value, out var intVal))
-                        {
-                            temp.DefaultValue = intVal == 1;
-                        }
-                        else
-                            temp.DefaultValue = value;
+                        continue;
                     }
 
-                    result.Columns.Add(temp);
+                    // プロパティ
+                    // 行をスペースで配列作成
+                    var cells = line.Split(' ');
+
+                    // 行の要素を取得、再生成
+                    var lineElements = new List<string>();
+                    for (int j = 0; j < cells.Length; j++)
+                    {
+                        var cell = cells[j];
+                        if (cell != "," && !string.IsNullOrEmpty(cell))
+                            lineElements.Add(cell);
+                    }
+                    var name = lineElements[0];
+                    var type = CreateTableParsedColumn.GetType(lineElements[1]);
+                    var option = string.Join(string.Empty, lineElements[2..]);
+                    createTableParsedList.Add(new CreateTableParsedColumn(name, type, option.ToLower()));
+                }
+            }
+
+            // Tabeleカラムを作成
+            foreach (var createTableParsed in createTableParsedList)
+            {
+                var temp = new DataColumn(createTableParsed.ColumnName, createTableParsed.ColumnType);
+                if (constraintKeys.Contains(createTableParsed.ColumnName))
+                    temp.Unique = true;
+
+                if (createTableParsed.Option.Contains("notnull"))
+                    temp.AllowDBNull = false;
+                else temp.AllowDBNull = true;
+
+                if (createTableParsed.Option.Contains("default"))
+                {
+                    var value = createTableParsed.Option.Replace("default", string.Empty);
+                    if (createTableParsed.ColumnType == typeof(bool) && int.TryParse(value, out var intVal))
+                    {
+                        temp.DefaultValue = intVal == 1;
+                    }
+                    else
+                        temp.DefaultValue = value;
                 }
 
-
+                result.Columns.Add(temp);
             }
         }
 

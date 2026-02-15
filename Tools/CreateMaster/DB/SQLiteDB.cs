@@ -52,7 +52,7 @@ public class SQLiteDB : IDB
             command.CommandText = $"SELECT sql FROM sqlite_master WHERE type='table' AND name='{tableName}'";
 
             using SqliteDataReader reader = command.ExecuteReader();
-            
+
             // CREATE TABLE文解析、登録プロパティリスト、主キーリストに格納
             while (reader.Read())
             {

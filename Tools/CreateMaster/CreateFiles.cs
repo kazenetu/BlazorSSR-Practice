@@ -106,12 +106,14 @@ public class CreateFils
             {"$Properties$", string.Join(Environment.NewLine, modelProp)}
         });
 
+        // 初期値設定メソッド
         string SetDefaultValue(DataColumn target)
         {
             if (target.DefaultValue == DBNull.Value) return string.Empty;
             return $" = {target.DefaultValue.ToString()?.ToLower()};";
         }
 
+        // null許容設定メソッド
         string Nullable(DataColumn target)
         {
             if (target.DataType == typeof(bool)) return string.Empty;
@@ -167,6 +169,7 @@ public class CreateFils
             {"$DBParams$", string.Join(Environment.NewLine, dbParams)},
         });
 
+        // 新規作成時の初期値設定メソッド
         string GetDefault(Type target)
         {
             var defaultValue = "\"\"";
@@ -303,6 +306,7 @@ public class CreateFils
             {"$EditKeyType$", editKeyType},
         });
 
+        // 入力コンポーネント取得メソッド
         string GetInputComponent(DataColumn target)
         {
             Type[] numericTypes = [typeof(int), typeof(long), typeof(decimal)];
@@ -313,6 +317,7 @@ public class CreateFils
             return "InputText";
         }
 
+        // 保存時の入力チェック生成メソッド
         string InputCheck(DataColumn target)
         {
             // boolは入力チェックなし

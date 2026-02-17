@@ -11,38 +11,38 @@ public class CreateFils
     /// <summary>
     /// ファイル生成のルートパス
     /// </summary>
-    private string RootPath;
+    private readonly string RootPath;
 
     /// <summary>
     /// DB対象テーブルのカラムリスト
     /// </summary>
-    private List<DataColumn> Columns = [];
+    private readonly List<DataColumn> Columns = [];
 
     /// <summary>
     /// オプション：リポジトリ名
     /// </summary>
-    private string? EditReposiotry;
+    private readonly string? EditReposiotry;
 
     /// <summary>
     /// テーブル名
     /// </summary>
-    private string TableName;
+    private readonly string TableName;
 
     /// <summary>
     /// クラス名
     /// </summary>
     /// <remarks>ページのuriから自動生成</remarks> 
-    private string ClassName;
+    private readonly string ClassName;
 
     /// <summary>
     /// ページの@pageのプレフィックスurl
     /// </summary>
-    private string UrlPrefix;
+    private readonly string UrlPrefix;
 
     /// <summary>
     /// 編集ページの@pageを[UrlPrefix]-editとするか否か(falsの場合は[UrlPrefix]_edit)
     /// </summary>
-    private bool UrlUseHyphen;
+    private readonly bool UrlUseHyphen;
 
     /// <summary>
     /// コンストラクタ

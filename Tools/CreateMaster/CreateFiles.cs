@@ -170,7 +170,7 @@ public class CreateFils
         });
 
         // 新規作成時の初期値設定メソッド
-        string GetDefault(Type target)
+        static string GetDefault(Type target)
         {
             var defaultValue = "\"\"";
 
@@ -376,7 +376,7 @@ public class CreateFils
     /// <param name="dbName">DBカラム名</param>
     /// <param name="firstLower">1文字目を小文字にする</param>
     /// <returns>C#コード体系(クラス名やプロパティ名)</returns>
-    private string ToCsharpName(string dbName, bool firstLower = false)
+    private static string ToCsharpName(string dbName, bool firstLower = false)
     {
         var words = dbName.Split("_");
         var result = string.Empty;
@@ -397,7 +397,7 @@ public class CreateFils
     /// </summary>
     /// <param name="targetColumnType">DataColumnの型</param>
     /// <returns>C#の型</returns>
-    private string ToCShrpType(Type targetColumnType)
+    private static string ToCShrpType(Type targetColumnType)
     {
         if (targetColumnType == typeof(string))
             return "string";
@@ -456,7 +456,7 @@ public class CreateFils
     /// </summary>
     /// <param name="templatePath">テンプレートファイルのパス</param>
     /// <returns>読込結果の文字列</returns>
-    private string ReadTemplate(string templatePath)
+    private static string ReadTemplate(string templatePath)
     {
         return File.ReadAllText(templatePath);
     }
@@ -467,7 +467,7 @@ public class CreateFils
     /// <param name="path">書き出しパス</param>
     /// <param name="fileName">書き出しファイル名</param>
     /// <param name="contents">書き出し内容(ソースコード)</param>
-    private void OutputFile(string path, string fileName, string contents)
+    private static void OutputFile(string path, string fileName, string contents)
     {
         // ディレクトリ作成
         if (!Directory.Exists(path))

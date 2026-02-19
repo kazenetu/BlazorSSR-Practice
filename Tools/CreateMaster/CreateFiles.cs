@@ -147,7 +147,7 @@ public class CreateFils
         var insertValues = Columns.Select(col => $"@{col.ColumnName}");
 
         var updateValues = Columns.Select(col => $"{col.ColumnName} = @{col.ColumnName}");
-        
+
         var dbParams = Columns.Select(col => $"        db.AddParam(\"@{col.ColumnName}\", target.{ToCsharpName(col.ColumnName)}!);");
         CreateFile(rootPath, "Repositories", "Repository.txt", $"{ClassName}Repository.cs", new Dictionary<string, string>
         {
@@ -248,7 +248,7 @@ public class CreateFils
             listUrl += "_";
         listUrl += "list";
 
-        CreateFile(rootPath,  "Components/Pages", "PageList.txt", $"{ClassName}List.razor", new Dictionary<string, string>
+        CreateFile(rootPath, "Components/Pages", "PageList.txt", $"{ClassName}List.razor", new Dictionary<string, string>
         {
             {"$uri$", listUrl},
             {"$ResultHeader$", resultHeader.ToString()},
@@ -296,7 +296,7 @@ public class CreateFils
             editUrl += "_";
         editUrl += "edit";
 
-        CreateFile(rootPath,  "Components/Pages", "PageEdit.txt", $"{ClassName}Edit.razor", new Dictionary<string, string>
+        CreateFile(rootPath, "Components/Pages", "PageEdit.txt", $"{ClassName}Edit.razor", new Dictionary<string, string>
         {
             {"$uri$", editUrl},
             {"$EditInput$", editInput.ToString()},
@@ -348,7 +348,7 @@ public class CreateFils
                     result.Append("0");
                 result.AppendLine($")");
             }
-            else if(target.DataType == typeof(bool))
+            else if (target.DataType == typeof(bool))
             {
                 result.Append($"            if (model?.{ToCsharpName(target.ColumnName)} == ");
                 if (target.DefaultValue != DBNull.Value)
@@ -356,7 +356,6 @@ public class CreateFils
                 else
                     inputCheck.Append("false");
                 result.AppendLine($")");
-                
             }
             else
             {

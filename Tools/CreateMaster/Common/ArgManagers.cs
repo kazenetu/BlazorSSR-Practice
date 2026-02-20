@@ -8,12 +8,12 @@ public class ArgManagers
     /// <summary>
     /// オプションパラメータ(名前あり)のコレクション
     /// </summary>
-    private Dictionary<string, string?> OptionPramArgs = new Dictionary<string, string?>();
+    private Dictionary<string, string?> OptionPramArgs = [];
 
     /// <summary>
     /// 必須パラメーター(名前なし)のコレクション
     /// </summary>
-    private List<string> RequiredPramArgs = new List<string>();
+    private List<string> RequiredPramArgs = [];
 
     /// <summary>
     /// コンストラクタ

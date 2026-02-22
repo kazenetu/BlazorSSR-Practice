@@ -97,12 +97,12 @@ public class ArgManagers
     /// <returns>対象パラメータの値(パラメータ名が存在しない場合はnull)</returns>
     public string? GetOptionArg(string paramName)
     {
-        if (!OptionPramArgs.ContainsKey(paramName))
+        if (!OptionPramArgs.TryGetValue(paramName, out string? value))
         {
             return null;
         }
 
-        return OptionPramArgs[paramName];
+        return value;
     }
 
     /// <summary>

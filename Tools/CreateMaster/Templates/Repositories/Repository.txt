@@ -7,7 +7,7 @@ using WebApp.DBAccess;
 
 namespace WebApp.Repositories;
 
-public partial class $ReposiotryName$Repository : RepositoryBase, I$ReposiotryName$Repository
+public class $ReposiotryName$Repository : RepositoryBase, I$ReposiotryName$Repository
 {
     /// <summary>
     /// コンストラクタ

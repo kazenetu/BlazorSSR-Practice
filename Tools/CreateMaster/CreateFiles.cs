@@ -1,8 +1,7 @@
-namespace Create;
-
 using System.Data;
-using System.IO;
 using System.Text;
+
+namespace CreateMaster.Create;
 
 /// <summary>
 /// ファイル作成クラス
@@ -12,35 +11,38 @@ public class CreateFils
     /// <summary>
     /// ファイル生成のルートパス
     /// </summary>
-    private string RootPath;
+    private readonly string RootPath;
 
-    List<DataColumn> Columns = [];
+    /// <summary>
+    /// DB対象テーブルのカラムリスト
+    /// </summary>
+    private readonly List<DataColumn> Columns = [];
 
     /// <summary>
     /// オプション：リポジトリ名
     /// </summary>
-    private string? EditReposiotry;
+    private readonly string? EditReposiotry;
 
     /// <summary>
     /// テーブル名
     /// </summary>
-    private string TableName;
+    private readonly string TableName;
 
     /// <summary>
     /// クラス名
     /// </summary>
     /// <remarks>ページのuriから自動生成</remarks> 
-    private string ClassName;
+    private readonly string ClassName;
 
     /// <summary>
     /// ページの@pageのプレフィックスurl
     /// </summary>
-    private string UrlPrefix;
+    private readonly string UrlPrefix;
 
     /// <summary>
     /// 編集ページの@pageを[UrlPrefix]-editとするか否か(falsの場合は[UrlPrefix]_edit)
     /// </summary>
-    private bool UrlUseHyphen;
+    private readonly bool UrlUseHyphen;
 
     /// <summary>
     /// コンストラクタ
@@ -104,12 +106,14 @@ public class CreateFils
             {"$Properties$", string.Join(Environment.NewLine, modelProp)}
         });
 
+        // 初期値設定メソッド
         string SetDefaultValue(DataColumn target)
         {
             if (target.DefaultValue == DBNull.Value) return string.Empty;
             return $" = {target.DefaultValue.ToString()?.ToLower()};";
         }
 
+        // null許容設定メソッド
         string Nullable(DataColumn target)
         {
             if (target.DataType == typeof(bool)) return string.Empty;
@@ -143,7 +147,7 @@ public class CreateFils
         var insertValues = Columns.Select(col => $"@{col.ColumnName}");
 
         var updateValues = Columns.Select(col => $"{col.ColumnName} = @{col.ColumnName}");
-        
+
         var dbParams = Columns.Select(col => $"        db.AddParam(\"@{col.ColumnName}\", target.{ToCsharpName(col.ColumnName)}!);");
         CreateFile(rootPath, "Repositories", "Repository.txt", $"{ClassName}Repository.cs", new Dictionary<string, string>
         {
@@ -165,7 +169,8 @@ public class CreateFils
             {"$DBParams$", string.Join(Environment.NewLine, dbParams)},
         });
 
-        string GetDefault(Type target)
+        // 新規作成時の初期値設定メソッド
+        static string GetDefault(Type target)
         {
             var defaultValue = "\"\"";
 
@@ -243,7 +248,7 @@ public class CreateFils
             listUrl += "_";
         listUrl += "list";
 
-        CreateFile(rootPath,  "Components/Pages", "PageList.txt", $"{ClassName}List.razor", new Dictionary<string, string>
+        CreateFile(rootPath, "Components/Pages", "PageList.txt", $"{ClassName}List.razor", new Dictionary<string, string>
         {
             {"$uri$", listUrl},
             {"$ResultHeader$", resultHeader.ToString()},
@@ -291,7 +296,7 @@ public class CreateFils
             editUrl += "_";
         editUrl += "edit";
 
-        CreateFile(rootPath,  "Components/Pages", "PageEdit.txt", $"{ClassName}Edit.razor", new Dictionary<string, string>
+        CreateFile(rootPath, "Components/Pages", "PageEdit.txt", $"{ClassName}Edit.razor", new Dictionary<string, string>
         {
             {"$uri$", editUrl},
             {"$EditInput$", editInput.ToString()},
@@ -301,6 +306,7 @@ public class CreateFils
             {"$EditKeyType$", editKeyType},
         });
 
+        // 入力コンポーネント取得メソッド
         string GetInputComponent(DataColumn target)
         {
             Type[] numericTypes = [typeof(int), typeof(long), typeof(decimal)];
@@ -311,6 +317,7 @@ public class CreateFils
             return "InputText";
         }
 
+        // 保存時の入力チェック生成メソッド
         string InputCheck(DataColumn target)
         {
             // boolは入力チェックなし
@@ -341,7 +348,7 @@ public class CreateFils
                     result.Append("0");
                 result.AppendLine($")");
             }
-            else if(target.DataType == typeof(bool))
+            else if (target.DataType == typeof(bool))
             {
                 result.Append($"            if (model?.{ToCsharpName(target.ColumnName)} == ");
                 if (target.DefaultValue != DBNull.Value)
@@ -349,7 +356,6 @@ public class CreateFils
                 else
                     inputCheck.Append("false");
                 result.AppendLine($")");
-                
             }
             else
             {
@@ -369,7 +375,7 @@ public class CreateFils
     /// <param name="dbName">DBカラム名</param>
     /// <param name="firstLower">1文字目を小文字にする</param>
     /// <returns>C#コード体系(クラス名やプロパティ名)</returns>
-    private string ToCsharpName(string dbName, bool firstLower = false)
+    private static string ToCsharpName(string dbName, bool firstLower = false)
     {
         var words = dbName.Split("_");
         var result = string.Empty;
@@ -390,7 +396,7 @@ public class CreateFils
     /// </summary>
     /// <param name="targetColumnType">DataColumnの型</param>
     /// <returns>C#の型</returns>
-    private string ToCShrpType(Type targetColumnType)
+    private static string ToCShrpType(Type targetColumnType)
     {
         if (targetColumnType == typeof(string))
             return "string";
@@ -449,7 +455,7 @@ public class CreateFils
     /// </summary>
     /// <param name="templatePath">テンプレートファイルのパス</param>
     /// <returns>読込結果の文字列</returns>
-    private string ReadTemplate(string templatePath)
+    private static string ReadTemplate(string templatePath)
     {
         return File.ReadAllText(templatePath);
     }
@@ -460,7 +466,7 @@ public class CreateFils
     /// <param name="path">書き出しパス</param>
     /// <param name="fileName">書き出しファイル名</param>
     /// <param name="contents">書き出し内容(ソースコード)</param>
-    private void OutputFile(string path, string fileName, string contents)
+    private static void OutputFile(string path, string fileName, string contents)
     {
         // ディレクトリ作成
         if (!Directory.Exists(path))

@@ -1,6 +1,6 @@
 using System.Data;
 
-namespace DB;
+namespace CreateMaster.DB;
 
 public interface IDB
 {

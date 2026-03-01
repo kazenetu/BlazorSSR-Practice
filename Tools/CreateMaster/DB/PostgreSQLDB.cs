@@ -1,9 +1,8 @@
 using System.Data;
 using System.Text;
-using System.Text.RegularExpressions;
 using Npgsql;
 
-namespace DB;
+namespace CreateMaster.DB;
 
 public class PostgeSQLDB : IDB
 {
@@ -63,16 +62,15 @@ public class PostgeSQLDB : IDB
             sql.AppendLine($"AND tc.table_name = '{tableName}'");
             command.CommandText = sql.ToString();
 
-            using (NpgsqlDataReader reader = command.ExecuteReader())
-            {
-                // 主キーを取得
-                while (reader.Read())
-                {
-                    var colName = reader["column_name"].ToString() ?? string.Empty;
-                    if (string.IsNullOrEmpty(colName)) continue;
+            using NpgsqlDataReader reader = command.ExecuteReader();
 
-                    result.Add(colName);
-                }
+            // 主キーを取得
+            while (reader.Read())
+            {
+                var colName = reader["column_name"].ToString() ?? string.Empty;
+                if (string.IsNullOrEmpty(colName)) continue;
+
+                result.Add(colName);
             }
         }
         return result;
@@ -89,7 +87,7 @@ public class PostgeSQLDB : IDB
         var result = new DataTable();
 
         // 主キーリスト
-        var constraintKeys = GetConstraintKeys(conn ,tableName);
+        var constraintKeys = GetConstraintKeys(conn, tableName);
 
         // SQL発行
         using (NpgsqlCommand command = conn.CreateCommand())
@@ -114,33 +112,32 @@ public class PostgeSQLDB : IDB
             sql.AppendLine("ORDER BY ordinal_position");
             command.CommandText = sql.ToString();
 
-            using (NpgsqlDataReader reader = command.ExecuteReader())
+            using NpgsqlDataReader reader = command.ExecuteReader();
+
+            // カラム登録
+            while (reader.Read())
             {
-                // カラム登録
-                while (reader.Read())
-                {
-                    // DBカラムスキーマ取得
-                    var name = reader["column_name"].ToString()??string.Empty;
-                    var type = CreateTableParsedColumn.GetType(reader["data_type"].ToString()??string.Empty);
-                    var isNull = (reader["is_nullable"].ToString()??string.Empty).ToUpper();
-                    var defaultValue = reader["column_default"].ToString()??string.Empty;
+                // DBカラムスキーマ取得
+                var name = reader["column_name"].ToString() ?? string.Empty;
+                var type = CreateTableParsedColumn.GetType(reader["data_type"].ToString() ?? string.Empty);
+                var isNull = (reader["is_nullable"].ToString() ?? string.Empty).ToUpper();
+                var defaultValue = reader["column_default"].ToString() ?? string.Empty;
 
-                    // カラム設定
-                    var temp = new DataColumn(name, type);
-                    if (constraintKeys.Contains(name))
-                        temp.Unique = true;
+                // カラム設定
+                var temp = new DataColumn(name, type);
+                if (constraintKeys.Contains(name))
+                    temp.Unique = true;
 
-                    if (isNull.Contains("NO"))
-                        temp.AllowDBNull = false;
-                    else
-                        temp.AllowDBNull = true;
+                if (isNull.Contains("NO"))
+                    temp.AllowDBNull = false;
+                else
+                    temp.AllowDBNull = true;
 
 
-                    if (!string.IsNullOrEmpty(defaultValue))
-                        temp.DefaultValue = defaultValue;
+                if (!string.IsNullOrEmpty(defaultValue))
+                    temp.DefaultValue = defaultValue;
 
-                    result.Columns.Add(temp);
-                }
+                result.Columns.Add(temp);
             }
         }
 

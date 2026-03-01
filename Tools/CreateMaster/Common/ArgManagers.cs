@@ -1,6 +1,4 @@
-using System.Collections.Generic;
-
-namespace Common;
+namespace CreateMaster.Common;
 
 /// <summary>
 /// パラメータ管理クラス
@@ -10,12 +8,12 @@ public class ArgManagers
     /// <summary>
     /// オプションパラメータ(名前あり)のコレクション
     /// </summary>
-    private Dictionary<string, string?> OptionPramArgs = new Dictionary<string, string?>();
+    private readonly Dictionary<string, string?> OptionPramArgs = [];
 
     /// <summary>
     /// 必須パラメーター(名前なし)のコレクション
     /// </summary>
-    private List<string> RequiredPramArgs = new List<string>();
+    private readonly List<string> RequiredPramArgs = [];
 
     /// <summary>
     /// コンストラクタ
@@ -99,12 +97,12 @@ public class ArgManagers
     /// <returns>対象パラメータの値(パラメータ名が存在しない場合はnull)</returns>
     public string? GetOptionArg(string paramName)
     {
-        if (!OptionPramArgs.ContainsKey(paramName))
+        if (OptionPramArgs.TryGetValue(paramName, out string? value))
         {
-            return null;
+            return value;
         }
 
-        return OptionPramArgs[paramName];
+        return null;
     }
 
     /// <summary>

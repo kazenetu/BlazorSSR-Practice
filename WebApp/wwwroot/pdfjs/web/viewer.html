@@ -45,13 +45,13 @@ See https://github.com/adobe-type-tools/cmap-resources
   <script>
     document.getElementById('close').addEventListener('click', () => {
       close();
-    });
+    }), { onece: true };
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "hidden") {
         const url = location.search.split('&')[0].replace('?file=', '');
         URL.revokeObjectURL(url);
       }
-    });
+    }, { onece: true });
     setTimeout(()=>{
       const fileName = location.search.split('&')[1].replace('title=','');
       PDFViewerApplication.setTitle(fileName);

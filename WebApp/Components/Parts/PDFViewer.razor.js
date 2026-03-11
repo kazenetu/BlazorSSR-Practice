@@ -18,7 +18,7 @@ export async function setSource(elementId, stream, title) {
         URL.revokeObjectURL(url);
         element.setAttribute("src", "");
         dialog.close();
-    });
+    }, { onece: true });
 }
 
 // PDF別ウィンドウ表示(pdf.js使用) 

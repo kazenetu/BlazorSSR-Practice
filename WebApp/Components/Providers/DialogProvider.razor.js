@@ -12,7 +12,7 @@ export async function showAlert(message) {
         dialog.close();
 
         scrollLock(false);
-    });
+    }, { onece: true });
 }
 
 export async function showConfirm(message, yesText, cancelText) {
@@ -38,7 +38,7 @@ export async function showConfirm(message, yesText, cancelText) {
         dialog.close();
 
         scrollLock(false);
-    });
+    }, { onece: true });
 
     // キャンセル：モーダルを閉じる
     const cancelButton = document.getElementById('confirmCancelButton');
@@ -46,7 +46,7 @@ export async function showConfirm(message, yesText, cancelText) {
         dialog.close();
 
         scrollLock(false);
-    });
+    }, { onece: true });
 }
 
 function addMessageTag(tagName, message) {

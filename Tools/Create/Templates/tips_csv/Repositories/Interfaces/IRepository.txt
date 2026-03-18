@@ -2,7 +2,7 @@ using WebApp.Models;
 
 namespace WebApp.Repositories.Interfaces;
 
-public partial interface I$ReposiotryName$Repository : IRepositoryBase
+public interface I$ReposiotryName$Repository : IRepositoryBase
 {
     /// <summary>
     /// CSV用データを取得

@@ -45,6 +45,7 @@ public class OrderModel
     /// <param name="unitPrice">単価</param>
     /// <param name="qty">数量</param>
     /// <param name="totalPrice">合計金額</param>
+    /// <param name="enabled">有効フラグ</param>
     /// <param name="version">バージョン番号(楽観ロック用)</param>
     public OrderModel(int no, string productName, decimal unitPrice, decimal qty, decimal totalPrice, bool enabled = true, int version = 0)
     {

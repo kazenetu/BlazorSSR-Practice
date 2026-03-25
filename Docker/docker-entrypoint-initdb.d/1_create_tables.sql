@@ -28,6 +28,7 @@ create table post_master (
 drop table if exists t_order cascade;
 create table t_order (
   productName TEXT not null
+  , enabled BOOLEAN default true
   , unitPrice NUMERIC not null
   , qty NUMERIC not null
   , createDate TEXT not null
@@ -78,6 +79,7 @@ comment on column post_master.address_kana is '住所カナ:郵便番号検索�
 
 comment on table t_order is '注文トラン';
 comment on column t_order.productName is '製品名';
+comment on column t_order.enabled is '有効フラグ'
 comment on column t_order.unitPrice is '単価';
 comment on column t_order.qty is '数量';
 comment on column t_order.createDate is '登録年月日';

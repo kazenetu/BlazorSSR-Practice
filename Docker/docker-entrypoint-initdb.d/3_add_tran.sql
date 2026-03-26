@@ -1,9 +1,9 @@
 insert into "t_order" values 
-    ('商品A',100,1,'2024-11-27 09:45:38','DymmyUser','INIT','2024-11-27 09:45:38','DymmyUser','INIT',1)
-  , ('商品B',1000,3,'2024-11-27 09:45:39','DymmyUser','INIT','2024-11-27 09:45:39','DymmyUser','INIT',1)
-  , ('商品C',200,1,'2024-11-27 09:45:39','DymmyUser','INIT','2024-11-27 09:45:39','DymmyUser','INIT',1)
-  , ('商品D',500,10,'2024-11-27 09:45:39','DymmyUser','INIT','2024-11-27 09:45:39','DymmyUser','INIT',1)
-  , ('商品E',5000,3,'2025/08/20 9:19:57','aa','FileUploadSample','2025/08/20 9:19:57','aa','FileUploadSample',1);
+    ('商品A',true,100,1,'2024-11-27 09:45:38','DymmyUser','INIT','2024-11-27 09:45:38','DymmyUser','INIT',1)
+  , ('商品B',true,1000,3,'2024-11-27 09:45:39','DymmyUser','INIT','2024-11-27 09:45:39','DymmyUser','INIT',1)
+  , ('商品C',true,200,1,'2024-11-27 09:45:39','DymmyUser','INIT','2024-11-27 09:45:39','DymmyUser','INIT',1)
+  , ('商品D',true,500,10,'2024-11-27 09:45:39','DymmyUser','INIT','2024-11-27 09:45:39','DymmyUser','INIT',1)
+  , ('商品E',true,5000,3,'2025/08/20 9:19:57','aa','FileUploadSample','2025/08/20 9:19:57','aa','FileUploadSample',1);
 
 
 

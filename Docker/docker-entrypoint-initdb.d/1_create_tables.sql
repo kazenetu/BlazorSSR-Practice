@@ -6,7 +6,7 @@ create table m_user (
   , totp_secrets TEXT
   , fullname TEXT not null
   , admin_role BOOLEAN default false
-  , disabled BOOLEAN default true
+  , disabled BOOLEAN default false
   , version INTEGER default 1
   , constraint m_user_PKC primary key (unique_name)
 ) ;

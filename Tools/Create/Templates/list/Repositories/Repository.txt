@@ -62,7 +62,7 @@ public partial class $ReposiotryName$Repository : RepositoryBase, I$ReposiotryNa
         // SQL発行
         //var sqlResult = db.Fill(sql.ToString());
         var sqlResult = new DataTable(); // HACK SQL完成時に削除。上の行のコメントアウトを解除すること
-        var noIndex = 1;
+        // var noIndex = 1;
         foreach (DataRow row in sqlResult.Rows)
         {
             // TODO モデルに変換、追加

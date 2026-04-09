@@ -304,8 +304,7 @@
             if (await IsExistErrorMessage()) return;
 
             // 一括登録
-            var userModel = await GetUserAsync();
-            if (repository.SaveList(saveItems, userModel!.ID, GetType().Name))
+            if (repository.SaveList(saveItems))
             {
                 Logger.LogInformation(await GetLogMessage($"取り込み成功"));
                 await ShowAlert("取り込みが成功しました。");

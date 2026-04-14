@@ -8,21 +8,14 @@ public class $ClassName$Model
     /// <summary>
     /// コンストラクタ
     /// </summary>
-    public $ClassName$Model($EditKeyType$ key/*, decimal unitPrice, decimal qty, decimal totalPrice, int version = 0*/)
+    public $ClassName$Model()
     {
-        Key = key;
-
-        // TODO パラメータ設定とプロパティ格納
-        // UnitPrice = unitPrice;
-        // Qty = qty;
-        // TotalPrice = totalPrice;
-        // Version = version;
     }
 
     /// <summary>
     /// 主キー
     /// </summary>
-    public $EditKeyType$ Key { set; get; }
+    public $EditKeyType$? Key { set; get; }
 
     // TODO プロパティ追加
     // /// <summary>
@@ -30,18 +23,21 @@ public class $ClassName$Model
     // /// </summary>
     // public decimal UnitPrice { set; get; }
 
-    // /// <summary>
-    // /// 数量
-    // /// </summary>
-    // public decimal Qty { set; get; }
-
-    // /// <summary>
-    // /// 合計金額
-    // /// </summary>
-    // public decimal TotalPrice { set; get; }
-
     /// <summary>
     /// バージョン番号(楽観ロック用)
     /// </summary>
     public int Version { set; get; }
+
+    /// <summary>
+    /// 変更確認
+    /// </summary>
+    /// <param name="initializationModel">初期化時のModel</param>
+    /// <returns>true:変更有/false:変更なし</returns>
+    public bool IsChenged($ClassName$Model initializationModel)
+    {
+        // TODO プロパティと「初期化時のModel(initializationModel)の不一致チェック(不一致の場合はtrueを返す)
+
+        // 全て一致
+        return false;
+    }
 }

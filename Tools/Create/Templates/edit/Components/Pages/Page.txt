@@ -12,7 +12,7 @@
     return;
 }
 
-<PageTitle>@Title</PageTitle>
+<PageTitle>$Title$</PageTitle>
 
 <h1>@Title</h1>
 
@@ -64,16 +64,12 @@
     /// 編集対象
     /// </summary>
     [SupplyParameterFromForm]
-    private $ClassName$Model? Model { get; set; }
+    private $ClassName$Model Model  = new();
 
     /// <summary>
-    /// 初期化処理
+    /// ページ初期化時の編集元データ
     /// </summary>
-    protected override void OnInitialized()
-    {
-        // タイトル設定
-        Title = "$Title$";
-    }
+    private $ClassName$Model InitializationModel  = new();
 
     /// <summary>
     /// 初期処理
@@ -99,9 +95,9 @@
 
                 Logger.LogInformation(await GetLogMessage("ログインチェック成功"));
 
-                // 一覧から遷移した場合、対象データを検索
-                if (Key is not null)
-                    Model = repository.GetEditData(Key.Value);
+                // 対象データを検索
+                Model = repository.GetEditData(Key);
+                InitializationModel= repository.GetEditData(Key);
 
                 StateHasChanged();
 
@@ -167,7 +163,7 @@
             // 楽観的ロック確認
             if (Key is not null && Model is not null)
             {
-                var dbModel = repository.GetEditData(Key.Value);
+                var dbModel = repository.GetEditData(Key);
                 if (Model.Version != dbModel.Version)
                 {
                     Logger.LogInformation(await GetLogMessage($"楽観ロックエラー 取得時:{Model.Version} 最新:{dbModel.Version}"));
@@ -178,13 +174,13 @@
             }
 
             // 新規登録時に「既存データのキー項目を入力」チェック
-            if (Key is not null && Model is not null)
+            if (Key is null && Model is not null)
             {
                 // DB取得
                 var dbResult = repository.GetEditData(Model.Key);
 
                 // データが存在する場合はエラーとする
-                if (dbResult is not null)
+                if (dbResult.Key is not null)
                 {
                     Logger.LogInformation(await GetLogMessage($"既存データ登録済エラー 対象データ:{dbResult.Key}"));
 
@@ -194,8 +190,7 @@
             }
 
             // 登録・更新
-            var userModel = await GetUserAsync();
-            if (repository.Save(Model!, userModel!.ID, GetType().Name))
+            if (repository.Save(Model!))
             {
                 Logger.LogInformation(await GetLogMessage($"保存成功"));
                 await ShowAlert("保存しました。", SaveOK);
@@ -227,15 +222,21 @@
     }
 
     /// <summary>
-    /// キャンセル確認
+    /// 戻る確認
     /// </summary>
     private async Task Cancel()
     {
-        await ShowConfirm("編集をキャンセルしますか？", ShowConfirmYes);
+        var msg = "編集をキャンセルしますか？"";
+        if (Model.IsChenged(InitializationModel))
+        {
+            msg += $"{Environment.NewLine}※編集した内容は消えます。";
+        }
+
+        await ShowConfirm(msg, ShowConfirmYes, "はい", "いいえ");
     }
 
     /// <summary>
-    /// キャンセル
+    /// 「キャンセル」確認：「はい」
     /// </summary>
     /// <returns></returns>
     private async Task ShowConfirmYes()

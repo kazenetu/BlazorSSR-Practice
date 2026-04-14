@@ -14,8 +14,6 @@ public interface I$ReposiotryName$Repository : IRepositoryBase
     /// 編集項目の登録(バルクインサート)
     /// </summary>
     /// <param name="targets">登録対象リスト</param>
-    /// <param name="userId">ユーザーID</param>
-    /// <param name="programId">プログラムID</param>
     /// <returns>成功/失敗</returns>
-    bool SaveList(IReadOnlyList<$ClassName$Model> targets, string userId, string programId);
+    bool SaveList(IReadOnlyList<$ClassName$Model> targets);
 }

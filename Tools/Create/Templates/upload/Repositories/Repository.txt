@@ -1,6 +1,5 @@
 using System.Data;
 using System.Text;
-using WebApp.Extentions;
 using WebApp.Models;
 using WebApp.Repositories.Interfaces;
 
@@ -42,10 +41,8 @@ public partial class $ReposiotryName$Repository : RepositoryBase, I$ReposiotryNa
     /// 編集項目の登録(バルクインサート)
     /// </summary>
     /// <param name="targets">登録対象リスト</param>
-    /// <param name="userId">ユーザーID</param>
-    /// <param name="programId">プログラムID</param>
     /// <returns>成功/失敗</returns>
-    public bool SaveList(IReadOnlyList<$ClassName$Model> targets, string userId, string programId)
+    public bool SaveList(IReadOnlyList<$ClassName$Model> targets)
     {
         var result = false;
         try
@@ -55,12 +52,9 @@ public partial class $ReposiotryName$Repository : RepositoryBase, I$ReposiotryNa
 
             // SQL作成
             var sql = new StringBuilder();
-            // sql.AppendLine("INSERT INTO t_order(productName, unitPrice, qty, createDate,createUserId, createProgramId, updateDate, updateUserId, updateProgramId, version) VALUES ");
-            // sql.AppendLine("(@productName, @unitPrice, @qty, @date, @user, @program, @date, @user, @program, 1) ");
+            // sql.AppendLine("INSERT INTO t_order(productName, unitPrice, qty, version) VALUES ");
+            // sql.AppendLine("(@productName, @unitPrice, @qty, 1) ");
             var sqlString = sql.ToString();
-
-            //　登録日時取得
-            var date = DateTime.UtcNow.ToJstTime();
 
             // 登録処理
             var insertCount = 0;
@@ -71,9 +65,6 @@ public partial class $ReposiotryName$Repository : RepositoryBase, I$ReposiotryNa
                 // db.AddParam("@productName", target.Key);
                 // db.AddParam("@unitPrice", target.UnitPrice);
                 // db.AddParam("@qty", target.Qty);
-                // db.AddParam("@date", date.ToString());
-                // db.AddParam("@user", userId);
-                // db.AddParam("@program", programId);
 
                 if (db.ExecuteNonQuery(sql.ToString()) != 1)
                 {

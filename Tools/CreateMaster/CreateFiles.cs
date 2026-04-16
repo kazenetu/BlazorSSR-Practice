@@ -63,7 +63,8 @@ public class CreateFils
             Columns.Add(col);
         }
 
-        var words = tableName.Split("_");
+        var words = uri.Split("_");
+        if (uri.Contains('-')) words = uri.Split("-");
         ClassName = string.Empty;
         foreach (var word in words)
         {
